@@ -1,0 +1,58 @@
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* AQUÍ ESTÁ LA MAGIA DE CSS QUE LO CONVIERTE EN BACKGROUND */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -100; /* Esto lo manda hasta el fondo de todo */
+            pointer-events: none; /* Hace que no lo puedas clickear, actúa como fondo */
+            overflow: hidden;
+            background: #000; 
+        }
+
+        .video-background video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Esto hace que llene la pantalla sin deformarse */
+            opacity: 0.6; /* Lo oscurecemos un poco */
+        }
+
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            text-shadow: 0 0 20px #0047AB, 0 0 40px #FF007A;
+            margin: 0;
+        }
+
+        .spacer {
+            height: auto; /* Cambiado a auto para que el carrusel ultra-wide quepa hermoso sin cortarse */
+            min-height: 100vh;
+            padding: 100px 50px;
+            box-sizing: border-box;
+        }
+.dashboard-tables-section {
+    width: 100%;
+    position: relative;
+    z-index: 10; /* Esto obliga a la tabla a ponerse AL FRENTE del video */
+    padding: 60px 20px;
+    box-sizing: border-box;
+}

@@ -1,14 +1,42 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>snaap</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snaap! - Neon Party</title>
+    
+</head>
+<body>
+
+    <div class="video-background">
+        <video autoplay muted loop playsinline crossorigin="anonymous">
+            <source src="https://assets.codepen.io/3364143/7btrrd.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <section class="hero-section">
+        <h1>Snaap</h1>
+        <p style="letter-spacing: 5px; color: #4db8ff;">EXPERIENCIAS INOLVIDABLES CON SNAAP!</p>
+    </section>
+    <section class="dashboard-tables-section">
+    <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 10px;">Panel de Control</h2>
+    <p style="text-align: center; color: var(--azul-claro); margin-bottom: 40px;">Visualización y administración de registros de eventos.</p>
+    
+    <div id="contenedor-tablas"></div>
+</section>
+
+    <section class="spacer">
+        <h2 style="text-align: center; font-size: 2.5rem; font-weight: 800;">Paquetes Exclusivos</h2>
+        <p style="text-align: center; color: rgba(255,255,255,0.7);">Desliza para ver cómo el navbar se mantiene arriba.</p>
+        
+        <div id="contenedor-carrusel"></div>
+    </section>
+
+    <script src="navegator.js"></script>
+    <script src="carousel.js"></script>
+    <script src="footer.js"></script>
+    <script src="tables.js"></script>
+    
+</body>
 </html>
-z
