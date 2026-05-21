@@ -7,6 +7,7 @@ export async function loadLayout() {
         navbarController.render(navbarContainer);
         navbarController.attachEvents();
     }
+    
     const footerContainer = document.getElementById('footer');
     if (footerContainer) {
         footerController.render(footerContainer);

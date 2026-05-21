@@ -1,49 +1,28 @@
-const SnaapLoginComponent = (() => {
-    const init = () => {
-        const target = document.getElementById("contenedor-login");
-        if (!target) return;
-
-        const section = document.createElement("section");
-        section.className = "snaap-login-section";
-
-        section.innerHTML = `
-            <div class="login-logo-side">
-                <div class="big-snaap-logo">
-                    Sn<span class="neon-aa">aa</span>p
-                </div>
-            </div>
-
-            <div class="login-card">
-                <h2>Inicio de sesión.</h2>
-                <form class="login-form" onsubmit="event.preventDefault()">
-                    
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" class="snaap-input" placeholder="correo">
-                    </div>
-                    
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" class="snaap-input" placeholder="nombre">
-                    </div>
-                    
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" class="snaap-input" placeholder="contraseña">
-                    </div>
-                    
-                    <div class="login-actions">
-                        <button class="btn-login">Inicio</button>
-                        <button class="btn-login">Crear cuenta</button>
-                    </div>
-                </form>
-            </div>
-        `;
-
-        target.appendChild(section);
-    };
-
-    return { init };
-})();
-
-document.addEventListener("DOMContentLoaded", SnaapLoginComponent.init);
+export async function loginController() {
+    const cssLink = document.querySelector('link[href="/src/css/components/login.css"]');
+    if (!cssLink) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/src/css/components/login.css';
+        document.head.appendChild(link);
+    }
+    
+    const form = document.getElementById('login-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const nombre = document.getElementById('login-nombre').value;
+            const password = document.getElementById('login-password').value;
+            console.log('Intento de login:', { email, nombre, password });
+            alert('Funcionalidad de login por implementar');
+        });
+    }
+    
+    const btnCrear = document.getElementById('btn-crear-cuenta');
+    if (btnCrear) {
+        btnCrear.addEventListener('click', () => {
+            alert('Funcionalidad de crear cuenta por implementar');
+        });
+    }
+}
