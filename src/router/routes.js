@@ -21,7 +21,7 @@ export const routes = {
         view: "/src/modules/visitor/packages/packages.html",
         controller: packagesController
     },
-    '/404': {
+    "/404": {
         view: "/src/modules/shared/errors/404.html",
         controller: init404Controller
     }
