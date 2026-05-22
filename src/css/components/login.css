@@ -163,6 +163,44 @@
     transform: translateY(-5px) scale(1.05);
 }
 
+.register-link {
+    margin-top: 30px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+}
+
+.register-link a {
+    color: var(--azul-claro);
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.register-link a:hover {
+    color: var(--rosa-neon);
+    text-shadow: 0 0 5px var(--rosa-neon);
+}
+
+.social-login {
+    margin-top: 35px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.social-icon {
+    font-size: 28px;
+    color: var(--azul-claro);
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.social-icon:hover {
+    color: var(--rosa-neon);
+    transform: translateY(-5px);
+    filter: drop-shadow(0 0 8px var(--rosa-neon));
+}
+
 @media (max-width: 900px) {
     .snaap-login-section {
         flex-direction: column;
