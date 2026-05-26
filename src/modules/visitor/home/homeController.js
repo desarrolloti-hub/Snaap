@@ -69,21 +69,21 @@ export async function homeController() {
     if (carruselDiv) carouselController.render(carruselDiv);
 
     // Simular mural con elementos aleatorios (ejemplo)
-    const muralPreview = document.getElementById('muralPreview');
-    if (muralPreview) {
-        const muestras = [
-            { emoji: '<i class="fa-solid fa-camera"></i>', texto: 'Fotos' },
-            { emoji: '<i class="fa-solid fa-pencil"></i>', texto: 'Dibujos' },
-            { emoji: '<i class="fa-solid fa-message"></i>', texto: 'Mensajes' },
-            { emoji: '<i class="fa-solid fa-film"></i>', texto: 'Videos' }
-        ];
-        muralPreview.innerHTML = muestras.map(m => `
-            <div class="mural-item">
-                <span>${m.emoji}</span>
-                <p>${m.texto}</p>
-            </div>
-        `).join('');
-    }
+   const muralPreview = document.getElementById('muralPreview');
+if (muralPreview) {
+    const muestras = [
+        { icon: '<i class="fa-solid fa-camera"></i>', texto: 'Fotos' },
+        { icon: '<i class="fa-solid fa-pencil"></i>', texto: 'Dibujos' },
+        { icon: '<i class="fa-solid fa-message"></i>', texto: 'Mensajes' },
+        { icon: '<i class="fa-solid fa-film"></i>', texto: 'Videos' }
+    ];
+    muralPreview.innerHTML = muestras.map(m => `
+        <div class="mural-item">
+            <span>${m.icon}</span>
+            <p>${m.texto}</p>
+        </div>
+    `).join('');
+}
 
     // Eventos
     document.getElementById('btnEscanear')?.addEventListener('click', () => alert('📲 Escanea el código QR que aparecerá en la pantalla del evento.'));
