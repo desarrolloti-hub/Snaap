@@ -1,8 +1,8 @@
 body, html {
     margin: 0;
     padding: 0;
-    color: white;
-    font-family: 'Poppins', sans-serif;
+    color: var(--snaap-text-white);
+    font-family: var(--snaap-font-family);
     overflow-x: hidden;
 }
 
@@ -12,7 +12,7 @@ body, html {
     left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -100;
+    z-index: var(--snaap-z-background);
     pointer-events: none;
     overflow: hidden;
     background: #000;
@@ -37,21 +37,21 @@ body, html {
 .hero-section h1 {
     font-size: clamp(3rem, 10vw, 6rem);
     font-weight: 900;
-    text-shadow: 0 0 20px #0047AB, 0 0 40px #FF007A;
+    text-shadow: 0 0 20px var(--snaap-azul), 0 0 40px var(--snaap-rosa);
     margin: 0;
 }
 
 .spacer {
     height: auto;
     min-height: 100vh;
-    padding: 100px 50px;
+    padding: var(--snaap-spacing-xl) var(--snaap-spacing-lg);
     box-sizing: border-box;
 }
 
 .dashboard-tables-section {
     width: 100%;
     position: relative;
-    z-index: 10;
+    z-index: var(--snaap-z-base);
     padding: 60px 20px;
     box-sizing: border-box;
 }

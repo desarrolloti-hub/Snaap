@@ -1,17 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-:root {
-    --azul-neon: #0047AB;
-    --rosa-neon: #FF007A;
-    --azul-claro: #4db8ff;
-    --card-glass: rgba(15, 15, 20, 0.6);
-}
-
 .snaap-carousel-section {
-    padding: 40px 0;
+    padding: var(--snaap-spacing-3xl) 0;
     overflow: hidden;
     background: transparent;
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--snaap-font-family);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,20 +28,20 @@
     position: absolute;
     width: 320px;
     height: 460px;
-    background: var(--card-glass);
+    background: var(--snaap-card-glass);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 2px solid rgba(0, 71, 171, 0.4);
-    border-radius: 28px;
+    border-radius: var(--snaap-radius-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    padding: 30px 25px;
+    padding: var(--snaap-spacing-xl) 25px;
     box-sizing: border-box;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--snaap-transition-slow);
     cursor: pointer;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--snaap-shadow-card);
     user-select: none;
     overflow: hidden;
 }
@@ -57,14 +50,14 @@
     width: 100%;
     height: 230px;
     object-fit: cover;
-    border-radius: 20px;
+    border-radius: var(--snaap-radius-md);
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     transition: transform 0.5s ease;
 }
 
 .card h3 {
-    color: #ffffff;
-    font-size: 22px;
+    color: var(--snaap-text-white);
+    font-size: var(--snaap-font-size-xl);
     font-weight: 700;
     margin: 0;
     text-align: center;
@@ -72,8 +65,8 @@
 }
 
 .card .price {
-    color: #ffffff;
-    font-size: 24px;
+    color: var(--snaap-text-white);
+    font-size: var(--snaap-font-size-2xl);
     font-weight: 800;
     letter-spacing: 2px;
     margin: 0;
@@ -110,7 +103,7 @@
 }
 
 .card.active:hover {
-    border-color: var(--rosa-neon);
+    border-color: var(--snaap-rosa);
     box-shadow: 0 0 40px rgba(255, 0, 122, 0.5), 0 35px 80px rgba(0,0,0,0.9);
     transform: translateY(-8px) scale(1.03) translateZ(150px);
 }
@@ -125,18 +118,18 @@
     transform: translateY(-50%);
     width: 70px;
     height: 70px;
-    border-radius: 50%;
+    border-radius: var(--snaap-radius-full);
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
-    border: 3px solid var(--azul-neon);
-    color: var(--azul-claro);
+    border: 3px solid var(--snaap-azul);
+    color: var(--snaap-azul-claro);
     font-size: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 100;
-    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: var(--snaap-transition-slow);
     box-shadow: 0 0 20px rgba(0, 71, 171, 0.4);
     user-select: none;
 }
@@ -152,8 +145,8 @@
 }
 
 .nav-button:hover {
-    border-color: var(--rosa-neon);
-    color: var(--rosa-neon);
+    border-color: var(--snaap-rosa);
+    color: var(--snaap-rosa);
     box-shadow: 0 0 35px rgba(255, 0, 122, 0.7);
     transform: translateY(-50%) scale(1.1);
 }
