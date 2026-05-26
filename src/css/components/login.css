@@ -1,26 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-:root {
-    --azul-neon: #0047AB;
-    --rosa-neon: #FF007A;
-    --azul-claro: #4db8ff;
-    --glass-bg: rgba(15, 15, 20, 0.9);
-    --input-bg: rgba(25, 25, 30, 0.95);
-}
-
 .snaap-login-section {
     width: 95%;
     max-width: 1200px;
     margin: 80px auto;
-    padding: 40px;
+    padding: var(--snaap-spacing-3xl);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 60px;
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--snaap-font-family);
     position: relative;
-    z-index: 10;
+    z-index: var(--snaap-z-base);
 }
 
 .login-logo-side {
@@ -32,9 +24,9 @@
 }
 
 .big-snaap-logo {
-    font-size: 160px;
+    font-size: var(--snaap-font-size-8xl);
     font-weight: 900;
-    color: #fff;
+    color: var(--snaap-text-white);
     letter-spacing: -9px;
     display: flex;
     align-items: center;
@@ -43,36 +35,36 @@
 
 .big-snaap-logo .neon-aa {
     color: transparent;
-    -webkit-text-stroke: 4px var(--azul-claro);
-    filter: drop-shadow(0 0 30px var(--azul-neon)) drop-shadow(0 0 10px var(--azul-neon));
+    -webkit-text-stroke: 4px var(--snaap-azul-claro);
+    filter: drop-shadow(0 0 30px var(--snaap-azul)) drop-shadow(0 0 10px var(--snaap-azul));
     margin: 0 5px;
 }
 
 .login-card {
     flex: 1;
-    background: var(--glass-bg);
+    background: var(--snaap-glass-bg);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    border: 4px solid var(--azul-neon);
-    border-radius: 40px;
+    border: 4px solid var(--snaap-azul);
+    border-radius: var(--snaap-radius-xl);
     padding: 60px 45px;
     box-shadow: 0 0 40px rgba(0, 71, 171, 0.5), inset 0 0 15px rgba(0, 71, 171, 0.2);
     text-align: center;
     min-width: 450px;
-    transition: all 0.4s ease;
+    transition: var(--snaap-transition);
 }
 
 .login-card:hover {
-    border-color: var(--rosa-neon);
+    border-color: var(--snaap-rosa);
     box-shadow: 0 0 50px rgba(255, 0, 122, 0.6), inset 0 0 20px rgba(255, 0, 122, 0.3);
     transform: translateY(-5px) scale(1.01);
 }
 
 .login-card h2 {
-    font-size: 44px;
+    font-size: var(--snaap-font-size-5xl);
     font-weight: 800;
-    color: #fff;
-    margin-bottom: 40px;
+    color: var(--snaap-text-white);
+    margin-bottom: var(--snaap-spacing-3xl);
     letter-spacing: -1.2px;
     text-shadow: 0 0 15px rgba(255,255,255,0.3);
 }
@@ -92,40 +84,40 @@
 .input-group i {
     position: absolute;
     left: 25px;
-    color: var(--azul-claro);
+    color: var(--snaap-azul-claro);
     font-size: 18px;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 0 5px var(--azul-neon));
+    transition: var(--snaap-transition);
+    filter: drop-shadow(0 0 5px var(--snaap-azul));
     pointer-events: none;
 }
 
 .snaap-input {
     width: 100%;
-    background: var(--input-bg);
+    background: var(--snaap-input-bg);
     border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50px;
+    border-radius: var(--snaap-radius-pill);
     padding: 20px 35px 20px 65px;
-    color: #fff;
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
+    color: var(--snaap-text-white);
+    font-family: var(--snaap-font-family);
+    font-size: var(--snaap-font-size-md);
     outline: none;
-    transition: all 0.3s ease;
+    transition: var(--snaap-transition);
     box-sizing: border-box;
     font-weight: 500;
 }
 
 .snaap-input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--snaap-text-muted);
     font-weight: 600;
 }
 
 .input-group:focus-within i {
-    color: var(--rosa-neon);
-    filter: drop-shadow(0 0 8px var(--rosa-neon));
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 8px var(--snaap-rosa));
 }
 
 .snaap-input:focus {
-    border-color: var(--azul-claro);
+    border-color: var(--snaap-azul-claro);
     box-shadow: 0 0 20px rgba(77, 184, 255, 0.5);
     background: rgba(30, 30, 40, 1);
 }
@@ -133,52 +125,52 @@
 .login-actions {
     display: flex;
     gap: 25px;
-    margin-top: 20px;
+    margin-top: var(--snaap-spacing-lg);
 }
 
 .btn-login {
     flex: 1;
     padding: 15px 25px;
-    border-radius: 50px;
+    border-radius: var(--snaap-radius-pill);
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(5px);
-    border: 2px solid var(--azul-neon);
-    color: var(--azul-claro);
-    font-family: 'Poppins', sans-serif;
+    border: var(--snaap-border-neon);
+    color: var(--snaap-azul-claro);
+    font-family: var(--snaap-font-family);
     font-weight: 700;
-    font-size: 16px;
+    font-size: var(--snaap-font-size-md);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 15px rgba(0, 71, 171, 0.3);
+    transition: var(--snaap-transition-slow);
+    box-shadow: var(--snaap-shadow-neon);
     user-select: none;
 }
 
 .btn-login:hover {
-    border-color: var(--rosa-neon);
-    color: var(--rosa-neon);
+    border-color: var(--snaap-rosa);
+    color: var(--snaap-rosa);
     box-shadow: 0 0 25px rgba(255, 0, 122, 0.6), inset 0 0 5px rgba(255, 0, 122, 0.2);
     transform: translateY(-5px) scale(1.05);
 }
 
 .register-link {
-    margin-top: 30px;
-    font-size: 14px;
-    color: rgba(255,255,255,0.7);
+    margin-top: var(--snaap-spacing-xl);
+    font-size: var(--snaap-font-size-base);
+    color: var(--snaap-text-gray);
 }
 
 .register-link a {
-    color: var(--azul-claro);
+    color: var(--snaap-azul-claro);
     text-decoration: none;
     font-weight: 600;
-    transition: 0.3s;
+    transition: var(--snaap-transition-fast);
 }
 
 .register-link a:hover {
-    color: var(--rosa-neon);
-    text-shadow: 0 0 5px var(--rosa-neon);
+    color: var(--snaap-rosa);
+    text-shadow: 0 0 5px var(--snaap-rosa);
 }
 
 .social-login {
@@ -190,28 +182,28 @@
 
 .social-icon {
     font-size: 28px;
-    color: var(--azul-claro);
-    transition: 0.3s;
+    color: var(--snaap-azul-claro);
+    transition: var(--snaap-transition-fast);
     cursor: pointer;
 }
 
 .social-icon:hover {
-    color: var(--rosa-neon);
+    color: var(--snaap-rosa);
     transform: translateY(-5px);
-    filter: drop-shadow(0 0 8px var(--rosa-neon));
+    filter: drop-shadow(0 0 8px var(--snaap-rosa));
 }
 
 @media (max-width: 900px) {
     .snaap-login-section {
         flex-direction: column;
         text-align: center;
-        padding: 20px;
+        padding: var(--snaap-spacing-lg);
         width: 90%;
     }
     .login-card {
         width: 100%;
         min-width: unset;
-        padding: 40px 25px;
+        padding: var(--snaap-spacing-3xl) 25px;
     }
     .login-actions {
         flex-direction: column;
@@ -223,7 +215,7 @@
         margin-bottom: 30px;
     }
     .big-snaap-logo .neon-aa {
-        -webkit-text-stroke: 3px var(--azul-claro);
-        filter: drop-shadow(0 0 20px var(--azul-neon));
+        -webkit-text-stroke: 3px var(--snaap-azul-claro);
+        filter: drop-shadow(0 0 20px var(--snaap-azul));
     }
 }

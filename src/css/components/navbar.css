@@ -1,14 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
-:root {
-    --azul-neon: #0047AB;
-    --rosa-neon: #FF007A;
-    --azul-claro: #4db8ff; 
-    --glass-bg: rgba(0, 0, 0, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.1);
-}
-
 .snaap-navbar {
     position: fixed;
     top: 0;
@@ -16,11 +8,11 @@
     width: 100%;
     height: 80px;
     box-sizing: border-box;
-    z-index: 10000;
+    z-index: var(--snaap-z-navbar);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--glass-border);
-    font-family: 'Poppins', sans-serif;
+    border-bottom: var(--snaap-border-glass);
+    font-family: var(--snaap-font-family);
     padding: 0 5%;
     display: flex;
     justify-content: space-between;
@@ -30,7 +22,7 @@
 .snaap-logo {
     font-size: 35px;
     font-weight: 800;
-    color: #ffffff;
+    color: var(--snaap-text-white);
     text-decoration: none;
     letter-spacing: -1px;
     display: flex;
@@ -39,8 +31,8 @@
 
 .snaap-logo .neon-aa {
     color: transparent;
-    -webkit-text-stroke: 1.2px var(--azul-claro);
-    filter: drop-shadow(0 0 8px var(--azul-neon));
+    -webkit-text-stroke: 1.2px var(--snaap-azul-claro);
+    filter: drop-shadow(0 0 8px var(--snaap-azul));
     margin: 0 2px;
 }
 
@@ -55,53 +47,53 @@
 
 .snaap-btn {
     background: transparent;
-    border: 2px solid var(--azul-neon);
+    border: var(--snaap-border-neon);
     padding: 8px 0;
     width: 170px;
-    border-radius: 50px;
-    color: #fff;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
     text-decoration: none;
-    font-size: 13px;
+    font-size: var(--snaap-font-size-xs);
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     text-transform: capitalize;
-    transition: all 0.3s ease-in-out;
+    transition: var(--snaap-transition);
     box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
     animation: neonPulse 2.5s infinite alternate;
 }
 
 @keyframes neonPulse {
-    from { box-shadow: 0 0 5px var(--azul-neon); border-color: var(--azul-neon); }
-    to { box-shadow: 0 0 15px var(--azul-neon), inset 0 0 2px var(--azul-neon); border-color: var(--azul-claro); }
+    from { box-shadow: 0 0 5px var(--snaap-azul); border-color: var(--snaap-azul); }
+    to { box-shadow: 0 0 15px var(--snaap-azul), inset 0 0 2px var(--snaap-azul); border-color: var(--snaap-azul-claro); }
 }
 
 .snaap-btn i {
-    color: var(--azul-claro);
-    transition: color 0.3s;
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
 }
 
 .snaap-btn:hover {
-    border-color: var(--rosa-neon);
+    border-color: var(--snaap-rosa);
     background: transparent;
     transform: translateY(-3px);
-    box-shadow: 0 0 20px var(--rosa-neon), inset 0 0 8px var(--rosa-neon);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
     animation: none;
-    color: #fff;
+    color: var(--snaap-text-white);
 }
 
 .snaap-btn:hover i {
-    color: var(--rosa-neon);
-    filter: drop-shadow(0 0 5px var(--rosa-neon));
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
 .rsi-footer-link {
     display: none;
     text-align: center;
-    padding: 20px;
-    font-size: 12px;
+    padding: var(--snaap-spacing-lg);
+    font-size: var(--snaap-font-size-xs);
     color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
     letter-spacing: 0.5px;
@@ -109,7 +101,7 @@
 
 .snaap-burger {
     display: none;
-    color: #fff;
+    color: var(--snaap-text-white);
     font-size: 30px;
     cursor: pointer;
     z-index: 10001;
@@ -133,7 +125,7 @@
     }
     .snaap-menu.active { right: 0; }
     .snaap-btn {
-        font-size: 16px;
+        font-size: var(--snaap-font-size-md);
         padding: 11px 0;
         width: 290px;
     }
