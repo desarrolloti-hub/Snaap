@@ -25,8 +25,8 @@ export async function homeController() {
                 <h1 class="snaap-lema">Escanea, <span>toma</span>, <span class="snaap-action">¡Snaap!</span></h1>
                 <p class="snaap-sub">Comparte tu creatividad al instante en el mural colectivo</p>
                 <div class="snaap-buttons">
-                    <button class="snaap-btn" id="btnEscanear">📱 Escanear QR</button>
-                    <button class="snaap-btn" id="btnDemo">🎬 Ver demo</button>
+                    <button class="snaap-btn" id="btnEscanear"><i class="fa fa-qrcode" aria-hidden="true"></i> Escanear QR</button>
+                    <button class="snaap-btn" id="btnDemo"><i class="fa-solid fa-calendar"></i> Iniciar fiesta</button>
                 </div>
             </div>
         </section>
@@ -50,7 +50,7 @@ export async function homeController() {
         <section class="snaap-live-mural">
             <h2>Mural <span class="snaap-neon-text">en acción</span></h2>
             <div class="snaap-mural-preview" id="muralPreview"></div>
-            <p style="color: #4db8ff;">🔥 Cada aportación enriquece la experiencia colectiva</p>
+            <p style="color: #4db8ff;">Tu mirada, tu snap, tu instante: todo suma para que el evento viva en todos.</p>
         </section>
 
         <section class="snaap-carousel-section">
@@ -72,10 +72,10 @@ export async function homeController() {
     const muralPreview = document.getElementById('muralPreview');
     if (muralPreview) {
         const muestras = [
-            { emoji: '📸', texto: 'Foto del público' },
-            { emoji: '✏️', texto: 'Dibujo: estrella' },
-            { emoji: '💬', texto: 'Mensaje: "WOW!"' },
-            { emoji: '🖼️', texto: 'Selfie grupal' }
+            { emoji: '<i class="fa-solid fa-camera"></i>', texto: 'Foto del público' },
+            { emoji: '<i class="fa-solid fa-pencil"></i>', texto: 'Dibujo' },
+            { emoji: '<i class="fa-solid fa-message"></i>', texto: 'Mensaje' },
+            { emoji: '<i class="fa-solid fa-film"></i>', texto: 'Selfie grupal' }
         ];
         muralPreview.innerHTML = muestras.map(m => `
             <div class="mural-item">
