@@ -24,8 +24,8 @@ export async function packagesController() {
     app.innerHTML = `
         <div class="snaap-paquetes-section">
             <div class="paquete-header">
-                <h2>Artist<span>aa</span> Emergente.</h2>
-                <p>Descubre experiencias únicas con nuestro catálogo de eventos premium</p>
+                <h2>Paquete ESPECIAL</h2>
+                <p>Capacidad justa para que nadie se quede sin subir su momento.</p>
             </div>
 
             <!-- Galería horizontal mejorada -->
@@ -43,10 +43,9 @@ export async function packagesController() {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Rolling_Stones_logo.svg" alt="Icono Artista">
                 </div>
                 <div class="paquete-info">
-                    <h3>det<span>aa</span>lles del p<span>aaa</span>quete.</h3>
+                    <h3>Todo lo que guardamos por ti.</h3>
                     <p>
-                        Branding neón personalizado, iluminación reactiva y una experiencia sonora de primer nivel para tu evento Snaap! 
-                        Incluye DJ en vivo, equipo de sonido profesional, efectos láser y pantallas LED.
+                        Ideal para reuniones íntimas, cumpleaños sorpresa o comidas familiares. Con 10 GB tus invitados pueden compartir hasta 2,500 fotos o 10 videos cortos sin preocuparse por el espacio. Suficiente para 30-50 personas subiendo lo mejor de la fiesta. Incluye QR personalizable. ¡Perfecto si es tu primera vez usando Snaap!
                     </p>
                 </div>
                 <div class="paquete-acciones">
@@ -137,4 +136,33 @@ export async function packagesController() {
             alert(`Has seleccionado el plan ${plan}. Pronto te contactaremos.`);
         });
     });
+
+    // ===== NUEVO: SCROLL REVEAL =====
+    function initScrollReveal() {
+        // Elementos a observar: cabecera, galería, main content, features y pricing
+        const elementsToReveal = document.querySelectorAll(
+            '.paquete-header, .paquete-galeria, .paquete-main-content, .paquete-features, .paquete-pricing'
+        );
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Solo aparece una vez
+                }
+            });
+        }, { threshold: 0.2 }); // Se activa cuando el 20% del elemento es visible
+
+        elementsToReveal.forEach(el => observer.observe(el));
+        
+        // Opcional: si algún elemento ya está visible (como el header), lo activamos inmediatamente
+        const header = document.querySelector('.paquete-header');
+        if (header && header.getBoundingClientRect().top < window.innerHeight) {
+            header.classList.add('visible');
+            observer.unobserve(header);
+        }
+    }
+
+    // Pequeño retraso para asegurar que todo esté en el DOM
+    setTimeout(initScrollReveal, 100);
 }

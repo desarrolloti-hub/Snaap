@@ -306,3 +306,60 @@
     .big-text { font-size: var(--snaap-font-size-3xl) !important; }
     .light-text { font-size: var(--snaap-font-size-2xl) !important; }
 }
+
+/* ===== NUEVO: SCROLL REVEAL para "Sobre nosotros" ===== */
+/* Elementos que van a aparecer con scroll */
+.snaap-acerca-cabecera,
+.acerca-bloque,
+.snaap-servicios-grid {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1),
+                transform 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* Cuando se añade la clase 'visible' */
+.snaap-acerca-cabecera.visible,
+.acerca-bloque.visible,
+.snaap-servicios-grid.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Efecto escalonado para las columnas de servicios (opcional) */
+.servicio-col {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.snaap-servicios-grid.visible .servicio-col {
+    opacity: 1;
+    transform: translateY(0);
+}
+.snaap-servicios-grid.visible .servicio-col:nth-child(1) { transition-delay: 0.1s; }
+.snaap-servicios-grid.visible .servicio-col:nth-child(2) { transition-delay: 0.2s; }
+.snaap-servicios-grid.visible .servicio-col:nth-child(3) { transition-delay: 0.3s; }
+
+/* Los textos de los bloques también pueden tener un pequeño retraso */
+.bloque-texto h3,
+.bloque-texto p,
+.bloque-texto button {
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.acerca-bloque.visible .bloque-texto h3 { transition-delay: 0.1s; opacity: 1; transform: translateX(0); }
+.acerca-bloque.visible .bloque-texto p { transition-delay: 0.2s; opacity: 1; transform: translateX(0); }
+.acerca-bloque.visible .bloque-texto button { transition-delay: 0.3s; opacity: 1; transform: translateX(0); }
+
+/* Las imágenes del carrusel (solo el contenedor, no los slides internos) */
+.bloque-imagen-carrusel {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.acerca-bloque.visible .bloque-imagen-carrusel {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0.2s;
+}

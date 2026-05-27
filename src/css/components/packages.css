@@ -322,3 +322,98 @@
     }
     .img-item { flex: 0 0 280px; height: 240px; }
 }
+
+/* ===== NUEVO: SCROLL REVEAL para PAQUETES ===== */
+/* Elementos que van a aparecer con scroll */
+.paquete-header,
+.paquete-galeria,
+.paquete-main-content,
+.paquete-features,
+.paquete-pricing {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1),
+                transform 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* Cuando se añade la clase 'visible' */
+.paquete-header.visible,
+.paquete-galeria.visible,
+.paquete-main-content.visible,
+.paquete-features.visible,
+.paquete-pricing.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Efecto escalonado para las tarjetas de características */
+.feature-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.paquete-features.visible .feature-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+.paquete-features.visible .feature-card:nth-child(1) { transition-delay: 0.1s; }
+.paquete-features.visible .feature-card:nth-child(2) { transition-delay: 0.2s; }
+.paquete-features.visible .feature-card:nth-child(3) { transition-delay: 0.3s; }
+.paquete-features.visible .feature-card:nth-child(4) { transition-delay: 0.4s; }
+
+/* Efecto escalonado para las tarjetas de precios */
+.pricing-card {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.paquete-pricing.visible .pricing-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+.paquete-pricing.visible .pricing-card:nth-child(1) { transition-delay: 0.1s; }
+.paquete-pricing.visible .pricing-card:nth-child(2) { transition-delay: 0.2s; }
+.paquete-pricing.visible .pricing-card:nth-child(3) { transition-delay: 0.3s; }
+
+/* Los items de la galería también pueden aparecer uno tras otro (opcional) */
+.img-item {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.paquete-galeria.visible .img-item {
+    opacity: 1;
+    transform: scale(1);
+}
+.paquete-galeria.visible .img-item:nth-child(1) { transition-delay: 0.05s; }
+.paquete-galeria.visible .img-item:nth-child(2) { transition-delay: 0.1s; }
+.paquete-galeria.visible .img-item:nth-child(3) { transition-delay: 0.15s; }
+.paquete-galeria.visible .img-item:nth-child(4) { transition-delay: 0.2s; }
+.paquete-galeria.visible .img-item:nth-child(5) { transition-delay: 0.25s; }
+.paquete-galeria.visible .img-item:nth-child(6) { transition-delay: 0.3s; }
+
+/* Pequeña animación para el texto principal y botones */
+.paquete-info h3,
+.paquete-info p,
+.paquete-acciones .btn-snaap-pkg {
+    opacity: 0;
+    transform: translateX(-15px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.paquete-main-content.visible .paquete-info h3 { transition-delay: 0.1s; opacity: 1; transform: translateX(0); }
+.paquete-main-content.visible .paquete-info p { transition-delay: 0.2s; opacity: 1; transform: translateX(0); }
+.paquete-main-content.visible .paquete-acciones .btn-snaap-pkg:nth-child(1) { transition-delay: 0.3s; opacity: 1; transform: translateX(0); }
+.paquete-main-content.visible .paquete-acciones .btn-snaap-pkg:nth-child(2) { transition-delay: 0.4s; opacity: 1; transform: translateX(0); }
+.paquete-main-content.visible .paquete-acciones .btn-snaap-pkg:nth-child(3) { transition-delay: 0.5s; opacity: 1; transform: translateX(0); }
+
+/* El logo también puede aparecer con un pequeño zoom */
+.paquete-logo-frame {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.paquete-main-content.visible .paquete-logo-frame {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0.1s;
+}

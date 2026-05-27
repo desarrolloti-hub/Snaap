@@ -127,9 +127,36 @@ export async function aboutUsController() {
             alert('¡Gracias por tu interés! Pronto un asesor se comunicará contigo.');
         });
     });
+
+    // ===== NUEVO: SCROLL REVEAL =====
+    function initScrollReveal() {
+        // Elementos a observar: cabecera, cada bloque, y el grid de servicios
+        const elementsToReveal = document.querySelectorAll('.snaap-acerca-cabecera, .acerca-bloque, .snaap-servicios-grid');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Solo aparece una vez
+                }
+            });
+        }, { threshold: 0.2 }); // Se activa cuando el 20% del elemento es visible
+
+        elementsToReveal.forEach(el => observer.observe(el));
+        
+        // Opcional: si quieres que la cabecera se vea inmediatamente sin esperar scroll (porque ya está visible al cargar)
+        const header = document.querySelector('.snaap-acerca-cabecera');
+        if (header && header.getBoundingClientRect().top < window.innerHeight) {
+            header.classList.add('visible');
+            observer.unobserve(header);
+        }
+    }
+
+    // Pequeño retraso para asegurar que todo esté en el DOM
+    setTimeout(initScrollReveal, 100);
 }
 
-// Función auxiliar para los carruseles internos
+// Función auxiliar para los carruseles internos (igual que la tuya, sin cambios)
 function setupCarruselLogic(carruselId, puntosId) {
     const slides = document.querySelectorAll(`#${carruselId} .acerca-slide`);
     const puntos = document.querySelectorAll(`#${puntosId} .carrusel-punto`);

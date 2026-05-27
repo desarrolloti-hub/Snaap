@@ -1,6 +1,4 @@
-
 /* Hero */
-/* Animación de entrada */
 @keyframes fadeSlideUp {
     0% {
         opacity: 0;
@@ -12,7 +10,6 @@
     }
 }
 
-/* Aplicar al contenedor principal del texto */
 .snaap-hero-content {
     animation: fadeSlideUp 1s ease-out forwards;
 }
@@ -23,7 +20,6 @@
     justify-content: center;
     text-align: center;
     padding: 2rem;
-    /* Sin fondo, transparente */
 }
 .snaap-hero-content {
     max-width: 800px;
@@ -34,19 +30,14 @@
     color: white;
     margin: 0;
     white-space: nowrap;
-  overflow-x: auto; /* si quieres scroll horizontal en lugar de salto */
+    overflow-x: auto;
 }
 
-
-.snaap-lema .snaap-action {
-    /* Sin color fijo ni text-shadow, para que los spans internos definan el estilo */
-}
 .snaap-action span {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
-/* Nuevos estilos para las partes de "Snaap" */
 .snaap-action .sn-white {
     color: white;
 }
@@ -58,20 +49,14 @@
     filter: drop-shadow(0 0 5px #00aaff4d) drop-shadow(0 0 8px #0088ff);
 }
 .snaap-action {
-  display: flex;
-  flex-wrap: nowrap;
-  white-space: nowrap; /* por si acaso */
-}
-.snaap-action {
-  display: inline-flex;  /* en lugar de flex */
-  flex-wrap: nowrap;
-  white-space: nowrap;
+    display: inline-flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 .snaap-action .p-white {
     color: white;
 }
 
-/* Mantienes el resto de tus estilos sin cambios */
 .snaap-sub {
     font-size: 1.3rem;
     margin: 1rem 0;
@@ -84,7 +69,7 @@
     justify-content: center;
     margin-top: 2rem;
 }
-/* Botones exclusivos del home (no afectan navbar) */
+
 .home-btn {
     background: transparent;
     border: 2px solid #4db8ff;
@@ -100,8 +85,6 @@
     color: #FF007A;
 }
 
-/* Sección QR + pasos (sin fondo) */
-/* Aplicar la misma animación al contenedor principal de la sección */
 .snaap-scan-container {
     animation: fadeSlideUp 0.8s ease-out forwards;
 }
@@ -142,8 +125,6 @@
     margin-bottom: 1rem;
 }
 
-/* Mural en vivo (sin fondo) */
-
 .snaap-live-mural {
     padding: 4rem 2rem;
     text-align: center;
@@ -157,14 +138,14 @@
     max-width: 1000px;
 }
 .mural-item:hover {
-    background: rgba(0, 0, 0, 0.8); /* oscurece o ilumina según prefieras */
-    box-shadow: 0 0 15px #FF007A ; 
-    transform: scale(1.02); /* ligera ampliación */
-    transition: all 0.3s ease; /* suaviza la transición */
-     border: 2px solid #FF007A;
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 15px #FF007A;
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+    border: 2px solid #FF007A;
 }
 .mural-item {
-    background: rgba(39, 38, 38, 0.5); /* único fondo semi para legibilidad, pero puedes quitarlo si prefieres */
+    background: rgba(39, 38, 38, 0.5);
     border-radius: 20px;
     padding: 1rem;
     width: 160px;
@@ -173,29 +154,22 @@
     transition: all 0.2s ease-in-out;
 }
 .mural-item span {
-       font-size: 2.5rem;
+    font-size: 2.5rem;
     display: block;
     transition: all 0.2s ease-in-out;
-    color: inherit;       
-    text-shadow: none;    
-    /* Solo al hover sobre la tarjeta, el icono se ilumina */
+    color: inherit;
+    text-shadow: none;
+}
 .mural-item:hover span {
     color: #FF007A;
     text-shadow: 0 0 8px #FF007A;
-}
 }
 .mural-item p {
     margin-top: 0.5rem;
     color: white;
     font-size: 0.85rem;
 }
-/* Al hover, el icono brilla en rosa */
-.mural-item:hover span {
-    color: #FF007A;                 
-    
-}
 
-/* Carrusel */
 .snaap-carousel-section {
     padding: 4rem 2rem;
     text-align: center;
@@ -204,12 +178,11 @@
     margin-bottom: 2rem;
 }
 
-/* CTA final (sin fondo) */
 .snaap-cta {
     display: flex;
     flex-direction: column;
-    align-items: center;  
-    justify-content: center; 
+    align-items: center;
+    justify-content: center;
     padding: 4rem 2rem;
     text-align: center;
 }
@@ -223,7 +196,6 @@
     text-shadow: 0 0 3px #4db8ff;
 }
 
-/* Títulos generales */
 h2 {
     font-size: 2rem;
     color: white;
@@ -231,7 +203,6 @@ h2 {
     margin-bottom: 1rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .snaap-lema { font-size: 2.5rem; }
     .snaap-sub { font-size: 1rem; }
@@ -239,4 +210,72 @@ h2 {
     .snaap-scan-text h3 { font-size: 1.4rem; }
     .mural-item { width: 130px; }
     h2 { font-size: 1.6rem; }
+}
+
+/* ===== SCROLL REVEAL (solo para scan y mural, CTA siempre visible) ===== */
+.snaap-scan-section,
+.snaap-live-mural {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1),
+                transform 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+.snaap-scan-section.visible,
+.snaap-live-mural.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* CTA y su botón siempre visibles */
+.snaap-cta {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+.snaap-cta button {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+/* Efecto escalonado para mural items */
+.mural-item {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.visible .mural-item {
+    opacity: 1;
+    transform: scale(1);
+}
+.visible .mural-item:nth-child(1) { transition-delay: 0.1s; }
+.visible .mural-item:nth-child(2) { transition-delay: 0.2s; }
+.visible .mural-item:nth-child(3) { transition-delay: 0.3s; }
+.visible .mural-item:nth-child(4) { transition-delay: 0.4s; }
+
+/* Efecto textos sección scan */
+.snaap-scan-text h3,
+.snaap-scan-text p {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.visible .snaap-scan-text h3,
+.visible .snaap-scan-text p {
+    opacity: 1;
+    transform: translateX(0);
+}
+.visible .snaap-scan-text h3:nth-of-type(1) { transition-delay: 0.1s; }
+.visible .snaap-scan-text p:nth-of-type(1)  { transition-delay: 0.2s; }
+.visible .snaap-scan-text h3:nth-of-type(2) { transition-delay: 0.3s; }
+.visible .snaap-scan-text p:nth-of-type(2)  { transition-delay: 0.4s; }
+.visible .snaap-scan-text h3:nth-of-type(3) { transition-delay: 0.5s; }
+.visible .snaap-scan-text p:nth-of-type(3)  { transition-delay: 0.6s; }
+
+/* Brillo neón en letras outline */
+.aa-outline {
+    animation: subtleGlow 2s infinite alternate;
+}
+@keyframes subtleGlow {
+    0% { filter: drop-shadow(0 0 2px #00aaff11); text-shadow: 0 0 2px #00aaff4d; }
+    100% { filter: drop-shadow(0 0 8px #ff007b00); text-shadow: 0 0 8px #ff007b00; }
 }
