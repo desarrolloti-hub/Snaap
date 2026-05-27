@@ -1,5 +1,21 @@
 
 /* Hero */
+/* Animación de entrada */
+@keyframes fadeSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplicar al contenedor principal del texto */
+.snaap-hero-content {
+    animation: fadeSlideUp 1s ease-out forwards;
+}
 .snaap-hero {
     min-height: 80vh;
     display: flex;
@@ -17,16 +33,51 @@
     font-weight: 900;
     color: white;
     margin: 0;
+    white-space: nowrap;
+  overflow-x: auto; /* si quieres scroll horizontal en lugar de salto */
 }
+
+
 .snaap-lema .snaap-action {
-    color: #FF007A;
-    text-shadow: 0 0 5px #FF007A;
+    /* Sin color fijo ni text-shadow, para que los spans internos definan el estilo */
 }
+.snaap-action span {
+  margin: 0;
+  padding: 0;
+}
+
+/* Nuevos estilos para las partes de "Snaap" */
+.snaap-action .sn-white {
+    color: white;
+}
+
+.snaap-action .aa-outline {
+    color: transparent;
+    -webkit-text-stroke: 3px rgb(0, 225, 255);
+    text-stroke: 3px #0047AB;
+    filter: drop-shadow(0 0 5px #00aaff4d) drop-shadow(0 0 8px #0088ff);
+}
+.snaap-action {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap; /* por si acaso */
+}
+.snaap-action {
+  display: inline-flex;  /* en lugar de flex */
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.snaap-action .p-white {
+    color: white;
+}
+
+/* Mantienes el resto de tus estilos sin cambios */
 .snaap-sub {
     font-size: 1.3rem;
     margin: 1rem 0;
     color: #eee;
 }
+
 .snaap-buttons {
     display: flex;
     gap: 1rem;
@@ -50,6 +101,10 @@
 }
 
 /* Sección QR + pasos (sin fondo) */
+/* Aplicar la misma animación al contenedor principal de la sección */
+.snaap-scan-container {
+    animation: fadeSlideUp 0.8s ease-out forwards;
+}
 .snaap-scan-section {
     padding: 4rem 2rem;
     text-align: center;
@@ -88,6 +143,7 @@
 }
 
 /* Mural en vivo (sin fondo) */
+
 .snaap-live-mural {
     padding: 4rem 2rem;
     text-align: center;
@@ -100,22 +156,43 @@
     margin: 2rem auto;
     max-width: 1000px;
 }
+.mural-item:hover {
+    background: rgba(0, 0, 0, 0.8); /* oscurece o ilumina según prefieras */
+    box-shadow: 0 0 15px #FF007A ; 
+    transform: scale(1.02); /* ligera ampliación */
+    transition: all 0.3s ease; /* suaviza la transición */
+     border: 2px solid #FF007A;
+}
 .mural-item {
-    background: rgba(0, 0, 0, 0.5); /* único fondo semi para legibilidad, pero puedes quitarlo si prefieres */
+    background: rgba(39, 38, 38, 0.5); /* único fondo semi para legibilidad, pero puedes quitarlo si prefieres */
     border-radius: 20px;
     padding: 1rem;
     width: 160px;
     text-align: center;
-    border: 1px solid #4db8ff;
+    border: 2px solid #0047AB;
+    transition: all 0.2s ease-in-out;
 }
 .mural-item span {
-    font-size: 2.5rem;
+       font-size: 2.5rem;
     display: block;
+    transition: all 0.2s ease-in-out;
+    color: inherit;       
+    text-shadow: none;    
+    /* Solo al hover sobre la tarjeta, el icono se ilumina */
+.mural-item:hover span {
+    color: #FF007A;
+    text-shadow: 0 0 8px #FF007A;
+}
 }
 .mural-item p {
     margin-top: 0.5rem;
     color: white;
     font-size: 0.85rem;
+}
+/* Al hover, el icono brilla en rosa */
+.mural-item:hover span {
+    color: #FF007A;                 
+    
 }
 
 /* Carrusel */
