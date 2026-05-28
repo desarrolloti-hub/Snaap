@@ -1,3 +1,4 @@
+/* src/css/components/navbar.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
@@ -20,7 +21,7 @@
 }
 
 .snaap-logo {
-    font-size: 35px;
+    font-size: 32px;
     font-weight: 800;
     color: var(--snaap-text-white);
     text-decoration: none;
@@ -39,30 +40,33 @@
 .snaap-menu {
     display: flex;
     list-style: none;
-    gap: 15px;
+    gap: 12px;
     margin: 0;
     padding: 0;
     align-items: center;
 }
 
+/* BOTONES MÁS COMPACTOS */
 .snaap-btn {
     background: transparent;
     border: var(--snaap-border-neon);
-    padding: 8px 0;
-    width: 170px;
+    padding: 6px 16px;
+    width: auto;
+    min-width: 100px;
     border-radius: var(--snaap-radius-pill);
     color: var(--snaap-text-white);
     text-decoration: none;
-    font-size: var(--snaap-font-size-xs);
+    font-size: 0.85rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     text-transform: capitalize;
     transition: var(--snaap-transition);
     box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
     animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
 }
 
 @keyframes neonPulse {
@@ -73,6 +77,7 @@
 .snaap-btn i {
     color: var(--snaap-azul-claro);
     transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
 }
 
 .snaap-btn:hover {
@@ -102,11 +107,12 @@
 .snaap-burger {
     display: none;
     color: var(--snaap-text-white);
-    font-size: 30px;
+    font-size: 28px;
     cursor: pointer;
     z-index: 10001;
 }
 
+/* RESPONSIVE */
 @media (max-width: 1024px) {
     .snaap-burger { display: block; }
     .snaap-menu {
@@ -124,10 +130,13 @@
         padding: 0;
     }
     .snaap-menu.active { right: 0; }
+    
     .snaap-btn {
-        font-size: var(--snaap-font-size-md);
-        padding: 11px 0;
-        width: 290px;
+        font-size: 1rem;
+        padding: 10px 20px;
+        min-width: 180px;
+        width: auto;
+        white-space: nowrap;
     }
     .rsi-footer-link {
         display: block;
@@ -135,5 +144,17 @@
         bottom: 35px;
         width: 100%;
         left: 0;
+    }
+}
+
+/* Ajuste para móviles muy pequeños */
+@media (max-width: 480px) {
+    .snaap-btn {
+        min-width: 150px;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    .snaap-logo {
+        font-size: 26px;
     }
 }

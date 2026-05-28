@@ -1,3 +1,5 @@
+// src/modules/layout/navbarController.js
+
 export const navbarController = {
     render(container) {
         container.innerHTML = `
@@ -10,7 +12,7 @@ export const navbarController = {
                 </div>
                 <ul class="snaap-menu" id="snaap-nav-list">
                     <li><a href="/" class="snaap-btn" data-link><i class="fas fa-house"></i> Inicio</a></li>
-                    <li><a href="/tablesController" class="snaap-btn" data-link><i class="fa fa-table" aria-hidden="true"></i> Tablas</a></li>
+                    <li><a href="/tablas" class="snaap-btn" data-link><i class="fa fa-table" aria-hidden="true"></i> Tablas</a></li>
                     <li><a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Sobre nosotros</a></li>
                     <li><a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Paquetes</a></li>
                     <li><a href="/login" class="snaap-btn" data-link><i class="fas fa-user"></i> Inicio de sesión</a></li>

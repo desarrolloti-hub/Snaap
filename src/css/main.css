@@ -22,10 +22,11 @@
 @import url('./components/aboutUs.css');
 @import url('./components/login.css');
 @import url('./components/packages.css');
-
+@import url('./components/terms.css');
 /* Pages */
 @import url('./pages/home.css');
 @import url('./pages/404.css');
+
 /* @import url('./pages/main.css');   /* si existe — LO ELIMINAMOS PARA EVITAR EL ERROR */
 
 /* Estilos base adicionales */

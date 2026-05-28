@@ -3,6 +3,7 @@ import { aboutUsController } from '/src/modules/visitor/aboutUs/aboutUsControlle
 import { loginController } from '/src/modules/visitor/login/loginController.js';
 import { packagesController } from '/src/modules/visitor/packages/packagesController.js';
 import { init404Controller } from '/src/modules/shared/errors/404Controller.js';
+import { termsController } from '/src/modules/visitor/terms/termsController.js'; // ✅ Directo
 
 export const routes = {
     "/": {
@@ -24,5 +25,8 @@ export const routes = {
     "/404": {
         view: "/src/modules/shared/errors/404.html",
         controller: init404Controller
-    }
+    },
+    "/terms": {
+        controller: termsController   // ✅ Sin view
+    },
 };

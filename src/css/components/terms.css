@@ -1,0 +1,248 @@
+/* Términos y Condiciones - Snaap (Versión Completa + Mejoras en Cabecera) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.snaap-terms-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+    font-family: 'Poppins', sans-serif;
+    color: #f0f0f0;
+    background: transparent;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== CABECERA MEJORADA ===== */
+.snaap-terms-header {
+    text-align: center;
+    margin-bottom: clamp(2rem, 6vw, 3.5rem);
+    position: relative;
+}
+
+.snaap-terms-header h1 {
+    font-size: clamp(2rem, 10vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #ffffff, #4db8ff, #ff007a);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+/* Fecha como badge */
+.snaap-terms-header p:first-of-type {
+    font-size: 0.9rem;
+    color: #aaa;
+    background: rgba(77, 184, 255, 0.15);
+    display: inline-block;
+    padding: 0.3rem 1.2rem;
+    border-radius: 40px;
+    backdrop-filter: blur(4px);
+    margin: 0.5rem auto;
+}
+
+/* Párrafos destacados (bienvenida y aceptación) */
+.snaap-terms-header p:nth-of-type(2),
+.snaap-terms-header p:nth-of-type(3) {
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid #4db8ff;
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    margin: 1.2rem auto;
+    text-align: left;
+    font-size: clamp(0.9rem, 3.5vw, 1rem);
+    line-height: 1.6;
+    color: #e0e0e0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
+    max-width: 900px;
+}
+
+.snaap-terms-header p:nth-of-type(2):hover,
+.snaap-terms-header p:nth-of-type(3):hover {
+    border-left-color: #ff007a;
+    transform: translateX(5px);
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Divisor neón animado */
+.terms-neon-divider {
+    width: clamp(80px, 20vw, 140px);
+    height: 3px;
+    background: linear-gradient(90deg, #4db8ff, #ff007a, #4db8ff);
+    margin: 1.8rem auto;
+    border-radius: 4px;
+    box-shadow: 0 0 15px #4db8ff;
+    animation: pulseNeon 2s infinite alternate;
+}
+
+@keyframes pulseNeon {
+    0% { opacity: 0.7; box-shadow: 0 0 5px #4db8ff; width: 80px; }
+    100% { opacity: 1; box-shadow: 0 0 25px #ff007a; width: 140px; }
+}
+
+/* ===== CONTENIDO PRINCIPAL ===== */
+.snaap-terms-content {
+    background: rgba(10, 10, 20, 0.65);
+    backdrop-filter: blur(12px);
+    border-radius: clamp(20px, 5vw, 32px);
+    padding: clamp(1.2rem, 4vw, 2.5rem);
+    border: 1px solid rgba(77, 184, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    margin-bottom: 2rem;
+}
+
+.snaap-terms-content section {
+    margin-bottom: 1.8rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-bottom: 1.2rem;
+}
+
+.snaap-terms-content section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.snaap-terms-content h2 {
+    font-size: clamp(1.3rem, 5vw, 1.9rem);
+    font-weight: 700;
+    color: #4db8ff;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.3px;
+    text-shadow: 0 0 5px rgba(77, 184, 255, 0.4);
+}
+
+.snaap-terms-content h3 {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    font-weight: 600;
+    color: #ff007a;
+    margin: 1rem 0 0.5rem 0;
+    text-shadow: 0 0 3px rgba(255, 0, 122, 0.3);
+}
+
+.snaap-terms-content p {
+    font-size: clamp(0.85rem, 3.5vw, 1rem);
+    line-height: 1.65;
+    color: #ddd;
+    font-weight: 400;
+    margin-bottom: 0.7rem;
+}
+
+.snaap-terms-content ul {
+    margin: 0.5rem 0 1rem 1rem;
+    list-style: none;
+}
+.snaap-terms-content li {
+    font-size: clamp(0.85rem, 3.5vw, 1rem);
+    margin: 0.6rem 0;
+    padding-left: 1.3rem;
+    position: relative;
+    line-height: 1.5;
+}
+.snaap-terms-content li::before {
+    content: "▹";
+    color: #4db8ff;
+    position: absolute;
+    left: 0;
+    text-shadow: 0 0 5px #4db8ff;
+    font-size: 1rem;
+}
+
+/* ===== BOTÓN ===== */
+@media (max-width: 480px) {
+    .snaap-btn {
+        width: auto;
+        min-width: 160px;
+        max-width: 80%;
+    }
+}
+
+.snaap-terms-footer {
+     display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.snaap-btn:hover {
+    border-color: #ff007a;
+    color: #ffffff;
+    transform: scale(1.03) translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.5);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .snaap-terms-content {
+        border-radius: 20px;
+    }
+    .snaap-btn {
+        min-width: 150px;
+        padding: 0.7rem 1.5rem;
+    }
+    .snaap-terms-content li::before {
+        font-size: 0.9rem;
+    }
+    .snaap-terms-header p:nth-of-type(2),
+    .snaap-terms-header p:nth-of-type(3) {
+        padding: 0.8rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .snaap-terms-header h1 {
+        letter-spacing: 0;
+    }
+    .snaap-terms-content {
+        backdrop-filter: blur(8px);
+        padding: 1rem;
+    }
+    .snaap-terms-content h2 {
+        word-break: break-word;
+    }
+    .snaap-btn {
+        width: 100%;
+        min-width: unset;
+    }
+    .snaap-terms-content li {
+        padding-left: 1rem;
+    }
+    .snaap-terms-header p:nth-of-type(2),
+    .snaap-terms-header p:nth-of-type(3) {
+        border-left-width: 3px;
+        margin: 1rem 0.5rem;
+    }
+}
+
+@media (min-width: 1600px) {
+    .snaap-terms-container {
+        max-width: 1400px;
+    }
+    .snaap-terms-content h2 {
+        font-size: 2.2rem;
+    }
+    .snaap-terms-content p {
+        font-size: 1.1rem;
+    }
+}
