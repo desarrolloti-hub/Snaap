@@ -8,7 +8,7 @@ export async function aboutUsController() {
         document.head.appendChild(link);
     }
 
-    const textoMockup = "Primera línea con texto suave. Segunda línea que continúa la idea. Tercera línea para mantener la forma Cuarta línea sin mensaje específico. Quinta línea para completar las cinco.";
+    const textoMockup = "Snaap nació de una pregunta simple pero poderosa ¿si cada instante de un evento pudiera vivirse no solo desde la pista, sino desde los ojos de todos los que lo habitan? Imaginamos un lugar donde las fotos, los dibujos, los mensajes y los videos se mezclaran en un lienzo digital gigante, en tiempo real. Donde el público dejara de ser espectador para convertirse en el alma de la fiesta. Donde el código QR no fuera un simple acceso, sino una puerta a la expresión colectiva.";
 
     const app = document.getElementById('app');
     if (!app) return;
@@ -23,31 +23,26 @@ export async function aboutUsController() {
                 </div>
                 
                 <div class="acerca-titulo-principal">
-                    <h2 class="light-text">Acerc<span>aa</span> de</h2>
+                    <h2 class="light-text">AcercA de</h2>
                     <h2 class="big-text">NOSOTROS.</h2>
                 </div>
 
                 <button class="btn-cotizar-navigator btn-cotizar-flotante" id="btnCotizarFlotante">Cotizar</button>
 
-                <div class="acerca-divisor-neon bottom">
-                    <div class="connector-izq conector-cuadrado"></div>
-                    <div class="linea-horizontal"></div>
-                    <div class="conector-der conector-cuadrado"></div>
-                </div>
             </div>
 
             <div class="snaap-acerca-bloques">
                 
                 <div class="acerca-bloque">
                     <div class="bloque-texto">
-                        <h3>Histori<span>aa</span></h3>
+                        <h3>Historia</h3>
                         <p>${textoMockup}</p>
                         <button class="btn-cotizar-navigator" data-cotizar>Cotizar</button>
                     </div>
                     <div class="bloque-imagen-carrusel">
                         <div class="acerca-slide-wrapper" id="carrusel-1">
                             <img class="acerca-slide active" src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=600&auto=format&fit=crop" alt="Evento 1">
-                            <img class="acerca-slide" src="https://images.unsplash.com/photo-1543012474-9461f6764dfc?q=80&w=600&auto=format&fit=crop" alt="Evento 2">
+                            <img class="acerca-slide" src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600&auto=format&fit=crop" alt="Evento 3">
                             <img class="acerca-slide" src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600&auto=format&fit=crop" alt="Evento 3">
                             <img class="acerca-slide" src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop" alt="Evento 4">
                         </div>
@@ -62,7 +57,7 @@ export async function aboutUsController() {
 
                 <div class="acerca-bloque invertido">
                     <div class="bloque-texto">
-                        <h3>Nuestr<span>aa</span> inspiracion.</h3>
+                        <h3>Nuestra inspiracion.</h3>
                         <p>${textoMockup}</p>
                         <button class="btn-cotizar-navigator" data-cotizar>Cotizar</button>
                     </div>
@@ -98,18 +93,18 @@ export async function aboutUsController() {
                 <div class="servicios-row">
                     <div class="servicio-col">
                         <div class="servicio-icon-wrapper"><i class="far fa-user-circle"></i></div>
-                        <h4>Servicio de calid<span>aa</span>d</h4>
-                        <p>Primera línea con texto suave. Segunda línea que continúa la idea. Tercera línea para mantener la forma Cuarta</p>
+                        <h4>Servicio de calidad</h4>
+                        <p>Atención ágil, soluciones creativas y un equipo que convierte tus ideas en experiencias inolvidables.</p>
                     </div>
                     <div class="servicio-col">
                         <div class="servicio-icon-wrapper"><i class="far fa-gem"></i></div>
-                        <h4><span>aa</span>tencion personaliz<span>aa</span>d</h4>
-                        <p>Primera línea con texto suave. Segunda línea que continúa la idea. Tercera línea para mantener la forma Cuarta</p>
+                        <h4>Atención personalizada</h4>
+                        <p>Creamos contigo, no para ti. Tu evento, tu esencia.</p>
                     </div>
                     <div class="servicio-col">
                         <div class="servicio-icon-wrapper"><i class="fas fa-wallet"></i></div>
-                        <h4>Precios a la medid<span>aa</span></h4>
-                        <p>Primera línea con texto suave. Segunda línea que continúa la idea. Tercera línea para mantener la forma Cuarta</p>
+                        <h4>Precios a la medida</h4>
+                        <p>Pagas lo que necesitas. Ni más, ni menos</p>
                     </div>
                 </div>
             </div>

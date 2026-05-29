@@ -1,3 +1,5 @@
+// src/modules/visitor/layout/footerController.js
+
 export const footerController = {
     render(container) {
         container.innerHTML = `
@@ -38,7 +40,8 @@ export const footerController = {
                         depende de la señal de internet del lugar.
                         </p>
                         <p>
-                        leer más en <a href="/terms" data-link>nuestros términos y condiciones</a>.
+                        leer más en 
+                        <a href="/terms" data-link class="terms-link">nuestros términos y condiciones</a>.
                         </p>
                         <div class="social-title">NUESTR<span>aa</span>S REDES SOCI<span>aa</span>LES</div>
                         <div class="social-icons">
@@ -54,5 +57,24 @@ export const footerController = {
                 </div>
             </footer>
         `;
+        
+        // Aplicar estilos adicionales al enlace de términos (opcional si no usas CSS externo)
+        const style = document.createElement('style');
+        style.textContent = `
+            .footer-info-section .terms-link {
+                color: #4db8ff;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+            .footer-info-section .terms-link:hover {
+                color: #ff007a;
+                text-shadow: 0 0 5px #ff007a;
+            }
+        `;
+        if (!document.querySelector('#footer-terms-style')) {
+            style.id = 'footer-terms-style';
+            document.head.appendChild(style);
+        }
     }
 };

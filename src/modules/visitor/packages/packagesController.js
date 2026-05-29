@@ -13,12 +13,14 @@ export async function packagesController() {
 
     // Datos para la galería de imágenes (puedes cambiarlas)
     const galeriaImagenes = [
-        "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop",
+        "Snaap1.jpg",
         "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=600&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop"
+        
+      
     ];
 
     app.innerHTML = `
@@ -40,7 +42,7 @@ export async function packagesController() {
             <!-- Contenido principal -->
             <div class="paquete-main-content">
                 <div class="paquete-logo-frame">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/bd/Rolling_Stones_logo.svg" alt="Icono Artista">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop" alt="Icono Artista">
                 </div>
                 <div class="paquete-info">
                     <h3>Todo lo que guardamos por ti.</h3>
@@ -52,17 +54,6 @@ export async function packagesController() {
                     <button class="btn-snaap-pkg" data-action="favoritos"><i class="fas fa-heart"></i> agregar a favoritos</button>
                     <button class="btn-snaap-pkg" data-action="rentar"><i class="fas fa-shopping-cart"></i> rentar ahora</button>
                     <button class="btn-snaap-pkg" data-action="pago"><i class="fas fa-credit-card"></i> formas de pago</button>
-                </div>
-            </div>
-
-            <!-- Características adicionales -->
-            <div class="paquete-features">
-                <h3>¿Qué <span class="neon-text">incluye</span>?</h3>
-                <div class="features-grid">
-                    <div class="feature-card"><i class="fas fa-music"></i><h4>DJ profesional</h4><p>Set list personalizado</p></div>
-                    <div class="feature-card"><i class="fas fa-lightbulb"></i><h4>Iluminación LED</h4><p>Espectáculo de luces sincronizado</p></div>
-                    <div class="feature-card"><i class="fas fa-vr-cardboard"></i><h4>Realidad aumentada</h4><p>Efectos visuales inmersivos</p></div>
-                    <div class="feature-card"><i class="fas fa-camera"></i><h4>Fotografía 360°</h4><p>Recuerdos instantáneos</p></div>
                 </div>
             </div>
 
