@@ -25,16 +25,12 @@ export async function loginController() {
                         <i class="fas fa-envelope"></i>
                         <input type="email" class="snaap-input" id="login-email" placeholder="correo electrónico" required>
                     </div>
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" class="snaap-input" id="login-nombre" placeholder="nombre de usuario" required>
-                    </div>
+                    
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
                         <input type="password" class="snaap-input" id="login-password" placeholder="contraseña" required>
                     </div>
 
-                    <!-- NUEVO: Checkbox + Botón para términos -->
                     <div class="terms-group">
                         <label class="terms-checkbox">
                             <input type="checkbox" id="acceptTerms"> Acepto los 
@@ -60,7 +56,7 @@ export async function loginController() {
         </section>
     `;
 
-    // --- LÓGICA DEL FORMULARIO (con validación de términos) ---
+    // --- LÓGICA DEL FORMULARIO (con redirección a admin) ---
     const form = document.getElementById('login-form');
     if (form) {
         form.addEventListener('submit', (e) => {
@@ -79,8 +75,14 @@ export async function loginController() {
                 return;
             }
             console.log('Intento de login:', { email, nombre, password });
-            alert(`✅ Bienvenido ${nombre}, pronto serás redirigido. (Demo)`);
-            // Aquí podrías redirigir o guardar sesión
+            alert(`✅ Bienvenido ${nombre}, redirigiendo al panel de control...`);
+
+            // Redirigir al dashboard de organizador (simulación)
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/admin');
+            } else {
+                window.location.href = '/admin';
+            }
         });
     }
 
@@ -101,11 +103,10 @@ export async function loginController() {
         });
     }
 
-    // Botón "Ver términos" (nuevo)
+    // Botón "Ver términos"
     const viewTermsBtn = document.getElementById('viewTermsBtn');
     if (viewTermsBtn) {
         viewTermsBtn.addEventListener('click', () => {
-            // Navegación SPA si existe navigateTo, sino fallback
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/terms');
             } else {
@@ -114,7 +115,7 @@ export async function loginController() {
         });
     }
 
-    // Enlace inline de términos (dentro del checkbox) - usar data-link si el router lo soporta
+    // Enlace inline de términos
     const termsLinkInline = document.getElementById('termsLinkInline');
     if (termsLinkInline) {
         termsLinkInline.addEventListener('click', (e) => {

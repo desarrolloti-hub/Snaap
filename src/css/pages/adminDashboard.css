@@ -1,0 +1,95 @@
+/* src/css/pages/adminDashboard.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+.admin-dashboard-container {
+    max-width: 1400px;
+    margin: 100px auto 3rem;
+    padding: 0 2rem;
+    font-family: 'Poppins', sans-serif;
+    color: #f0f0f0;
+}
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: white;
+}
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+.btn-neon, .btn-neon-secondary {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    border: 2px solid #4db8ff;
+    border-radius: 40px;
+    padding: 0.7rem 1.5rem;
+    color: #4db8ff;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.btn-neon:hover, .btn-neon-secondary:hover {
+    border-color: #ff007a;
+    color: white;
+    transform: translateY(-2px);
+}
+.btn-neon-secondary {
+    background: rgba(255,0,122,0.1);
+}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+.dashboard-card {
+    background: rgba(20,20,35,0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 1.5rem;
+    border: 1px solid rgba(77,184,255,0.3);
+}
+.dashboard-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #4db8ff;
+    padding-left: 1rem;
+}
+.event-list {
+    list-style: none;
+    padding: 0;
+}
+.event-list li {
+    background: rgba(0,0,0,0.4);
+    border-radius: 16px;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.event-stats {
+    display: inline-flex;
+    gap: 0.8rem;
+    font-size: 0.8rem;
+}
+.btn-small {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #4db8ff;
+    border-radius: 30px;
+    padding: 0.3rem 1rem;
+    color: #4db8ff;
+    text-decoration: none;
+    font-size: 0.7rem;
+}
+@media (max-width: 768px) {
+    .admin-dashboard-container { margin-top: 80px; padding: 0 1rem; }
+    .dashboard-actions { flex-direction: column; align-items: center; }
+}
