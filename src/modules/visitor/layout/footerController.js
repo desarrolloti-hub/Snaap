@@ -11,39 +11,43 @@ export const footerController = {
                     <div class="footer-info-section">
                         <h3>Términos y Condiciones.</h3>
                         <p>
-                        Tú eres el autor: Al subir fotos, videos, notas o dibujos,
-                        confirmas que son tuyos y nos das permiso para proyectarlos en
-                        la pantalla gigante durante el evento.
+                        Tú eres el autor: Al subir fotos, videos, notas o dibujos, confirmas
+                        que son tuyos y nos das permiso para proyectarlos en la pantalla
+                        gigante durante el evento y guardarlos en el álbum digital.
                         </p>
                         <p>
                         Cero Tolerancia: Está estrictamente prohibido compartir
                         contenido ofensivo, vulgar, violento, inapropiado, sexual o
-                        publicitario.
-                        </p>
-                        <p>Snaap no se hace responsable en ningún caso
-                        por el contenido ofensivo o ilegal que los usuarios decidan
-                        subir.
+                        publicitario. Snaap no se hace responsable en ningún caso por el
+                        contenido ofensivo o ilegal que los usuarios decidan subir.
                         </p>
                         <p>
                         Moderación del Organizador: La pantalla es controlada por el
-                        anfitrión del evento.
+                        anfitrión del evento. El organizador tiene el poder y la obligación
+                        de moderar y eliminar de inmediato cualquier contenido que
+                        considere inadecuado.
+                        </p>
+                        <p>
+                        Responsabilidad: Tú eres el único responsable legal de lo que
+                        compartas en la pantalla. Snaap se deslinda de toda
+                        responsabilidad civil, penal o administrativa por el mal uso de la
+                        plataforma.
                         </p>
                         <p> 
-                        El organizador tiene el poder y la obligación
-                        de moderar y eliminar de inmediato cualquier contenido que
-                        considere inadecuado.</p>
-                        <p>
-                        Responsabilidad: Tú eres el único responsable legal de lo que compartas en la pantalla.
+                        Tus Datos y Edad: Al registrarte, confirmas que eres mayor de
+                        edad (o usas la app bajo supervisión de tus padres) y que tus
+                        datos (nombre, correo, teléfono y edad) se usarán para gestionar
+                        tu cuenta de forma segura.
                         </p>
                         <p>
                         Conectividad: La velocidad de proyección en tiempo real
-                        depende de la señal de internet del lugar.
+                        depende de la señal de internet del lugar y del dispositivo.
                         </p>
                         <p>
-                        leer más en 
-                        <a href="/terms" data-link class="terms-link">nuestros términos y condiciones</a>.
+                        Leer más en nuestros
+                        <a href="/terms" data-link class="terms-link"> términos y condiciones</a>.
                         </p>
-                        <div class="social-title">NUESTR<span>aa</span>S REDES SOCI<span>aa</span>LES</div>
+                        <div class="social-title">NUESTRAS REDES SOCIALES</div>
                         <div class="social-icons">
                             <a href="#" class="social-link"><i class="fab fa-x-twitter"></i></a>
                             <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
@@ -58,19 +62,8 @@ export const footerController = {
             </footer>
         `;
         
-        // Aplicar estilos adicionales al enlace de términos (opcional si no usas CSS externo)
         const style = document.createElement('style');
         style.textContent = `
-            .footer-info-section .terms-link {
-                color: #4db8ff;
-                text-decoration: none;
-                font-weight: 600;
-                transition: all 0.2s ease;
-            }
-            .footer-info-section .terms-link:hover {
-                color: #ff007a;
-                text-shadow: 0 0 5px #ff007a;
-            }
         `;
         if (!document.querySelector('#footer-terms-style')) {
             style.id = 'footer-terms-style';
