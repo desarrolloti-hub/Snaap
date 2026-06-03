@@ -1,34 +1,47 @@
+// src/routes.js
 import { homeController } from '/src/modules/visitor/home/homeController.js';
 import { aboutUsController } from '/src/modules/visitor/aboutUs/aboutUsController.js';
 import { loginController } from '/src/modules/visitor/login/loginController.js';
 import { packagesController } from '/src/modules/visitor/packages/packagesController.js';
 import { init404Controller } from '/src/modules/shared/errors/404Controller.js';
 import { termsController } from '/src/modules/visitor/terms/termsController.js';
-
+import { homeHostController } from '/src/modules/host/homeHost/homeHostController.js';
+import { navbarController } from '/src/modules/visitor/layout/navbarController.js'; // ← IMPORTAR NAVBAR
 
 export const routes = {
     "/": {
-        view: "/src/modules/visitor/home/home.html",
-        controller: homeController
+        view: "/public/modules/visitor/home/home.html",
+        controller: homeController,
+        navbar: navbarController  // ← Agregar navbar específico
     },
     "/nosotros": {
-        view: "/src/modules/visitor/aboutUs/aboutUs.html",
-        controller: aboutUsController
+        view: "/public/modules/visitor/aboutUs/aboutUs.html",
+        controller: aboutUsController,
+        navbar: navbarController  // ← Mismo navbar para visitante
     },
     "/login": {
         view: "/src/modules/visitor/login/login.html",
-        controller: loginController
+        controller: loginController,
+        navbar: navbarController  // ← Navbar de visitante
     },
     "/paquetes": {
-        view: "/src/modules/visitor/packages/packages.html",
-        controller: packagesController
+        view: "/public/modules/visitor/packages/packages.html",  
+        controller: packagesController,
+        navbar: navbarController  // ← Navbar de visitante
     },
-    "/404": {
-        view: "/src/modules/shared/errors/404.html",
-        controller: init404Controller
+    "/host": {
+        view: "/public/modules/host/homeHost/homeHost.html", 
+        controller: homeHostController,
+        navbar: null  // ← Aquí luego irá navbarHostController
     },
     "/terms": {
-        controller: termsController
+        view: "/src/modules/visitor/terms/terms.html",
+        controller: termsController,
+        navbar: navbarController
     },
-   
+    "/404": {
+        view: "/public/modules/shared/errors/404.html",
+        controller: init404Controller,
+        navbar: null  // Error 404 sin navbar o con navbar genérico
+    }
 };

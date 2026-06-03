@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Host</title>
+    <link rel="stylesheet" href="/src/css/pages/homeHost.css">
+</head>
+<body>
+    <div class="host-container">
+        <!-- Header -->
+        <header class="host-header">
+            <div class="logo">
+                <h1>Host Dashboard</h1>
+            </div>
+            <div class="host-info">
+                <span class="host-name">Bienvenido, <span id="hostName">Cargando...</span></span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="host-main">
+            <!-- Estadísticas -->
+            <section class="stats-section">
+                <h2>Resumen de Actividad</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3>Propiedades</h3>
+                            <p class="stat-number" id="totalProperties">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-info">
+                            <h3>Calificación</h3>
+                            <p class="stat-number" id="rating">0.0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3>Ingresos</h3>
+                            <p class="stat-number" id="revenue">$0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Huéspedes</h3>
+                            <p class="stat-number" id="totalGuests">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Propiedades Recientes -->
+            <section class="properties-section">
+                <div class="section-header">
+                    <h2>Mis Propiedades</h2>
+                    <button class="btn-primary" id="addPropertyBtn">+ Agregar Propiedad</button>
+                </div>
+                <div class="properties-grid" id="propertiesGrid">
+                    <!-- Las propiedades se cargarán dinámicamente -->
+                    <div class="loading-state">
+                        <p>Cargando propiedades...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reservaciones Recientes -->
+            <section class="reservations-section">
+                <h2>Reservaciones Recientes</h2>
+                <div class="reservations-table-container">
+                    <table class="reservations-table">
+                        <thead>
+                            <tr>
+                                <th>Huésped</th>
+                                <th>Propiedad</th>
+                                <th>Fechas</th>
+                                <th>Estado</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationsTableBody">
+                            <tr>
+                                <td colspan="5" class="loading-state">Cargando reservaciones...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="host-footer">
+            <p>&copy; 2025 Host Dashboard. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+</body>
+</html>

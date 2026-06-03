@@ -1,4 +1,4 @@
-/* Hero */
+/* ===== ANIMACIONES ===== */
 @keyframes fadeSlideUp {
     0% {
         opacity: 0;
@@ -10,9 +10,18 @@
     }
 }
 
-.snaap-hero-content {
-    animation: fadeSlideUp 1s ease-out forwards;
+@keyframes subtleGlow {
+    0% { 
+        filter: drop-shadow(0 0 2px #00aaff11); 
+        text-shadow: 0 0 2px #00aaff4d; 
+    }
+    100% { 
+        filter: drop-shadow(0 0 8px #ff007b00); 
+        text-shadow: 0 0 8px #ff007b00; 
+    }
 }
+
+/* ===== HERO SECTION ===== */
 .snaap-hero {
     min-height: 80vh;
     display: flex;
@@ -21,9 +30,12 @@
     text-align: center;
     padding: 2rem;
 }
+
 .snaap-hero-content {
     max-width: 800px;
+    animation: fadeSlideUp 1s ease-out forwards;
 }
+
 .snaap-lema {
     font-size: 4rem;
     font-weight: 900;
@@ -33,9 +45,168 @@
     overflow-x: auto;
 }
 
-.snaap-action span {
-    margin: 0;
-    padding: 0;
+.snaap-sub {
+    font-size: 1.3rem;
+    margin: 1rem 0;
+    color: #eee;
+}
+
+/* ===== BOTONES ===== */
+.snaap-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.snaap-btn {
+    background: transparent;
+    border: 2px solid #4db8ff;
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    color: #4db8ff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.snaap-btn:hover {
+    border-color: #FF007A;
+    color: #FF007A;
+}
+
+/* ===== SCAN SECTION ===== */
+.snaap-scan-section {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.snaap-scan-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    animation: fadeSlideUp 0.8s ease-out forwards;
+}
+
+.qr-mockup {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 24px;
+    box-shadow: 0 0 0 3px #4db8ff;
+}
+
+.qr-mockup i {
+    font-size: 90px;
+    color: black;
+}
+
+.snaap-scan-text {
+    text-align: left;
+}
+
+.snaap-scan-text h3 {
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem;
+    color: white;
+}
+
+.snaap-scan-text p {
+    font-size: 1rem;
+    color: #ddd;
+    margin-bottom: 1rem;
+}
+
+/* ===== MURAL SECTION ===== */
+.snaap-live-mural {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.snaap-mural-preview {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 1000px;
+}
+
+.mural-item {
+    background: rgba(39, 38, 38, 0.5);
+    border-radius: 20px;
+    padding: 1rem;
+    width: 160px;
+    text-align: center;
+    border: 2px solid #0047AB;
+    transition: all 0.2s ease-in-out;
+}
+
+.mural-item:hover {
+    background: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 15px #FF007A;
+    transform: scale(1.02);
+    border: 2px solid #FF007A;
+}
+
+.mural-item:hover span {
+    color: #FF007A;
+    text-shadow: 0 0 8px #FF007A;
+}
+
+.mural-item span {
+    font-size: 2.5rem;
+    display: block;
+    transition: all 0.2s ease-in-out;
+}
+
+.mural-item p {
+    margin-top: 0.5rem;
+    color: white;
+    font-size: 0.85rem;
+}
+
+/* ===== CAROUSEL SECTION ===== */
+.snaap-carousel-section {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.snaap-carousel-section h2 {
+    margin-bottom: 2rem;
+}
+
+/* ===== CTA SECTION ===== */
+.snaap-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.snaap-cta h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* ===== TIPOGRAFÍA GENERAL ===== */
+h2 {
+    font-size: 2rem;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* ===== COMPONENTE SNAAP ACTION ===== */
+.snaap-action {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .snaap-action .sn-white {
@@ -47,172 +218,20 @@
     -webkit-text-stroke: 3px rgb(0, 225, 255);
     text-stroke: 3px #0047AB;
     filter: drop-shadow(0 0 5px #00aaff4d) drop-shadow(0 0 8px #0088ff);
+    animation: subtleGlow 2s infinite alternate;
 }
-.snaap-action {
-    display: inline-flex;
-    flex-wrap: nowrap;
-    white-space: nowrap;
-}
+
 .snaap-action .p-white {
     color: white;
 }
 
-.snaap-sub {
-    font-size: 1.3rem;
-    margin: 1rem 0;
-    color: #eee;
-}
-
-.snaap-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 2rem;
-}
-
-.home-btn {
-    background: transparent;
-    border: 2px solid #4db8ff;
-    border-radius: 50px;
-    padding: 0.75rem 2rem;
-    color: #4db8ff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.home-btn:hover {
-    border-color: #FF007A;
-    color: #FF007A;
-}
-
-.snaap-scan-container {
-    animation: fadeSlideUp 0.8s ease-out forwards;
-}
-.snaap-scan-section {
-    padding: 4rem 2rem;
-    text-align: center;
-}
-.snaap-scan-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 3rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-.qr-mockup {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 24px;
-    box-shadow: 0 0 0 3px #4db8ff;
-}
-.qr-mockup i {
-    font-size: 90px;
-    color: black;
-}
-.snaap-scan-text {
-    text-align: left;
-}
-.snaap-scan-text h3 {
-    font-size: 1.8rem;
-    margin: 0 0 0.5rem;
-    color: white;
-}
-.snaap-scan-text p {
-    font-size: 1rem;
-    color: #ddd;
-    margin-bottom: 1rem;
-}
-
-.snaap-live-mural {
-    padding: 4rem 2rem;
-    text-align: center;
-}
-.snaap-mural-preview {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-    margin: 2rem auto;
-    max-width: 1000px;
-}
-.mural-item:hover {
-    background: rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 15px #FF007A;
-    transform: scale(1.02);
-    transition: all 0.3s ease;
-    border: 2px solid #FF007A;
-}
-.mural-item {
-    background: rgba(39, 38, 38, 0.5);
-    border-radius: 20px;
-    padding: 1rem;
-    width: 160px;
-    text-align: center;
-    border: 2px solid #0047AB;
-    transition: all 0.2s ease-in-out;
-}
-.mural-item span {
-    font-size: 2.5rem;
-    display: block;
-    transition: all 0.2s ease-in-out;
-    color: inherit;
-    text-shadow: none;
-}
-.mural-item:hover span {
-    color: #FF007A;
-    text-shadow: 0 0 8px #FF007A;
-}
-.mural-item p {
-    margin-top: 0.5rem;
-    color: white;
-    font-size: 0.85rem;
-}
-
-.snaap-carousel-section {
-    padding: 4rem 2rem;
-    text-align: center;
-}
-.snaap-carousel-section h2 {
-    margin-bottom: 2rem;
-}
-
-.snaap-cta {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 4rem 2rem;
-    text-align: center;
-}
-.snaap-cta h2 {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
+/* ===== EFECTOS NEÓN ===== */
 .snaap-neon-text {
     color: #4db8ff;
     text-shadow: 0 0 3px #4db8ff;
 }
 
-h2 {
-    font-size: 2rem;
-    color: white;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-    .snaap-lema { font-size: 2.5rem; }
-    .snaap-sub { font-size: 1rem; }
-    .qr-mockup i { font-size: 60px; }
-    .snaap-scan-text h3 { font-size: 1.4rem; }
-    .mural-item { width: 130px; }
-    h2 { font-size: 1.6rem; }
-}
-
-/* ===== SCROLL REVEAL (solo para scan y mural, CTA siempre visible) ===== */
+/* ===== SCROLL REVEAL ===== */
 .snaap-scan-section,
 .snaap-live-mural {
     opacity: 0;
@@ -227,26 +246,29 @@ h2 {
     transform: translateY(0);
 }
 
-/* CTA y su botón siempre visibles */
+/* CTA siempre visible */
 .snaap-cta {
     opacity: 1 !important;
     transform: translateY(0) !important;
 }
+
 .snaap-cta button {
     opacity: 1 !important;
     transform: scale(1) !important;
 }
 
 /* Efecto escalonado para mural items */
+.visible .mural-item {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .mural-item {
     opacity: 0;
     transform: scale(0.9);
     transition: opacity 0.4s ease, transform 0.4s ease;
 }
-.visible .mural-item {
-    opacity: 1;
-    transform: scale(1);
-}
+
 .visible .mural-item:nth-child(1) { transition-delay: 0.1s; }
 .visible .mural-item:nth-child(2) { transition-delay: 0.2s; }
 .visible .mural-item:nth-child(3) { transition-delay: 0.3s; }
@@ -259,11 +281,13 @@ h2 {
     transform: translateX(-20px);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
+
 .visible .snaap-scan-text h3,
 .visible .snaap-scan-text p {
     opacity: 1;
     transform: translateX(0);
 }
+
 .visible .snaap-scan-text h3:nth-of-type(1) { transition-delay: 0.1s; }
 .visible .snaap-scan-text p:nth-of-type(1)  { transition-delay: 0.2s; }
 .visible .snaap-scan-text h3:nth-of-type(2) { transition-delay: 0.3s; }
@@ -271,11 +295,29 @@ h2 {
 .visible .snaap-scan-text h3:nth-of-type(3) { transition-delay: 0.5s; }
 .visible .snaap-scan-text p:nth-of-type(3)  { transition-delay: 0.6s; }
 
-/* Brillo neón en letras outline */
-.aa-outline {
-    animation: subtleGlow 2s infinite alternate;
-}
-@keyframes subtleGlow {
-    0% { filter: drop-shadow(0 0 2px #00aaff11); text-shadow: 0 0 2px #00aaff4d; }
-    100% { filter: drop-shadow(0 0 8px #ff007b00); text-shadow: 0 0 8px #ff007b00; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .snaap-lema { 
+        font-size: 2.5rem; 
+    }
+    
+    .snaap-sub { 
+        font-size: 1rem; 
+    }
+    
+    .qr-mockup i { 
+        font-size: 60px; 
+    }
+    
+    .snaap-scan-text h3 { 
+        font-size: 1.4rem; 
+    }
+    
+    .mural-item { 
+        width: 130px; 
+    }
+    
+    h2 { 
+        font-size: 1.6rem; 
+    }
 }

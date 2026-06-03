@@ -1,73 +1,45 @@
-// src/modules/visitor/layout/footerController.js
-
+/**
+ * Controlador para cargar y gestionar el footer de manera dinámica
+ */
 export const footerController = {
-    render(container) {
-        container.innerHTML = `
+    /**
+     * Renderiza el footer en el contenedor especificado
+     * @param {HTMLElement} container - Elemento DOM donde se inyectará el footer
+     */
+    async render(container) {
+        if (!container) {
+            console.error('footerController: No se proporcionó un contenedor válido');
+            return;
+        }
+
+        try {
+            const response = await fetch('/modules/visitor/layout/footer.html');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const html = await response.text();
+            container.innerHTML = html;
+        } catch (error) {
+            console.error('Error loading footer:', error);
+            container.innerHTML = this.getFallbackFooter();
+        }
+    },
+
+    /**
+     * Footer de respaldo en caso de error de carga
+     * @returns {string} HTML del footer alternativo
+     */
+    getFallbackFooter() {
+        return `
             <footer class="snaap-footer">
                 <div class="footer-container">
-                    <div class="footer-logo-section">
-                        <a href="/" class="footer-logo" data-link>Sn<span class="neon-aa">aa</span>p</a>
-                    </div>
                     <div class="footer-info-section">
-                        <h3>Términos y Condiciones.</h3>
-                        <p>
-                        Tú eres el autor: Al subir fotos, videos, notas o dibujos, confirmas
-                        que son tuyos y nos das permiso para proyectarlos en la pantalla
-                        gigante durante el evento y guardarlos en el álbum digital.
-                        </p>
-                        <p>
-                        Cero Tolerancia: Está estrictamente prohibido compartir
-                        contenido ofensivo, vulgar, violento, inapropiado, sexual o
-                        publicitario. Snaap no se hace responsable en ningún caso por el
-                        contenido ofensivo o ilegal que los usuarios decidan subir.
-                        </p>
-                        <p>
-                        Moderación del Organizador: La pantalla es controlada por el
-                        anfitrión del evento. El organizador tiene el poder y la obligación
-                        de moderar y eliminar de inmediato cualquier contenido que
-                        considere inadecuado.
-                        </p>
-                        <p>
-                        Responsabilidad: Tú eres el único responsable legal de lo que
-                        compartas en la pantalla. Snaap se deslinda de toda
-                        responsabilidad civil, penal o administrativa por el mal uso de la
-                        plataforma.
-                        </p>
-                        <p> 
-                        Tus Datos y Edad: Al registrarte, confirmas que eres mayor de
-                        edad (o usas la app bajo supervisión de tus padres) y que tus
-                        datos (nombre, correo, teléfono y edad) se usarán para gestionar
-                        tu cuenta de forma segura.
-                        </p>
-                        <p>
-                        Conectividad: La velocidad de proyección en tiempo real
-                        depende de la señal de internet del lugar y del dispositivo.
-                        </p>
-                        <p>
-                        Leer más en nuestros
-                        <a href="/terms" data-link class="terms-link"> términos y condiciones</a>.
-                        </p>
-                        <div class="social-title">NUESTRAS REDES SOCIALES</div>
-                        <div class="social-icons">
-                            <a href="#" class="social-link"><i class="fab fa-x-twitter"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
-                        </div>
+                        <p>© ${new Date().getFullYear()} Snaap - Todos los derechos reservados</p>
                     </div>
-                </div>
-                <div class="footer-bottom">
-                    <a href="https://rsienterprise.com/" target="_blank" class="rsi-link">Desarrollado por RSI Enterprise México</a>
                 </div>
             </footer>
         `;
-        
-        const style = document.createElement('style');
-        style.textContent = `
-        `;
-        if (!document.querySelector('#footer-terms-style')) {
-            style.id = 'footer-terms-style';
-            document.head.appendChild(style);
-        }
     }
 };

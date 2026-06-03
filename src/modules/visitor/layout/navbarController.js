@@ -1,4 +1,4 @@
-// src/modules/layout/navbarController.js
+// src/modules/visitor/layout/navbarController.js
 
 export const navbarController = {
     render(container) {
@@ -15,36 +15,80 @@ export const navbarController = {
                     <li><a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Sobre nosotros</a></li>
                     <li><a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Paquetes</a></li>
                     <li><a href="/login" class="snaap-btn" data-link><i class="fas fa-user"></i> Inicio de sesión</a></li>
-                    <a href="https://rsienterprise.com/" target="_blank" class="rsi-footer-link">
-                        desarrollada por rsi enterprise mexico
-                    </a>
+                    <li class="snaap-footer-item">
+                        <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link">
+                            desarrollada por rsi enterprise mexico
+                        </a>
+                    </li>
                 </ul>
             </nav>
         `;
+        
+        // Esperar un momento para que el DOM se actualice
+        setTimeout(() => {
+            this.attachEvents();
+        }, 100);
     },
     
     attachEvents() {
-        const burgerBtn = document.getElementById("snaap-burger-btn");
-        const navList = document.getElementById("snaap-nav-list");
-        if (!burgerBtn || !navList) return;
+        const burgerBtn = document.getElementById('snaap-burger-btn');
+        const navList = document.getElementById('snaap-nav-list');
         
-        const icon = burgerBtn.querySelector("i");
-        burgerBtn.addEventListener("click", () => {
-            navList.classList.toggle("active");
-            icon.classList.toggle("fa-bars");
-            icon.classList.toggle("fa-xmark");
-            icon.style.color = navList.classList.contains("active") ? "var(--rosa-neon)" : "#fff";
-        });
+        console.log('burgerBtn:', burgerBtn);
+        console.log('navList:', navList);
         
+        if (!burgerBtn || !navList) {
+            console.error('Elementos no encontrados');
+            return;
+        }
+        
+        const icon = burgerBtn.querySelector('i');
+        
+        // Función para abrir/cerrar menú
+        const toggleMenu = (e) => {
+            e.stopPropagation();
+            navList.classList.toggle('active');
+            
+            console.log('Menú active:', navList.classList.contains('active'));
+            
+            if (icon) {
+                if (navList.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-xmark');
+                    icon.style.color = '#ff00aa';
+                } else {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                    icon.style.color = '#ffffff';
+                }
+            }
+        };
+        
+        // Limpiar event listeners anteriores
+        const newBurgerBtn = burgerBtn.cloneNode(true);
+        burgerBtn.parentNode.replaceChild(newBurgerBtn, burgerBtn);
+        
+        const newNavList = document.getElementById('snaap-nav-list');
+        const newIcon = newBurgerBtn.querySelector('i');
+        
+        // Agregar event listener nuevo
+        newBurgerBtn.addEventListener('click', toggleMenu);
+        
+        // Cerrar menú al hacer click en un enlace
         const links = document.querySelectorAll('.snaap-btn');
         links.forEach(link => {
-            link.addEventListener("click", () => {
-                navList.classList.remove("active");
-                if (icon) {
-                    icon.className = "fas fa-bars";
-                    icon.style.color = "#fff";
+            link.addEventListener('click', () => {
+                newNavList.classList.remove('active');
+                if (newIcon) {
+                    newIcon.classList.remove('fa-xmark');
+                    newIcon.classList.add('fa-bars');
+                    newIcon.style.color = '#ffffff';
                 }
             });
         });
+        
+        console.log('✅ Eventos del navbar adjuntados');
     }
 };
+
+export default navbarController;

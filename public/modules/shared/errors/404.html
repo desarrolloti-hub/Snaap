@@ -1,26 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sitio en mantenimiento</title>
+    <link rel="stylesheet" href="/src/css/pages/404.css">
 </head>
 <body>
-    <div class="snaap-error-container">
-        <div class="error-card">
-            <div class="maintenance-icon">
-                <i class="fas fa-tools"></i>
+    <div class="error-container">
+        <div class="error-content">
+            <!-- Código 404 con efecto -->
+            <div class="error-code">
+                <h1>404</h1>
+                <div class="code-decoration"></div>
             </div>
-            <h1 class="error-code">404</h1>
+            
+            <!-- Mensaje principal -->
             <h2 class="error-title">Sitio en mantenimiento</h2>
-            <p class="error-message">
+            
+            <!-- Descripción -->
+            <p class="error-description">
                 Estamos mejorando la experiencia Snaap.<br>
                 Vuelve pronto, habrá novedades increíbles.
             </p>
-            <button class="btn-redirect" id="redirect-btn">Ir al inicio</button>
-            <div class="countdown">
-                Redirigiendo en <span id="countdown-number">5</span> segundos...
+            
+            <!-- Botón de inicio -->
+            <button id="goHomeBtn" class="home-button">
+                <span class="button-icon">🏠</span>
+                Ir al inicio
+            </button>
+            
+            <!-- Contador de redirección -->
+            <div class="redirect-info">
+                <p>Redirigiendo en <span id="countdown">3</span> segundos...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
             </div>
         </div>
+        
+        <!-- Elementos decorativos -->
+        <div class="decoration-circle circle-1"></div>
+        <div class="decoration-circle circle-2"></div>
+        <div class="decoration-circle circle-3"></div>
     </div>
+
+    <script type="module" src="/src/modules/shared/errors/404Controller.js"></script>
 </body>
 </html>
