@@ -1,0 +1,246 @@
+/* src/css/components/navbarHost.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+:root {
+    --snaap-host-z-navbar: 1000;
+    --snaap-host-border-glass: 1px solid rgba(255, 255, 255, 0.1);
+    --snaap-host-font-family: 'Poppins', sans-serif;
+    --snaap-host-text-white: #ffffff;
+    --snaap-host-verde: #00ff88;
+    --snaap-host-verde-oscuro: #00cc6a;
+    --snaap-host-morado: #9d00ff;
+    --snaap-host-border-neon: 1.5px solid rgba(0, 255, 136, 0.5);
+    --snaap-host-radius-pill: 50px;
+    --snaap-host-transition: all 0.3s ease;
+    --snaap-host-transition-fast: 0.2s ease;
+    --snaap-host-spacing-lg: 20px;
+    --snaap-host-font-size-xs: 12px;
+    --snaap-host-bg-dark: rgba(0, 0, 0, 0.95);
+}
+
+.snaap-navbar-host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    z-index: var(--snaap-host-z-navbar);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: var(--snaap-host-border-glass);
+    font-family: var(--snaap-host-font-family);
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.snaap-logo-host {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--snaap-host-text-white);
+    text-decoration: none;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.snaap-logo-host .neon-aa-host {
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--snaap-host-verde);
+    filter: drop-shadow(0 0 8px var(--snaap-host-verde));
+    margin: 0 2px;
+}
+
+.host-badge {
+    font-size: 12px;
+    background: linear-gradient(135deg, var(--snaap-host-verde), var(--snaap-host-verde-oscuro));
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: normal;
+    margin-left: 5px;
+    box-shadow: 0 0 10px var(--snaap-host-verde);
+}
+
+.snaap-menu-host {
+    display: flex;
+    list-style: none;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.snaap-btn-host {
+    background: transparent;
+    border: var(--snaap-host-border-neon);
+    padding: 6px 16px;
+    width: auto;
+    min-width: 100px;
+    border-radius: var(--snaap-host-radius-pill);
+    color: var(--snaap-host-text-white);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-host-transition);
+    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+    animation: neonPulseHost 2.5s infinite alternate;
+    white-space: nowrap;
+}
+
+@keyframes neonPulseHost {
+    from { 
+        box-shadow: 0 0 5px var(--snaap-host-verde); 
+        border-color: var(--snaap-host-verde); 
+    }
+    to { 
+        box-shadow: 0 0 15px var(--snaap-host-verde), inset 0 0 2px var(--snaap-host-verde); 
+        border-color: var(--snaap-host-verde-oscuro); 
+    }
+}
+
+.snaap-btn-host i {
+    color: var(--snaap-host-verde);
+    transition: color var(--snaap-host-transition-fast);
+    font-size: 0.9rem;
+}
+
+.snaap-btn-host:hover {
+    border-color: var(--snaap-host-morado);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-host-morado), inset 0 0 8px var(--snaap-host-morado);
+    animation: none;
+    color: var(--snaap-host-text-white);
+}
+
+.snaap-btn-host:hover i {
+    color: var(--snaap-host-morado);
+    filter: drop-shadow(0 0 5px var(--snaap-host-morado));
+}
+
+.snaap-burger-host {
+    display: none;
+    color: var(--snaap-host-text-white);
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10001;
+}
+
+.snaap-footer-item-host {
+    display: none;
+}
+
+.snaap-footer-link-host {
+    text-align: center;
+    padding: var(--snaap-host-spacing-lg);
+    font-size: var(--snaap-host-font-size-xs);
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+/* Estilos específicos para el botón de logout */
+#logout-host-btn {
+    border-color: rgba(255, 68, 68, 0.5);
+    box-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+}
+
+#logout-host-btn i {
+    color: #ff4444;
+}
+
+#logout-host-btn:hover {
+    border-color: #ff4444;
+    box-shadow: 0 0 20px #ff4444, inset 0 0 8px #ff4444;
+}
+
+#logout-host-btn:hover i {
+    color: #ff4444;
+}
+
+/* Media Queries para responsive */
+@media (max-width: 1200px) {
+    .snaap-btn-host {
+        min-width: 85px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .snaap-burger-host { 
+        display: block; 
+    }
+    
+    .snaap-menu-host {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(5, 5, 10, 0.98);
+        backdrop-filter: blur(30px);
+        flex-direction: column;
+        justify-content: center;
+        transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        gap: 20px;
+        padding: 0;
+        z-index: 10000;
+    }
+    
+    .snaap-menu-host.active { 
+        right: 0; 
+    }
+    
+    .snaap-btn-host {
+        font-size: 1rem;
+        padding: 10px 20px;
+        min-width: 200px;
+        white-space: nowrap;
+    }
+    
+    .snaap-footer-item-host {
+        display: block;
+        list-style: none;
+        margin-top: 40px;
+    }
+    
+    .snaap-footer-link-host {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .snaap-btn-host {
+        min-width: 180px;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    
+    .snaap-logo-host {
+        font-size: 24px;
+    }
+    
+    .host-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+/* Estilo para el body cuando el menú está abierto (opcional) */
+body.menu-host-open {
+    overflow: hidden;
+}

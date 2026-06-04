@@ -6,7 +6,8 @@ import { packagesController } from '/src/modules/visitor/packages/packagesContro
 import { init404Controller } from '/src/modules/shared/errors/404Controller.js';
 import { termsController } from '/src/modules/visitor/terms/termsController.js';
 import { homeHostController } from '/src/modules/host/homeHost/homeHostController.js';
-import { navbarController } from '/src/modules/visitor/layout/navbarController.js'; // ← IMPORTAR NAVBAR
+import { navbarController } from '/src/modules/visitor/layout/navbarController.js';
+import { navbarHostController } from '/src/modules/host/layout/navbarHostController.js';
 
 export const routes = {
     "/": {
@@ -32,7 +33,7 @@ export const routes = {
     "/host": {
         view: "/public/modules/host/homeHost/homeHost.html", 
         controller: homeHostController,
-        navbar: null  // ← Aquí luego irá navbarHostController
+        navbar: navbarHostController   // ← Aquí luego irá navbarHostController
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
