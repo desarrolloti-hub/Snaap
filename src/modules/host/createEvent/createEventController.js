@@ -1,51 +1,49 @@
 const packagesDetails = {
     basico: {
         nombre: "Paquete Básico",
-        precio: "$999 MXN",
+        precio: "$00 MXN",
         caracteristicas: [
-            "Hasta 50 invitados",
-            "Galería de fotos básica",
-            "Música ambiental",
-            "Soporte por email",
-            "Duración: 4 horas"
+            "Capasidad para 50 invitados",
+            "Capasidad de almacenamiento para 200 fotos",
+            "Solo puedes subir fotos, dibujos y notas",
+            "Duración: 24 horas despues del evento",
+
         ]
     },
     estandar: {
         nombre: "Paquete Estándar",
-        precio: "$1,999 MXN",
+        precio: "$00 MXN",
         caracteristicas: [
-            "Hasta 150 invitados",
+            "Capasidad para 100 invitados",
             "Galería de fotos premium",
             "Música en vivo (1 hora)",
             "Soporte prioritario",
-            "Duración: 6 horas",
+            "Duración: 48 horas despues del evento",
             "Video streaming básico"
         ]
     },
     premium: {
         nombre: "Paquete Premium",
-        precio: "$3,499 MXN",
+        precio: "$00 MXN",
         caracteristicas: [
-            "Hasta 300 invitados",
+            "Capasidad para 150 invitados",
             "Galería de fotos + video",
             "Música en vivo (2 horas)",
             "Soporte 24/7",
-            "Duración: 8 horas",
+            "Duración: 72 horas despues del evento",
             "Video streaming HD",
             "Fotógrafo profesional"
         ]
     },
     empresarial: {
         nombre: "Paquete Empresarial",
-        precio: "$5,999 MXN",
+        precio: "$00 MXN",
         caracteristicas: [
-            "Invitados ilimitados",
+            "Capasidad para 200 invitados",
             "Cobertura multimedia completa",
-            "Banda en vivo",
             "Soporte dedicado",
-            "Duración: 12 horas",
-            "Video streaming 4K",
-            "Equipo completo de producción",
+            "Duración: 7 días despues del evento",
+            "Fotos streaming 4K",
             "Marca personalizada"
         ]
     }
