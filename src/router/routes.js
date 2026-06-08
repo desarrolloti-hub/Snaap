@@ -9,7 +9,7 @@ import { homeHostController } from '/src/modules/host/homeHost/homeHostControlle
 import { navbarController } from '/src/modules/visitor/layout/navbarController.js';
 import { initNavbarHost } from '/src/modules/host/layout/navbarHostController.js';
 import { initCreateEvent } from '/src/modules/host/createEvent/createEventController.js';
-
+import { carroucelEventsController } from '/src/modules/host/carroucelEvents/carroucelEventsController.js';
 export const routes = {
     "/": {
         view: "/public/modules/visitor/home/home.html",
@@ -39,6 +39,11 @@ export const routes = {
     "/host/create-event": {
         view: "/public/modules/host/createEvent/createEvent.html",
         controller: initCreateEvent,
+        navbar: initNavbarHost
+    },
+    "/host/events": {
+        view: "/public/modules/host/carroucelEvents/carroucelEvents.html",
+        controller: carroucelEventsController,
         navbar: initNavbarHost
     },
     "/terms": {

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos Pasados - SNAAP Host</title>
+    <link rel="stylesheet" href="/src/css/components/carroucelEvents.css">
+    <link rel="stylesheet" href="/src/css/components/navbarHost.css">
+</head>
+<body>
+    <div id="carroucel-container"></div>
+
+    <script type="module">
+        import { carroucelEventsController } from '/src/modules/host/carroucelEvents/carroucelEventsController.js';
+        const container = document.getElementById('carroucel-container');
+        carroucelEventsController.render(container);
+    </script>
+</body>
+</html>
