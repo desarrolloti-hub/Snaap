@@ -1,25 +1,38 @@
-<!-- Importar estilos directamente desde el HTML -->
-<link rel="stylesheet" href="/src/css/components/navbarHost.css">
-
-<nav class="snaap-navbar-host">
-    <a href="/host" class="snaap-logo-host" data-link>
-        Sn<span class="neon-aa-host">aa</span>p
-        <span class="host-badge">Host</span>
-    </a>
-    <div class="snaap-burger-host" id="snaap-burger-btn-host">
-        <i class="fas fa-bars"></i>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar Host - SNAAP</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="snaap-navbar">
+        <a href="/" class="snaap-logo" data-link>
+            Sn<span class="neon-aa">aa</span>p
+        </a>
+        <div class="snaap-burger" id="snaap-burger-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="snaap-menu" id="snaap-nav-list">
+            <li><a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Crear nuevo evento</a></li>
+            <li><a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Historial de eventos</a></li>
+            <li><a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Perfil</a></li>
+            <li><a href="/login" class="snaap-btn" data-link><i class="fas fa-info-circle"></i>Cerrar sesión</a></li>
+            <li class="snaap-footer-item">
+                <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link">
+                    desarrollada por rsi enterprise mexico
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="demo-content">
+        <h1>Panel de Host</h1>
+        <p>Reduce el ancho de la ventana para ver el menú responsivo</p>
+        <p style="margin-top: 20px; font-size: 0.9rem;">✨ Botones con efecto neón y hover rosa</p>
     </div>
-    <ul class="snaap-menu-host" id="snaap-nav-list-host">
-        <li><a href="/host" class="snaap-btn-host" data-link><i class="fas fa-chart-line"></i> Dashboard</a></li>
-        <li><a href="/host/properties" class="snaap-btn-host" data-link><i class="fas fa-building"></i> Mis propiedades</a></li>
-        <li><a href="/host/reservations" class="snaap-btn-host" data-link><i class="fas fa-calendar-check"></i> Reservaciones</a></li>
-        <li><a href="/host/earnings" class="snaap-btn-host" data-link><i class="fas fa-dollar-sign"></i> Ganancias</a></li>
-        <li><a href="/host/settings" class="snaap-btn-host" data-link><i class="fas fa-cog"></i> Configuración</a></li>
-        <li><a href="/" class="snaap-btn-host" data-link id="logout-host-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a></li>
-        <li class="snaap-footer-item-host">
-            <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link-host">
-                desarrollada por rsi enterprise mexico
-            </a>
-        </li>
-    </ul>
-</nav>
+</body>
+</html>

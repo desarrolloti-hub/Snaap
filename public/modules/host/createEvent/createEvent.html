@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Evento - SNAAP Host</title>
+    <link rel="stylesheet" href="/src/css/components/createEvent.css">
+   
+</head>
+<body>
+    <div class="snaap-create-event-section">
+        <div class="create-event-card">
+            <div class="create-event-header">
+                <i class="fas fa-calendar-plus"></i>
+                <h2>Crear Nuevo Evento</h2>
+                <p>Completa los siguientes datos para comenzar</p>
+            </div>
+
+            <form id="createEventForm" class="create-event-form">
+                <div class="form-group">
+                    <label for="eventName">
+                        <i class="fas fa-tag"></i>
+                        Nombre del Evento
+                    </label>
+                    <input type="text" 
+                           id="eventName" 
+                           name="eventName" 
+                           class="snaap-input"
+                           placeholder="Ej: Boda de Ana y Juan, Conferencia Tech 2024"
+                           required>
+                    <small class="input-hint">Elige un nombre único y descriptivo para tu evento</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="packageSelect">
+                        <i class="fas fa-box"></i>
+                        Selecciona un Paquete
+                    </label>
+                    <select id="packageSelect" name="packageSelect" class="snaap-input" required>
+                        <option value="">-- Selecciona un paquete --</option>
+                        <option value="basico">🌟 Básico - $999 MXN</option>
+                        <option value="estandar">⚡ Estándar - $1,999 MXN</option>
+                        <option value="premium">💎 Premium - $3,499 MXN</option>
+                        <option value="empresarial">🏢 Empresarial - $5,999 MXN</option>
+                    </select>
+                </div>
+
+                <div id="packageDetails" class="package-details hidden">
+                    <div class="details-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>Detalles del Paquete</h3>
+                    </div>
+                    <div id="packageInfo" class="package-info"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="cancelBtn">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        <i class="fas fa-check-circle"></i>
+                        Crear Evento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initCreateEvent } from '/src/modules/host/createEvent/createEventController.js';
+        initCreateEvent();
+    </script>
+</body>
+</html>

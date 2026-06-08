@@ -1,75 +1,73 @@
-/* src/css/components/navbarHost.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 :root {
-    --snaap-host-z-navbar: 1000;
-    --snaap-host-border-glass: 1px solid rgba(255, 255, 255, 0.1);
-    --snaap-host-font-family: 'Poppins', sans-serif;
-    --snaap-host-text-white: #ffffff;
-    --snaap-host-verde: #00ff88;
-    --snaap-host-verde-oscuro: #00cc6a;
-    --snaap-host-morado: #9d00ff;
-    --snaap-host-border-neon: 1.5px solid rgba(0, 255, 136, 0.5);
-    --snaap-host-radius-pill: 50px;
-    --snaap-host-transition: all 0.3s ease;
-    --snaap-host-transition-fast: 0.2s ease;
-    --snaap-host-spacing-lg: 20px;
-    --snaap-host-font-size-xs: 12px;
-    --snaap-host-bg-dark: rgba(0, 0, 0, 0.95);
+    --snaap-z-navbar: 1000;
+    --snaap-border-glass: 1px solid rgba(255, 255, 255, 0.1);
+    --snaap-font-family: 'Poppins', sans-serif;
+    --snaap-text-white: #ffffff;
+    --snaap-azul-claro: #00a3ff;
+    --snaap-azul: #0055ff;
+    --snaap-rosa: #ff00aa;
+    --snaap-border-neon: 1.5px solid rgba(0, 163, 255, 0.5);
+    --snaap-radius-pill: 50px;
+    --snaap-transition: all 0.3s ease;
+    --snaap-transition-fast: 0.2s ease;
+    --snaap-spacing-lg: 20px;
+    --snaap-font-size-xs: 12px;
 }
 
-.snaap-navbar-host {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--snaap-font-family);
+    background: linear-gradient(135deg, #0f2aa3 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.snaap-navbar {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 80px;
     box-sizing: border-box;
-    z-index: var(--snaap-host-z-navbar);
+    z-index: var(--snaap-z-navbar);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: var(--snaap-host-border-glass);
-    font-family: var(--snaap-host-font-family);
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: var(--snaap-border-glass);
+    font-family: var(--snaap-font-family);
     padding: 0 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(0, 0, 0, 0.8);
 }
 
-.snaap-logo-host {
+/* LOGO */
+.snaap-logo {
     font-size: 32px;
     font-weight: 800;
-    color: var(--snaap-host-text-white);
+    color: var(--snaap-text-white);
     text-decoration: none;
     letter-spacing: -1px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    position: relative;
 }
 
-.snaap-logo-host .neon-aa-host {
+.snaap-logo .neon-aa {
     color: transparent;
-    -webkit-text-stroke: 1.2px var(--snaap-host-verde);
-    filter: drop-shadow(0 0 8px var(--snaap-host-verde));
+    -webkit-text-stroke: 1.2px var(--snaap-azul-claro);
+    filter: drop-shadow(0 0 8px var(--snaap-azul));
     margin: 0 2px;
 }
 
-.host-badge {
-    font-size: 12px;
-    background: linear-gradient(135deg, var(--snaap-host-verde), var(--snaap-host-verde-oscuro));
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 20px;
-    font-weight: 700;
-    letter-spacing: normal;
-    margin-left: 5px;
-    box-shadow: 0 0 10px var(--snaap-host-verde);
-}
-
-.snaap-menu-host {
+/* MENÚ */
+.snaap-menu {
     display: flex;
     list-style: none;
     gap: 12px;
@@ -78,14 +76,15 @@
     align-items: center;
 }
 
-.snaap-btn-host {
+/* BOTONES */
+.snaap-btn {
     background: transparent;
-    border: var(--snaap-host-border-neon);
+    border: var(--snaap-border-neon);
     padding: 6px 16px;
     width: auto;
     min-width: 100px;
-    border-radius: var(--snaap-host-radius-pill);
-    color: var(--snaap-host-text-white);
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 600;
@@ -94,98 +93,103 @@
     justify-content: center;
     gap: 8px;
     text-transform: capitalize;
-    transition: var(--snaap-host-transition);
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
-    animation: neonPulseHost 2.5s infinite alternate;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
     white-space: nowrap;
+    cursor: pointer;
 }
 
-@keyframes neonPulseHost {
-    from { 
-        box-shadow: 0 0 5px var(--snaap-host-verde); 
-        border-color: var(--snaap-host-verde); 
-    }
-    to { 
-        box-shadow: 0 0 15px var(--snaap-host-verde), inset 0 0 2px var(--snaap-host-verde); 
-        border-color: var(--snaap-host-verde-oscuro); 
-    }
+@keyframes neonPulse {
+    from { box-shadow: 0 0 5px var(--snaap-azul); border-color: var(--snaap-azul); }
+    to { box-shadow: 0 0 15px var(--snaap-azul), inset 0 0 2px var(--snaap-azul); border-color: var(--snaap-azul-claro); }
 }
 
-.snaap-btn-host i {
-    color: var(--snaap-host-verde);
-    transition: color var(--snaap-host-transition-fast);
+.snaap-btn i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
     font-size: 0.9rem;
 }
 
-.snaap-btn-host:hover {
-    border-color: var(--snaap-host-morado);
+.snaap-btn:hover {
+    border-color: var(--snaap-rosa);
     background: transparent;
     transform: translateY(-3px);
-    box-shadow: 0 0 20px var(--snaap-host-morado), inset 0 0 8px var(--snaap-host-morado);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
     animation: none;
-    color: var(--snaap-host-text-white);
+    color: var(--snaap-text-white);
 }
 
-.snaap-btn-host:hover i {
-    color: var(--snaap-host-morado);
-    filter: drop-shadow(0 0 5px var(--snaap-host-morado));
+.snaap-btn:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
-.snaap-burger-host {
+/* BOTÓN HAMBURGUESA */
+.snaap-burger {
     display: none;
-    color: var(--snaap-host-text-white);
+    color: var(--snaap-text-white);
     font-size: 28px;
     cursor: pointer;
     z-index: 10001;
 }
 
-.snaap-footer-item-host {
+/* FOOTER ITEM (móvil) */
+.snaap-footer-item {
     display: none;
 }
 
-.snaap-footer-link-host {
+.snaap-footer-link {
     text-align: center;
-    padding: var(--snaap-host-spacing-lg);
-    font-size: var(--snaap-host-font-size-xs);
+    padding: var(--snaap-spacing-lg);
+    font-size: var(--snaap-font-size-xs);
     color: rgba(255, 255, 255, 0.6);
     text-decoration: none;
     letter-spacing: 0.5px;
 }
 
-/* Estilos específicos para el botón de logout */
-#logout-host-btn {
-    border-color: rgba(255, 68, 68, 0.5);
-    box-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+/* CONTENIDO DEMO */
+.demo-content {
+    padding: 2rem;
+    color: white;
+    text-align: center;
+    margin-top: 100px;
 }
 
-#logout-host-btn i {
-    color: #ff4444;
+.demo-content h1 {
+    margin-top: 2rem;
+    font-size: 2.5rem;
 }
 
-#logout-host-btn:hover {
-    border-color: #ff4444;
-    box-shadow: 0 0 20px #ff4444, inset 0 0 8px #ff4444;
+.demo-content p {
+    margin-top: 1rem;
+    font-size: 1.2rem;
 }
 
-#logout-host-btn:hover i {
-    color: #ff4444;
+/* OVERLAY PARA MÓVIL */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    display: none;
 }
 
-/* Media Queries para responsive */
-@media (max-width: 1200px) {
-    .snaap-btn-host {
-        min-width: 85px;
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
+.menu-overlay.active {
+    display: block;
 }
 
+/* ========== RESPONSIVE ========== */
 @media (max-width: 1024px) {
-    .snaap-burger-host { 
+    .snaap-burger { 
         display: block; 
     }
     
-    .snaap-menu-host {
+    .snaap-menu {
         position: fixed;
         top: 0;
         right: -100%;
@@ -201,46 +205,36 @@
         z-index: 10000;
     }
     
-    .snaap-menu-host.active { 
+    .snaap-menu.active { 
         right: 0; 
     }
     
-    .snaap-btn-host {
+    .snaap-btn {
         font-size: 1rem;
         padding: 10px 20px;
-        min-width: 200px;
+        min-width: 180px;
         white-space: nowrap;
     }
     
-    .snaap-footer-item-host {
+    .snaap-footer-item {
         display: block;
         list-style: none;
         margin-top: 40px;
     }
     
-    .snaap-footer-link-host {
+    .snaap-footer-link {
         display: block;
     }
 }
 
 @media (max-width: 480px) {
-    .snaap-btn-host {
-        min-width: 180px;
+    .snaap-btn {
+        min-width: 150px;
         font-size: 0.9rem;
         padding: 8px 16px;
     }
     
-    .snaap-logo-host {
-        font-size: 24px;
+    .snaap-logo {
+        font-size: 26px;
     }
-    
-    .host-badge {
-        font-size: 10px;
-        padding: 2px 6px;
-    }
-}
-
-/* Estilo para el body cuando el menú está abierto (opcional) */
-body.menu-host-open {
-    overflow: hidden;
 }
