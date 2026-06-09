@@ -1,60 +1,9 @@
-// src/modules/visitor/login/loginController.js
-
 export async function loginController() {
-    // Cargar CSS específico
-    const cssLink = document.querySelector('link[href="/src/css/components/login.css"]');
-    if (!cssLink) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/src/css/components/login.css';
-        document.head.appendChild(link);
-    }
-
+    // Ya no necesitamos cargar CSS ni insertar HTML porque ya existe en el DOM
+    // Solo nos encargamos de la lógica
+    
     const app = document.getElementById('app');
     if (!app) return;
-
-    app.innerHTML = `
-        <section class="snaap-login-section">
-            <div class="login-logo-side">
-                <div class="big-snaap-logo">Sn<span class="neon-aa">aa</span>p</div>
-            </div>
-            <div class="login-card">
-                <h2>Inicio de sesión.</h2>
-                <form class="login-form" id="login-form">
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" class="snaap-input" id="login-email" placeholder="correo electrónico" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" class="snaap-input" id="login-password" placeholder="contraseña" required>
-                    </div>
-
-                    <div class="terms-group">
-                        <label class="terms-checkbox">
-                            <input type="checkbox" id="acceptTerms"> Acepto los 
-                            <a href="/terms" data-link id="termsLinkInline">términos y condiciones</a>
-                        </label>
-                        <button type="button" class="btn-terms-view" id="viewTermsBtn">Ver términos</button>
-                    </div>
-
-                    <div class="login-actions">
-                        <button type="submit" class="btn-login" id="btn-login">Iniciar sesión</button>
-                        <button type="button" class="btn-login" id="btn-register">Crear cuenta</button>
-                    </div>
-                    <div class="register-link">
-                        ¿Olvidaste tu contraseña? <a href="#" id="forgot-password">Recupérala aquí</a>
-                    </div>
-                    <div class="social-login">
-                        <i class="fab fa-google social-icon" data-social="google"></i>
-                        <i class="fab fa-facebook-f social-icon" data-social="facebook"></i>
-                        <i class="fab fa-apple social-icon" data-social="apple"></i>
-                    </div>
-                </form>
-            </div>
-        </section>
-    `;
 
     // --- LÓGICA DEL FORMULARIO (con redirección a admin) ---
     const form = document.getElementById('login-form');
@@ -62,11 +11,10 @@ export async function loginController() {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
-            const nombre = document.getElementById('login-nombre').value;
             const password = document.getElementById('login-password').value;
             const acceptTerms = document.getElementById('acceptTerms').checked;
 
-            if (!email || !nombre || !password) {
+            if (!email || !password) {
                 alert('❌ Por favor completa todos los campos');
                 return;
             }
@@ -74,8 +22,8 @@ export async function loginController() {
                 alert('⚠️ Debes aceptar los términos y condiciones para iniciar sesión.');
                 return;
             }
-            console.log('Intento de login:', { email, nombre, password });
-            alert(`✅ Bienvenido ${nombre}, redirigiendo al panel de control...`);
+            console.log('Intento de login:', { email, password });
+            alert(`✅ Bienvenido, redirigiendo al panel de control...`);
 
             // Redirigir al dashboard de organizador (simulación)
             if (typeof window.navigateTo === 'function') {
@@ -86,11 +34,16 @@ export async function loginController() {
         });
     }
 
-    // Botón "Crear cuenta"
+    // Botón "Crear cuenta" - Ahora redirige al registro
     const btnRegister = document.getElementById('btn-register');
     if (btnRegister) {
         btnRegister.addEventListener('click', () => {
-            alert('📝 Funcionalidad de registro en desarrollo. Pronto estará disponible.');
+            // Redirigir al formulario de registro
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/register');
+            } else {
+                window.location.href = '/register';
+            }
         });
     }
 
@@ -136,4 +89,11 @@ export async function loginController() {
             alert(`🔑 Inicio de sesión con ${social} (demo). Próximamente.`);
         });
     });
+}
+
+// Auto-inicializar cuando el DOM esté listo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loginController);
+} else {
+    loginController();
 }

@@ -10,6 +10,8 @@ import { navbarController } from '/src/modules/visitor/layout/navbarController.j
 import { initCreateEvent } from '/src/modules/host/createEvent/createEventController.js';
 import { carroucelEventsController } from '/src/modules/host/carroucelEvents/carroucelEventsController.js';
 import { navbarHostController } from '/src/modules/host/layout/navbarHostController.js';
+import { registerController } from '/src/modules/visitor/register/registerController.js'; 
+
 export const routes = {
     "/": {
         view: "/public/modules/visitor/home/home.html",
@@ -20,9 +22,13 @@ export const routes = {
         controller: aboutUsController,
     },
     "/login": {
-        view: "/src/modules/visitor/login/login.html",
+        view: "/public/modules/visitor/login/login.html",  
         controller: loginController,
     },
+    "/register": {
+        view: "/public/modules/visitor/register/register.html",
+        controller: registerController,
+    }, 
     "/paquetes": {
         view: "/public/modules/visitor/packages/packages.html",  
         controller: packagesController,

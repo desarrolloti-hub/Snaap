@@ -110,13 +110,29 @@ body {
     text-transform: uppercase;
 }
 
-.card .price {
-    color: var(--snaap-azul-claro);
-    font-size: var(--snaap-font-size-2xl);
-    font-weight: 800;
-    letter-spacing: 2px;
+.event-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
     margin: 10px 0;
-    text-shadow: 0 0 10px rgba(0, 163, 255, 0.5);
+    width: 100%;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--snaap-text-muted);
+    font-size: var(--snaap-font-size-base);
+}
+
+.stat-item i {
+    color: var(--snaap-azul-claro);
+    font-size: 14px;
+}
+
+.stat-item span {
+    font-size: 13px;
 }
 
 .card .event-date {
@@ -302,8 +318,12 @@ body {
         font-size: 1rem;
     }
     
-    .card .price {
-        font-size: 1.3rem;
+    .event-stats {
+        gap: 12px;
+    }
+    
+    .stat-item span {
+        font-size: 11px;
     }
     
     .card.prev {

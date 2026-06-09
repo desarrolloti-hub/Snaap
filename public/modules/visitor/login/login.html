@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Login - Snaap</title>
+    <link rel="stylesheet" href="/src/css/components/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <section class="snaap-login-section">
+            <div class="login-logo-side">
+                <div class="big-snaap-logo">Sn<span class="neon-aa">aa</span>p</div>
+            </div>
+            <div class="login-card">
+                <h2>Inicio de sesión.</h2>
+                <form class="login-form" id="login-form">
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" class="snaap-input" id="login-email" placeholder="correo electrónico" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" class="snaap-input" id="login-password" placeholder="contraseña" required>
+                    </div>
+
+                    <div class="terms-group">
+                        <label class="terms-checkbox">
+                            <input type="checkbox" id="acceptTerms"> Acepto los 
+                            <a href="/terms" data-link id="termsLinkInline">términos y condiciones</a>
+                        </label>
+                    </div>
+
+                    <div class="login-actions">
+                        <button type="submit" class="btn-login" id="btn-login">Iniciar sesión</button>
+                        <button type="button" class="btn-login" id="btn-register">Crear cuenta</button>
+                    </div>
+                    <div class="register-link">
+                        ¿Olvidaste tu contraseña? <a href="#" id="forgot-password">Recupérala aquí</a>
+                    </div>
+                    <div class="social-login">
+                        <i class="fab fa-google social-icon" data-social="google"></i>
+                        <i class="fab fa-facebook-f social-icon" data-social="facebook"></i>
+                        <i class="fab fa-apple social-icon" data-social="apple"></i>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+    
+    <script type="module" src="/src/modules/visitor/login/loginController.js"></script>
+</body>
+</html>
