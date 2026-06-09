@@ -131,7 +131,7 @@ export const navbarHostController = {
                 </div>
                 <ul class="snaap-menu-host" id="snaap-nav-list-host">
                     <li><a href="/host" class="snaap-btn-host" data-link><i class="fas fa-chart-line"></i> perfil</a></li>
-                    <li><a href="/host/properties" class="snaap-btn-host" data-link><i class="fas fa-building"></i> nuevo evento</a></li>
+                    <li><a href="/host/create-event" class="snaap-btn-host" data-link><i class="fas fa-building"></i> nuevo evento</a></li>
                     <li><a href="/host/reservations" class="snaap-btn-host" data-link><i class="fas fa-calendar-check"></i> Reservaciones</a></li>
                     <li><a href="/host/earnings" class="snaap-btn-host" data-link><i class="fas fa-dollar-sign"></i> eventos</a></li>
                     <li><a href="/host/settings" class="snaap-btn-host" data-link><i class="fas fa-cog"></i> Configuración</a></li>

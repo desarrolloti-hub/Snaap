@@ -194,3 +194,95 @@ body {
         justify-content: center;
     }
 }
+/* Footer bottom - Con imagen más grande */
+.snaap-footer .footer-bottom {
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.snaap-footer .footer-bottom-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.snaap-footer .rsi-footer-logo {
+    height: 60px;  /* Antes era 30px, ahora el doble: 60px */
+    width: auto;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    opacity: 0.9;
+}
+
+.snaap-footer .rsi-footer-logo:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.snaap-footer .rsi-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;  /* También aumenté un poco el texto para que combine mejor */
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.snaap-footer .rsi-link:hover {
+    opacity: 1;
+}
+
+/* Año actual */
+.current-year {
+    display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .snaap-footer {
+        padding: 40px 0 20px 0;
+    }
+    
+    .snaap-footer .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .snaap-footer .footer-logo-section {
+        text-align: center;
+    }
+    
+    .snaap-footer .footer-info-section {
+        padding-left: 0;
+        border-left: none;
+        border-top: 2px solid rgba(255, 255, 255, 0.1);
+        padding-top: 30px;
+        width: 100%;
+    }
+    
+    .snaap-footer .social-icons {
+        justify-content: center;
+    }
+    
+    .snaap-footer .footer-logo {
+        justify-content: center;
+    }
+    
+    /* Ajuste responsive - también más grande en móvil */
+    .snaap-footer .rsi-footer-logo {
+        height: 50px;  /* En móvil: 25px antes, ahora 50px */
+    }
+    
+    .snaap-footer .footer-bottom-content {
+        gap: 12px;
+    }
+    
+    .snaap-footer .rsi-link {
+        font-size: 12px;
+    }
+}
