@@ -7,14 +7,15 @@ import { init404Controller } from '/src/modules/shared/errors/404Controller.js';
 import { termsController } from '/src/modules/visitor/terms/termsController.js';
 import { homeHostController } from '/src/modules/host/homeHost/homeHostController.js';
 import { navbarController } from '/src/modules/visitor/layout/navbarController.js';
-import { initNavbarHost } from '/src/modules/host/layout/navbarHostController.js';
+
 import { initCreateEvent } from '/src/modules/host/createEvent/createEventController.js';
 import { carroucelEventsController } from '/src/modules/host/carroucelEvents/carroucelEventsController.js';
+import { navbarHostController } from '/src/modules/host/layout/navbarHostController.js';
 export const routes = {
     "/": {
         view: "/public/modules/visitor/home/home.html",
         controller: homeController,
-        navbar: navbarController
+        navbar: navbarHostController
     },
     "/nosotros": {
         view: "/public/modules/visitor/aboutUs/aboutUs.html",
@@ -34,17 +35,17 @@ export const routes = {
     "/host": {
         view: "/public/modules/host/homeHost/homeHost.html", 
         controller: homeHostController,
-        navbar: initNavbarHost
+        navbar: navbarHostController
     },
     "/host/create-event": {
         view: "/public/modules/host/createEvent/createEvent.html",
         controller: initCreateEvent,
-        navbar: initNavbarHost
+        navbar: navbarHostController
     },
     "/host/events": {
         view: "/public/modules/host/carroucelEvents/carroucelEvents.html",
         controller: carroucelEventsController,
-        navbar: initNavbarHost
+        navbar: navbarHostController
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
