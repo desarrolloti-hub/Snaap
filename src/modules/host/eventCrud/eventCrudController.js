@@ -63,13 +63,12 @@ const renderEventosList = (filter = '') => {
                 <p><i class="fas fa-camera"></i> ${evento.uploadedPhotos} fotos</p>
             </div>
             <div class="evento-actions">
-                <button class="btn-edit" data-id="${evento.id}"><i class="fas fa-edit"></i> Editar</button>
-                <button class="btn-delete" data-id="${evento.id}"><i class="fas fa-trash"></i> Eliminar</button>
+                <button class="btn-edit" data-id="${evento.id}"><i class="fas fa-edit"></i> Editar Fotos</button>
             </div>
         </div>
     `).join('');
     
-    // Agregar event listeners a los botones
+    // Agregar event listeners a los botones de editar
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -78,14 +77,7 @@ const renderEventosList = (filter = '') => {
         });
     });
     
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const id = parseInt(btn.dataset.id);
-            deleteEvento(id);
-        });
-    });
-    
+    // Agregar event listener a las tarjetas
     document.querySelectorAll('.evento-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = parseInt(card.dataset.id);
@@ -99,27 +91,15 @@ const editEvento = (id) => {
     if (evento) {
         document.getElementById('eventoId').value = evento.id;
         document.getElementById('title').value = evento.title;
-        document.getElementById('img').value = evento.img;
         document.getElementById('date').value = evento.date;
         document.getElementById('attendees').value = evento.attendees;
         document.getElementById('uploadedPhotos').value = evento.uploadedPhotos;
+        document.getElementById('img').value = evento.img;
         
         // Cambiar texto del botón submit
         const submitBtn = document.querySelector('#eventoForm button[type="submit"]');
-        submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar';
-    }
-};
-
-const deleteEvento = (id) => {
-    if (confirm('¿Estás seguro de que deseas eliminar este evento?')) {
-        eventos = eventos.filter(e => e.id !== id);
-        saveEventos();
-        renderEventosList(document.getElementById('searchInput')?.value || '');
-        
-        // Limpiar formulario si el evento eliminado estaba siendo editado
-        const eventoId = document.getElementById('eventoId').value;
-        if (parseInt(eventoId) === id) {
-            clearForm();
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Fotos';
         }
     }
 };
@@ -127,43 +107,39 @@ const deleteEvento = (id) => {
 const clearForm = () => {
     document.getElementById('eventoId').value = '';
     document.getElementById('title').value = '';
-    document.getElementById('img').value = '';
     document.getElementById('date').value = '';
     document.getElementById('attendees').value = '';
     document.getElementById('uploadedPhotos').value = '';
+    document.getElementById('img').value = '';
     
     const submitBtn = document.querySelector('#eventoForm button[type="submit"]');
-    submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+    }
 };
 
 const saveOrUpdateEvento = (event) => {
     event.preventDefault();
     
     const id = parseInt(document.getElementById('eventoId').value);
-    const title = document.getElementById('title').value;
-    const img = document.getElementById('img').value;
-    const date = document.getElementById('date').value;
-    const attendees = parseInt(document.getElementById('attendees').value);
     const uploadedPhotos = parseInt(document.getElementById('uploadedPhotos').value);
+    const img = document.getElementById('img').value;
     
     if (id) {
-        // Actualizar evento existente
+        // Solo actualizar fotos y URL de imagen, mantener el resto igual
         const index = eventos.findIndex(e => e.id === id);
         if (index !== -1) {
-            eventos[index] = { id, title, img, date, attendees, uploadedPhotos };
+            eventos[index] = { 
+                ...eventos[index],
+                uploadedPhotos: uploadedPhotos,
+                img: img
+            };
             saveEventos();
-            alert('Evento actualizado exitosamente');
+            alert('Fotos actualizadas exitosamente');
+            renderEventosList(document.getElementById('searchInput')?.value || '');
+            clearForm();
         }
-    } else {
-        // Crear nuevo evento
-        const newId = eventos.length > 0 ? Math.max(...eventos.map(e => e.id)) + 1 : 1;
-        eventos.push({ id: newId, title, img, date, attendees, uploadedPhotos });
-        saveEventos();
-        alert('Evento creado exitosamente');
     }
-    
-    clearForm();
-    renderEventosList(document.getElementById('searchInput')?.value || '');
 };
 
 // Función principal del controlador

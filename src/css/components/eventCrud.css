@@ -10,7 +10,6 @@ body {
     min-height: 100vh;
 }
 
-/* Estilo específico para la página del CRUD */
 .crud-page {
     padding-top: 100px;
     min-height: 100vh;
@@ -44,26 +43,6 @@ body {
 .crud-header h1 i {
     color: #00a3ff;
     margin-right: 10px;
-}
-
-.back-btn {
-    background: rgba(0, 163, 255, 0.3);
-    border: 1px solid #00a3ff;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 1rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.back-btn:hover {
-    background: #00a3ff;
-    transform: scale(1.05);
 }
 
 .crud-content {
@@ -121,6 +100,15 @@ body {
     outline: none;
     border-color: #00a3ff;
     box-shadow: 0 0 10px rgba(0, 163, 255, 0.5);
+}
+
+/* Estilo para campos deshabilitados (solo lectura) */
+.form-group input:read-only,
+.form-group input:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: rgba(20, 20, 30, 0.5);
+    border-color: rgba(0, 163, 255, 0.2);
 }
 
 .form-buttons {
@@ -255,32 +243,19 @@ body {
     gap: 8px;
 }
 
-.btn-edit, .btn-delete {
+.btn-edit {
     padding: 6px 12px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.85rem;
     transition: all 0.3s ease;
-}
-
-.btn-edit {
     background: #00a3ff;
     color: white;
 }
 
 .btn-edit:hover {
     background: #0088cc;
-    transform: scale(1.05);
-}
-
-.btn-delete {
-    background: #ff00aa;
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #cc0088;
     transform: scale(1.05);
 }
 
