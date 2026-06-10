@@ -53,7 +53,7 @@
     font-size: var(--snaap-font-size-8xl);
     font-weight: 900;
     color: var(--snaap-text-white);
-    letter-spacing: -9px;
+    letter-spacing: -0.5px; /* Espaciado equilibrado - ni muy juntas ni muy separadas */
     display: flex;
     align-items: center;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0);
@@ -285,7 +285,7 @@
     }
     .big-snaap-logo {
         font-size: 110px;
-        letter-spacing: -6px;
+        letter-spacing: -0.3px; /* Ajuste equilibrado para móvil */
         margin-bottom: 30px;
     }
     .big-snaap-logo .neon-aa {

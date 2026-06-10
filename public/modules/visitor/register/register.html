@@ -4,52 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - Snaap</title>
-    <link rel="stylesheet" href="/src/css/components/register.css">
+    <link rel="stylesheet" href="/src/css/base/register.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Aquí va tu componente nav -->
+    <!-- Asegúrate de que tu nav tenga una clase como 'navbar' para poder ajustar el padding -->
+    
     <div id="app">
-        <section class="snaap-register-section">
-            <div class="register-logo-side">
-                <div class="big-snaap-logo">Sn<span class="neon-aa">aa</span>p</div>
-            </div>
-            <div class="register-card">
-                <h2>Crear cuenta nueva.</h2>
-                <form class="register-form" id="register-form">
-                    <div class="input-group">
-                        <i class="fas fa-user"></i>
-                        <input type="text" class="snaap-input" id="register-name" placeholder="nombre completo" required>
-                    </div>
+        <div class="snaap-register-container">
+            <section class="snaap-register-section">
+                <div class="register-logo-side">
+                    <div class="big-snaap-logo">Sn<span class="neon-aa">aa</span>p</div>
+                </div>
+                <div class="register-card">
+                    <h2>Crear cuenta nueva.</h2>
+                    <form class="register-form" id="register-form">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="snaap-input" id="register-name" placeholder="Nombre completo" required>
+                        </div>
 
-                    <div class="input-group">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" class="snaap-input" id="register-email" placeholder="correo electrónico" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" class="snaap-input" id="register-password" placeholder="contraseña" required>
-                    </div>
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="snaap-input" id="register-email" placeholder="Correo electrónico" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="snaap-input" id="register-password" placeholder="Contraseña" required>
+                        </div>
 
-                    <div class="input-group">
-                        <i class="fas fa-check-circle"></i>
-                        <input type="password" class="snaap-input" id="register-confirm-password" placeholder="confirmar contraseña" required>
-                    </div>
+                        <div class="input-group">
+                            <i class="fas fa-check-circle"></i>
+                            <input type="password" class="snaap-input" id="register-confirm-password" placeholder="Confirmar contraseña" required>
+                        </div>
 
-                    <div class="terms-group">
-                        <label class="terms-checkbox">
-                            <input type="checkbox" id="acceptTermsRegister"> 
-                            <span>Acepto los <a href="/terms" id="termsLinkRegister">términos y condiciones</a></span>
-                        </label>
-                    </div>
+                        <div class="terms-group">
+                            <label class="terms-checkbox">
+                                <input type="checkbox" id="acceptTermsRegister"> 
+                                <span>Acepto los <a href="/terms" id="termsLinkRegister">términos y condiciones</a></span>
+                            </label>
+                        </div>
 
-                    <div class="register-actions">
-                        <button type="submit" class="btn-register">Registrarme</button>
-                        <button type="button" class="btn-register" id="btn-back-login">Volver al login</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+                        <div class="register-actions">
+                            <button type="submit" class="btn-register">Registrarme</button>
+                            <button type="button" class="btn-register-outline" id="btn-back-login">Volver al login</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
     </div>
     
     <script type="module" src="/src/modules/visitor/register/registerController.js"></script>

@@ -25,12 +25,42 @@
     --snaap-shadow-neon: 0 0 10px rgba(77, 184, 255, 0.3);
     --snaap-transition-fast: all 0.2s ease;
     --snaap-font-size-base: 0.9rem;
+    --nav-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    min-height: 100vh;
+}
+
+.snaap-register-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: var(--nav-height);
+    padding-bottom: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .snaap-register-section {
-    width: 95%;
+    width: 100%;
     max-width: 1200px;
-    margin: 40px auto;
+    margin: 0 auto;
     padding: var(--snaap-spacing-3xl);
     display: flex;
     align-items: center;
@@ -53,7 +83,7 @@
     font-size: var(--snaap-font-size-8xl);
     font-weight: 900;
     color: var(--snaap-text-white);
-    letter-spacing: -9px;
+    letter-spacing: -0.5px; /* Espaciado equilibrado - ni muy juntas ni muy separadas */
     display: flex;
     align-items: center;
     text-shadow: 0 0 15px rgba(255, 255, 255, 0);
@@ -64,6 +94,7 @@
     -webkit-text-stroke: 4px var(--snaap-azul-claro);
     filter: drop-shadow(0 0 30px var(--snaap-azul)) drop-shadow(0 0 10px var(--snaap-azul));
     margin: 0 5px;
+    letter-spacing: normal;
 }
 
 .register-card {
@@ -169,6 +200,7 @@
     cursor: pointer;
     width: 16px;
     height: 16px;
+    accent-color: var(--snaap-azul-claro);
 }
 
 .terms-checkbox a {
@@ -184,10 +216,11 @@
 
 .register-actions {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     margin-top: 10px;
 }
 
+/* Botón Registrarme */
 .btn-register {
     flex: 1;
     padding: 12px 20px;
@@ -215,13 +248,49 @@
     transform: translateY(-3px) scale(1.02);
 }
 
+/* Botón Volver al login - MISMAS ANIMACIONES que btn-register */
+.btn-register-outline {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: var(--snaap-radius-pill);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+    border: var(--snaap-border-neon);
+    color: var(--snaap-azul-claro);
+    font-family: var(--snaap-font-family);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--snaap-transition-slow);
+    box-shadow: var(--snaap-shadow-neon);
+    user-select: none;
+}
+
+.btn-register-outline:hover {
+    border-color: var(--snaap-rosa);
+    color: var(--snaap-rosa);
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.6), inset 0 0 5px rgba(255, 0, 122, 0.2);
+    transform: translateY(-3px) scale(1.02);
+}
+
 @media (max-width: 968px) {
+    .snaap-register-container {
+        padding-top: calc(var(--nav-height) + 20px);
+        padding-left: 15px;
+        padding-right: 15px;
+        align-items: flex-start;
+    }
+
     .snaap-register-section {
         flex-direction: column;
         text-align: center;
         padding: var(--snaap-spacing-lg);
-        width: 90%;
-        margin: 20px auto;
+        width: 100%;
+        margin: 0 auto;
+        gap: 30px;
     }
     
     .register-card {
@@ -236,9 +305,9 @@
     }
     
     .big-snaap-logo {
-        font-size: 80px;
-        letter-spacing: -6px;
-        margin-bottom: 20px;
+        font-size: 70px;
+        letter-spacing: -0.3px; /* Ajuste equilibrado para móvil */
+        margin-top: 20px;
     }
     
     .big-snaap-logo .neon-aa {
@@ -253,5 +322,28 @@
     .snaap-input {
         padding: 12px 20px 12px 50px;
         font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .snaap-register-container {
+        padding-top: calc(var(--nav-height) + 30px);
+    }
+
+    .register-card {
+        padding: 30px 20px;
+    }
+    
+    .register-card h2 {
+        font-size: 1.5rem;
+    }
+    
+    .big-snaap-logo {
+        font-size: 50px;
+        letter-spacing: -0.2px; /* Ajuste equilibrado para móvil pequeño */
+    }
+    
+    .big-snaap-logo .neon-aa {
+        -webkit-text-stroke: 2px var(--snaap-azul-claro);
     }
 }

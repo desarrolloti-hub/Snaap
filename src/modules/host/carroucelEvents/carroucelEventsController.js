@@ -1,5 +1,6 @@
 const eventosData = [
     { 
+        id: 1,
         title: "Los XV de Rusi", 
         img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop", 
         date: "15 Marzo 2024",
@@ -7,6 +8,7 @@ const eventosData = [
         uploadedPhotos: 45
     },
     { 
+        id: 2,
         title: "Boda Legendaria", 
         img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop", 
         date: "22 Febrero 2024",
@@ -14,6 +16,7 @@ const eventosData = [
         uploadedPhotos: 128
     },
     { 
+        id: 3,
         title: "Fiesta Locura Total", 
         img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop", 
         date: "10 Enero 2024",
@@ -51,7 +54,28 @@ export function carroucelEventsController() {
         renderCards();
     };
     
+    // Agregar evento de clic a las tarjetas
+    const addCardClickEvents = () => {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                const evento = eventosData[index];
+                // Guardar el evento seleccionado en localStorage
+                localStorage.setItem('eventoSeleccionado', JSON.stringify(evento));
+                console.log('Evento seleccionado:', evento.title);
+                // Usar la función navigateTo del router
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/host/event-crud');
+                } else {
+                    console.error('navigateTo no está disponible');
+                    window.location.href = '/host/event-crud';
+                }
+            });
+        });
+    };
+    
     renderCards();
+    addCardClickEvents();
     
     const prevBtn = document.getElementById('snaap-prev-btn');
     const nextBtn = document.getElementById('snaap-next-btn');

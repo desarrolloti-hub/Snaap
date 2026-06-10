@@ -69,6 +69,18 @@ export async function registerController() {
             }
         });
     }
+
+    const forgotLink = document.getElementById('forgotPasswordLink');
+    if (forgotLink) {
+        forgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/forgot-password');
+            } else {
+                window.location.href = '/forgot-password';
+            }
+        });
+    }
 }
 
 if (document.readyState === 'loading') {
