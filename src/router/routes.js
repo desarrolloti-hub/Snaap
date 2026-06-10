@@ -12,6 +12,7 @@ import { carroucelEventsController } from '/src/modules/host/carroucelEvents/car
 import { navbarHostController } from '/src/modules/host/layout/navbarHostController.js';
 import { registerController } from '/src/modules/visitor/register/registerController.js';
 import { eventCrudController } from '/src/modules/host/eventCrud/eventCrudController.js';
+import { eventEditFormController } from '/src/modules/host/eventEditForm/eventEditFormController.js';
 
 export const routes = {
     "/": {
@@ -49,6 +50,10 @@ export const routes = {
     "/host/event-crud": {
         view: "/public/modules/host/eventCrud/eventCrud.html",
         controller: eventCrudController,
+    },
+    "/host/event-edit": {
+        view: "/public/modules/host/eventEditForm/eventEditForm.html",
+        controller: eventEditFormController,
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",

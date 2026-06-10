@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Evento - SNAAP Host</title>
+    <link rel="stylesheet" href="/src/css/components/eventEditForm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div class="edit-page">
+            <div class="edit-container">
+                <div class="edit-header">
+                    <button class="btn-back" id="btnVolver">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <h1><i class="fas fa-edit"></i> Editar Evento</h1>
+                </div>
+
+                <div class="edit-content">
+                    <form id="eventoEditForm">
+                        <input type="hidden" id="eventoId">
+                        
+                        <div class="form-group">
+                            <label for="title"><i class="fas fa-tag"></i> Nombre del Evento:</label>
+                            <input type="text" id="title" required placeholder="Ej: Los XV de Rusi">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="date"><i class="fas fa-calendar-day"></i> Fecha:</label>
+                            <input type="text" id="date" required placeholder="Ej: 15 Marzo 2024">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="attendees"><i class="fas fa-users"></i> Asistentes:</label>
+                            <input type="number" id="attendees" required min="0" placeholder="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="uploadedPhotos"><i class="fas fa-camera"></i> Fotos Subidas:</label>
+                            <input type="number" id="uploadedPhotos" required min="0" placeholder="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="img"><i class="fas fa-image"></i> URL de la Imagen del Evento:</label>
+                            <input type="url" id="img" required placeholder="https://ejemplo.com/imagen.jpg">
+                        </div>
+                        
+                        <div class="form-buttons">
+                            <button type="submit" class="btn-save">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                            <button type="button" id="cancelarBtn" class="btn-cancel">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/host/eventEditForm/eventEditFormController.js"></script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2aa3 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.edit-page {
+    padding-top: 100px;
+    min-height: 100vh;
+}
+
+.edit-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(10, 10, 20, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(0, 163, 255, 0.3);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.edit-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(0, 163, 255, 0.3);
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(-3px);
+}
+
+.edit-header h1 {
+    color: white;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.edit-header h1 i {
+    color: #00a3ff;
+    margin-right: 10px;
+}
+
+.edit-content {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-group label i {
+    color: #00a3ff;
+    margin-right: 8px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(0, 163, 255, 0.3);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #00a3ff;
+    box-shadow: 0 0 10px rgba(0, 163, 255, 0.5);
+}
+
+.form-group input:hover {
+    border-color: rgba(0, 163, 255, 0.6);
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-save, .btn-cancel {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #00a3ff, #0055ff);
+    color: white;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 163, 255, 0.4);
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Estilos para mensajes de error */
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    color: #ff6b6b;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.success-message {
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    color: #6bff6b;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .edit-page {
+        padding-top: 60px;
+    }
+    
+    .edit-container {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    .edit-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -63,113 +63,48 @@ const renderEventosList = (filter = '') => {
                 <p><i class="fas fa-camera"></i> ${evento.uploadedPhotos} fotos</p>
             </div>
             <div class="evento-actions">
-                <button class="btn-edit" data-id="${evento.id}"><i class="fas fa-edit"></i> Editar Fotos</button>
+                <button class="btn-edit" data-id="${evento.id}">
+                    <i class="fas fa-edit"></i> Editar Evento
+                </button>
             </div>
         </div>
     `).join('');
     
     // Agregar event listeners a los botones de editar
-    document.querySelectorAll('.btn-edit').forEach(btn => {
+    const editButtons = document.querySelectorAll('.btn-edit');
+    console.log('Botones encontrados:', editButtons.length); // Para depuración
+    
+    editButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            const id = parseInt(btn.dataset.id);
-            editEvento(id);
-        });
-    });
-    
-    // Agregar event listener a las tarjetas
-    document.querySelectorAll('.evento-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const id = parseInt(card.dataset.id);
-            editEvento(id);
+            const id = parseInt(btn.getAttribute('data-id'));
+            console.log('Botón clickeado, ID:', id); // Para depuración
+            redirectToEditForm(id);
         });
     });
 };
 
-const editEvento = (id) => {
-    const evento = eventos.find(e => e.id === id);
-    if (evento) {
-        document.getElementById('eventoId').value = evento.id;
-        document.getElementById('title').value = evento.title;
-        document.getElementById('date').value = evento.date;
-        document.getElementById('attendees').value = evento.attendees;
-        document.getElementById('uploadedPhotos').value = evento.uploadedPhotos;
-        document.getElementById('img').value = evento.img;
-        
-        // Cambiar texto del botón submit
-        const submitBtn = document.querySelector('#eventoForm button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar Fotos';
-        }
-    }
-};
-
-const clearForm = () => {
-    document.getElementById('eventoId').value = '';
-    document.getElementById('title').value = '';
-    document.getElementById('date').value = '';
-    document.getElementById('attendees').value = '';
-    document.getElementById('uploadedPhotos').value = '';
-    document.getElementById('img').value = '';
-    
-    const submitBtn = document.querySelector('#eventoForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
-    }
-};
-
-const saveOrUpdateEvento = (event) => {
-    event.preventDefault();
-    
-    const id = parseInt(document.getElementById('eventoId').value);
-    const uploadedPhotos = parseInt(document.getElementById('uploadedPhotos').value);
-    const img = document.getElementById('img').value;
-    
-    if (id) {
-        // Solo actualizar fotos y URL de imagen, mantener el resto igual
-        const index = eventos.findIndex(e => e.id === id);
-        if (index !== -1) {
-            eventos[index] = { 
-                ...eventos[index],
-                uploadedPhotos: uploadedPhotos,
-                img: img
-            };
-            saveEventos();
-            alert('Fotos actualizadas exitosamente');
-            renderEventosList(document.getElementById('searchInput')?.value || '');
-            clearForm();
-        }
-    }
+// Función para redirigir al formulario de edición
+const redirectToEditForm = (eventoId) => {
+    console.log('Redirigiendo con ID:', eventoId); // Para depuración
+    // Guardar el ID del evento a editar en localStorage
+    localStorage.setItem('eventoParaEditar', eventoId);
+    // Redirigir a la página del formulario de edición usando la ruta
+    window.location.hash = '#/host/event-edit';
 };
 
 // Función principal del controlador
 export function eventCrudController() {
+    console.log('Controlador eventCrudController iniciado'); // Para depuración
     loadEventos();
     renderEventosList();
-    
-    const form = document.getElementById('eventoForm');
-    if (form) {
-        form.addEventListener('submit', saveOrUpdateEvento);
-    }
-    
-    const cancelarBtn = document.getElementById('cancelarBtn');
-    if (cancelarBtn) {
-        cancelarBtn.addEventListener('click', clearForm);
-    }
     
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             renderEventosList(e.target.value);
         });
-    }
-    
-    // Cargar evento seleccionado desde el carrusel
-    const eventoSeleccionado = localStorage.getItem('eventoSeleccionado');
-    if (eventoSeleccionado) {
-        const evento = JSON.parse(eventoSeleccionado);
-        editEvento(evento.id);
-        localStorage.removeItem('eventoSeleccionado');
     }
 }
 
