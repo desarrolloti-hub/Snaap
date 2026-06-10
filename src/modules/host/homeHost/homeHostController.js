@@ -1,274 +1,145 @@
-// Datos de ejemplo (simulando API)
-const mockData = {
-    host: {
-        name: "Carlos Rodríguez",
-        id: 1
-    },
-    properties: [
-        {
-            id: 1,
-            title: "Hermoso apartamento en el centro",
-            location: "Centro, Ciudad",
-            price: 120,
-            image: "https://via.placeholder.com/300x200",
-            status: "active",
-            guests: 4
-        },
-        {
-            id: 2,
-            title: "Casa de playa con vista al mar",
-            location: "Zona Costera",
-            price: 250,
-            image: "https://via.placeholder.com/300x200",
-            status: "active",
-            guests: 6
-        },
-        {
-            id: 3,
-            title: "Loft moderno cerca del aeropuerto",
-            location: "Zona Norte",
-            price: 90,
-            image: "https://via.placeholder.com/300x200",
-            status: "inactive",
-            guests: 2
-        }
-    ],
-    reservations: [
-        {
-            id: 1,
-            guest: "María González",
-            property: "Hermoso apartamento en el centro",
-            checkIn: "2025-01-15",
-            checkOut: "2025-01-20",
-            status: "confirmed",
-            amount: 600
-        },
-        {
-            id: 2,
-            guest: "Juan Pérez",
-            property: "Casa de playa con vista al mar",
-            checkIn: "2025-01-18",
-            checkOut: "2025-01-22",
-            status: "pending",
-            amount: 1000
-        },
-        {
-            id: 3,
-            guest: "Ana Martínez",
-            property: "Loft moderno cerca del aeropuerto",
-            checkIn: "2025-01-10",
-            checkOut: "2025-01-12",
-            status: "confirmed",
-            amount: 180
-        }
-    ]
-};
-
-// Calcular estadísticas
-function calculateStats(properties, reservations) {
-    const totalProperties = properties.length;
-    const totalGuests = properties.reduce((sum, prop) => sum + (prop.guests || 0), 0);
-    const totalRevenue = reservations
-        .filter(res => res.status === 'confirmed')
-        .reduce((sum, res) => sum + res.amount, 0);
-    const rating = 4.8; // Rating de ejemplo
+export function homeHostController() {
+    console.log('Home Host Controller cargado');
     
-    return {
-        totalProperties,
-        totalGuests,
-        totalRevenue,
-        rating
+    // Datos de ejemplo para el dashboard
+    const stats = {
+        totalEvents: 12,
+        totalPhotos: 847,
+        totalAttendees: 2450,
+        activeEvents: 3
     };
-}
-
-// Actualizar estadísticas en el DOM
-function updateStats(properties, reservations) {
-    const stats = calculateStats(properties, reservations);
     
-    const totalPropertiesEl = document.getElementById('totalProperties');
-    const totalGuestsEl = document.getElementById('totalGuests');
-    const revenueEl = document.getElementById('revenue');
-    const ratingEl = document.getElementById('rating');
+    const recentEvents = [
+        {
+            id: 1,
+            title: "Los XV de Rusi",
+            date: "15 Marzo 2024",
+            photos: 45,
+            attendees: 120,
+            status: "completado"
+        },
+        {
+            id: 2,
+            title: "Boda Legendaria",
+            date: "22 Febrero 2024",
+            photos: 128,
+            attendees: 250,
+            status: "completado"
+        },
+        {
+            id: 3,
+            title: "Fiesta Locura Total",
+            date: "10 Enero 2024",
+            photos: 92,
+            attendees: 180,
+            status: "completado"
+        },
+        {
+            id: 4,
+            title: "Graduación UNI",
+            date: "05 Abril 2024",
+            photos: 67,
+            attendees: 95,
+            status: "activo"
+        }
+    ];
     
-    if (totalPropertiesEl) totalPropertiesEl.textContent = stats.totalProperties;
-    if (totalGuestsEl) totalGuestsEl.textContent = stats.totalGuests;
-    if (revenueEl) revenueEl.textContent = `$${stats.totalRevenue}`;
-    if (ratingEl) ratingEl.textContent = stats.rating.toFixed(1);
-}
-
-// Renderizar propiedades
-function renderProperties(properties) {
-    const propertiesGrid = document.getElementById('propertiesGrid');
+    // Actualizar estadísticas en el DOM
+    const updateStats = () => {
+        const totalEventsEl = document.getElementById('totalEvents');
+        const totalPhotosEl = document.getElementById('totalPhotos');
+        const totalAttendeesEl = document.getElementById('totalAttendees');
+        const activeEventsEl = document.getElementById('activeEvents');
+        
+        if (totalEventsEl) totalEventsEl.textContent = stats.totalEvents;
+        if (totalPhotosEl) totalPhotosEl.textContent = stats.totalPhotos;
+        if (totalAttendeesEl) totalAttendeesEl.textContent = stats.totalAttendees;
+        if (activeEventsEl) activeEventsEl.textContent = stats.activeEvents;
+    };
     
-    if (!propertiesGrid) return;
-    
-    if (!properties || properties.length === 0) {
-        propertiesGrid.innerHTML = '<div class="loading-state">No hay propiedades registradas</div>';
-        return;
-    }
-    
-    propertiesGrid.innerHTML = properties.map(property => `
-        <div class="property-card" data-id="${property.id}">
-            <img src="${property.image}" alt="${property.title}" class="property-image">
-            <div class="property-info">
-                <h3 class="property-title">${property.title}</h3>
-                <p class="property-location">📍 ${property.location}</p>
-                <p class="property-price">$${property.price} / noche</p>
-                <span class="property-status ${property.status === 'active' ? 'status-active' : 'status-inactive'}">
-                    ${property.status === 'active' ? 'Activo' : 'Inactivo'}
-                </span>
-                <div class="property-actions">
-                    <button class="btn-edit" onclick="window.editProperty(${property.id})">Editar</button>
-                    <button class="btn-delete" onclick="window.deleteProperty(${property.id})">Eliminar</button>
+    // Renderizar eventos recientes
+    const renderRecentEvents = () => {
+        const container = document.getElementById('recentEventsList');
+        if (!container) return;
+        
+        container.innerHTML = recentEvents.map(event => `
+            <div class="recent-event-card" data-id="${event.id}">
+                <div class="event-info">
+                    <h4>${event.title}</h4>
+                    <div class="event-details">
+                        <span><i class="fas fa-calendar-day"></i> ${event.date}</span>
+                        <span><i class="fas fa-users"></i> ${event.attendees} asistentes</span>
+                        <span><i class="fas fa-camera"></i> ${event.photos} fotos</span>
+                    </div>
+                </div>
+                <div class="event-status">
+                    <span class="status-badge ${event.status}">${event.status === 'activo' ? 'Activo' : 'Completado'}</span>
+                    <button class="btn-view-event" data-id="${event.id}">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
                 </div>
             </div>
-        </div>
-    `).join('');
-}
-
-// Renderizar reservaciones
-function renderReservations(reservations) {
-    const tableBody = document.getElementById('reservationsTableBody');
-    
-    if (!tableBody) return;
-    
-    if (!reservations || reservations.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="loading-state">No hay reservaciones recientes</td></tr>';
-        return;
-    }
-    
-    tableBody.innerHTML = reservations.map(reservation => `
-        <tr>
-            <td>${reservation.guest}</td>
-            <td>${reservation.property}</td>
-            <td>${formatDate(reservation.checkIn)} - ${formatDate(reservation.checkOut)}</td>
-            <td>
-                <span class="status-badge status-${reservation.status}">
-                    ${getStatusText(reservation.status)}
-                </span>
-            </td>
-            <td>$${reservation.amount}</td>
-        </tr>
-    `).join('');
-}
-
-// Formatear fecha
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
-}
-
-// Obtener texto del estado
-function getStatusText(status) {
-    const statusMap = {
-        'confirmed': 'Confirmada',
-        'pending': 'Pendiente',
-        'cancelled': 'Cancelada'
+        `).join('');
+        
+        // Agregar event listeners a los botones de ver evento
+        document.querySelectorAll('.btn-view-event').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.id;
+                console.log(`Ver evento ${id}`);
+                // Navegar al detalle del evento
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/host/events');
+                }
+            });
+        });
     };
-    return statusMap[status] || status;
-}
-
-// Función para editar propiedad (ejemplo)
-window.editProperty = function(propertyId) {
-    console.log('Editar propiedad:', propertyId);
-    alert(`Editar propiedad ${propertyId} - Funcionalidad en desarrollo`);
-};
-
-// Función para eliminar propiedad (ejemplo)
-window.deleteProperty = function(propertyId) {
-    if (confirm('¿Estás seguro de que deseas eliminar esta propiedad?')) {
-        console.log('Eliminar propiedad:', propertyId);
-        alert(`Propiedad ${propertyId} eliminada (simulación)`);
-        // Aquí iría la lógica real de eliminación
-        location.reload(); // Recargar para simular actualización
-    }
-};
-
-// Función para agregar nueva propiedad
-function addProperty() {
-    alert('Agregar nueva propiedad - Funcionalidad en desarrollo');
-    console.log('Abrir modal para agregar propiedad');
-}
-
-// Función para cargar estilos específicos del host
-function loadHostStyles() {
-    // Verificar si el CSS ya está cargado
-    if (!document.querySelector('link[href*="homeHost.css"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/src/css/pages/homeHost.css';
-        document.head.appendChild(link);
-    }
-}
-
-// Inicializar el dashboard
-function initDashboard() {
-    // Mostrar nombre del host
-    const hostNameEl = document.getElementById('hostName');
-    if (hostNameEl) {
-        hostNameEl.textContent = mockData.host.name;
-    }
     
-    // Actualizar estadísticas
-    updateStats(mockData.properties, mockData.reservations);
-    
-    // Renderizar propiedades
-    renderProperties(mockData.properties);
-    
-    // Renderizar reservaciones
-    renderReservations(mockData.reservations);
-    
-    // Configurar event listeners
-    const addPropertyBtn = document.getElementById('addPropertyBtn');
-    if (addPropertyBtn) {
-        addPropertyBtn.addEventListener('click', addProperty);
-    }
-}
-
-// Cargar datos desde API (ejemplo)
-async function loadDataFromAPI() {
-    try {
-        // Simular carga de API
-        console.log('Cargando datos desde API...');
+    // Inicializar gráfica (simulada)
+    const initChart = () => {
+        const canvas = document.getElementById('eventsChart');
+        if (!canvas) return;
         
-        // Aquí irían las llamadas reales a la API
-        // const response = await fetch('/api/host/dashboard');
-        // const data = await response.json();
-        // return data;
+        // Aquí puedes agregar una gráfica real con Chart.js u otra librería
+        console.log('Gráfica inicializada');
+    };
+    
+    // Configurar event listeners de botones de acción rápida
+    const setupQuickActions = () => {
+        const createEventBtn = document.getElementById('createEventBtn');
+        const viewEventsBtn = document.getElementById('viewEventsBtn');
+        const managePhotosBtn = document.getElementById('managePhotosBtn');
         
-        // Por ahora usamos mockData
-        return mockData;
-    } catch (error) {
-        console.error('Error al cargar datos:', error);
-        return null;
-    }
+        if (createEventBtn) {
+            createEventBtn.addEventListener('click', () => {
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/host/create-event');
+                }
+            });
+        }
+        
+        if (viewEventsBtn) {
+            viewEventsBtn.addEventListener('click', () => {
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/host/events');
+                }
+            });
+        }
+        
+        if (managePhotosBtn) {
+            managePhotosBtn.addEventListener('click', () => {
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/host/event-crud');
+                }
+            });
+        }
+    };
+    
+    // Inicializar todo
+    updateStats();
+    renderRecentEvents();
+    initChart();
+    setupQuickActions();
 }
 
-// Función principal del controlador (la que llama el router)
-export async function homeHostController() {
-    console.log('Inicializando homeHostController...');
-    
-    // Cargar estilos específicos
-    loadHostStyles();
-    
-    // Cargar datos (simulado)
-    const data = await loadDataFromAPI();
-    
-    if (data) {
-        // Inicializar el dashboard después de que el DOM esté listo
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initDashboard);
-        } else {
-            initDashboard();
-        }
-    } else {
-        console.error('No se pudieron cargar los datos');
-        const hostNameEl = document.getElementById('hostName');
-        if (hostNameEl) {
-            hostNameEl.textContent = 'Error al cargar';
-        }
-    }
-}
-
-// Exportar funciones para uso externo (si es necesario)
-export { initDashboard, renderProperties, renderReservations, updateStats };
+export default homeHostController;
