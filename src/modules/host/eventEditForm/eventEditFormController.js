@@ -5,9 +5,7 @@ const loadEventos = () => {
     const stored = localStorage.getItem('eventos');
     if (stored) {
         eventos = JSON.parse(stored);
-        console.log('Eventos cargados:', eventos); // Para depuración
     } else {
-        // Datos iniciales por si no hay nada en localStorage
         eventos = [
             { 
                 id: 1,
@@ -40,12 +38,10 @@ const loadEventos = () => {
 
 const saveEventos = () => {
     localStorage.setItem('eventos', JSON.stringify(eventos));
-    console.log('Eventos guardados:', eventos); // Para depuración
 };
 
 const getEventoToEdit = () => {
     const eventoId = localStorage.getItem('eventoParaEditar');
-    console.log('ID del evento a editar:', eventoId); // Para depuración
     
     if (eventoId) {
         const evento = eventos.find(e => e.id === parseInt(eventoId));
@@ -56,15 +52,12 @@ const getEventoToEdit = () => {
             document.getElementById('attendees').value = evento.attendees;
             document.getElementById('uploadedPhotos').value = evento.uploadedPhotos;
             document.getElementById('img').value = evento.img;
-            console.log('Evento cargado en formulario:', evento); // Para depuración
         } else {
             alert('Evento no encontrado');
             window.location.hash = '#/host/event-crud';
         }
-        // Limpiar el localStorage después de cargar
         localStorage.removeItem('eventoParaEditar');
     } else {
-        // Si no hay evento para editar, redirigir
         alert('No se ha seleccionado ningún evento para editar');
         window.location.hash = '#/host/event-crud';
     }
@@ -80,31 +73,13 @@ const updateEvento = (event) => {
     const uploadedPhotos = parseInt(document.getElementById('uploadedPhotos').value);
     const img = document.getElementById('img').value.trim();
     
-    console.log('Actualizando evento:', {id, title, date, attendees, uploadedPhotos, img}); // Para depuración
-    
-    // Validaciones
-    if (!title) {
-        alert('Por favor ingresa el nombre del evento');
+    if (!title || !date || !img) {
+        alert('Por favor completa todos los campos');
         return;
     }
     
-    if (!date) {
-        alert('Por favor ingresa la fecha del evento');
-        return;
-    }
-    
-    if (isNaN(attendees) || attendees < 0) {
-        alert('Por favor ingresa un número válido de asistentes');
-        return;
-    }
-    
-    if (isNaN(uploadedPhotos) || uploadedPhotos < 0) {
-        alert('Por favor ingresa un número válido de fotos subidas');
-        return;
-    }
-    
-    if (!img) {
-        alert('Por favor ingresa la URL de la imagen');
+    if (isNaN(attendees) || attendees < 0 || isNaN(uploadedPhotos) || uploadedPhotos < 0) {
+        alert('Por favor ingresa números válidos');
         return;
     }
     
@@ -121,7 +96,6 @@ const updateEvento = (event) => {
             };
             saveEventos();
             alert('✅ Evento actualizado exitosamente');
-            // Redirigir de vuelta usando la ruta
             window.location.hash = '#/host/event-crud';
         } else {
             alert('Error: No se encontró el evento');
@@ -130,8 +104,7 @@ const updateEvento = (event) => {
 };
 
 const cancelEdit = () => {
-    if (confirm('¿Estás seguro de que deseas cancelar la edición? Los cambios no se guardarán.')) {
-        // Redirigir de vuelta sin guardar cambios
+    if (confirm('¿Estás seguro de que deseas cancelar la edición?')) {
         window.location.hash = '#/host/event-crud';
     }
 };
@@ -142,9 +115,7 @@ const goBack = () => {
     }
 };
 
-// Función principal del controlador
 export function eventEditFormController() {
-    console.log('Controlador eventEditFormController iniciado'); // Para depuración
     loadEventos();
     getEventoToEdit();
     

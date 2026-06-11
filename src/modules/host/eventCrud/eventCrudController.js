@@ -1,5 +1,6 @@
 // Cargar eventos del localStorage o usar datos iniciales
 let eventos = [];
+let eventoAEliminar = null;
 
 const loadEventos = () => {
     const stored = localStorage.getItem('eventos');
@@ -40,6 +41,52 @@ const saveEventos = () => {
     localStorage.setItem('eventos', JSON.stringify(eventos));
 };
 
+// Función para eliminar un evento
+const deleteEvento = (id) => {
+    eventos = eventos.filter(evento => evento.id !== id);
+    saveEventos();
+    renderEventosList(document.getElementById('searchInput')?.value || '');
+    console.log('Evento eliminado, ID:', id);
+};
+
+// Mostrar modal de confirmación
+const showDeleteModal = (evento) => {
+    eventoAEliminar = evento;
+    const modal = document.getElementById('deleteModal');
+    const deleteEventTitle = document.getElementById('deleteEventTitle');
+    
+    if (deleteEventTitle) {
+        deleteEventTitle.textContent = evento.title;
+    }
+    
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+};
+
+// Cerrar modal
+const closeDeleteModal = () => {
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    eventoAEliminar = null;
+};
+
+// Función para redirigir al formulario de edición
+const redirectToEditForm = (eventoId) => {
+    console.log('Redirigiendo a editar con ID:', eventoId);
+    localStorage.setItem('eventoParaEditar', eventoId);
+    window.location.hash = '#/host/event-edit';
+};
+
+// Función para redirigir al formulario de creación
+const redirectToCreateForm = () => {
+    console.log('Redirigiendo a crear nuevo evento');
+    localStorage.removeItem('eventoParaEditar');
+    window.location.hash = '#/host/event-create';
+};
+
 const renderEventosList = (filter = '') => {
     const container = document.getElementById('eventosList');
     if (!container) return;
@@ -64,7 +111,10 @@ const renderEventosList = (filter = '') => {
             </div>
             <div class="evento-actions">
                 <button class="btn-edit" data-id="${evento.id}">
-                    <i class="fas fa-edit"></i> Editar Evento
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="btn-delete" data-id="${evento.id}" data-title="${evento.title}">
+                    <i class="fas fa-trash-alt"></i> Eliminar
                 </button>
             </div>
         </div>
@@ -72,38 +122,89 @@ const renderEventosList = (filter = '') => {
     
     // Agregar event listeners a los botones de editar
     const editButtons = document.querySelectorAll('.btn-edit');
-    console.log('Botones encontrados:', editButtons.length); // Para depuración
-    
     editButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const id = parseInt(btn.getAttribute('data-id'));
-            console.log('Botón clickeado, ID:', id); // Para depuración
+            console.log('Botón Editar clickeado, ID:', id);
             redirectToEditForm(id);
+        });
+    });
+    
+    // Agregar event listeners a los botones de eliminar
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = parseInt(btn.getAttribute('data-id'));
+            const title = btn.getAttribute('data-title');
+            const evento = eventos.find(e => e.id === id);
+            if (evento) {
+                showDeleteModal(evento);
+            }
         });
     });
 };
 
-// Función para redirigir al formulario de edición
-const redirectToEditForm = (eventoId) => {
-    console.log('Redirigiendo con ID:', eventoId); // Para depuración
-    // Guardar el ID del evento a editar en localStorage
-    localStorage.setItem('eventoParaEditar', eventoId);
-    // Redirigir a la página del formulario de edición usando la ruta
-    window.location.hash = '#/host/event-edit';
-};
-
 // Función principal del controlador
 export function eventCrudController() {
-    console.log('Controlador eventCrudController iniciado'); // Para depuración
+    console.log('Controlador eventCrudController iniciado');
     loadEventos();
     renderEventosList();
     
+    // Búsqueda de eventos
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             renderEventosList(e.target.value);
+        });
+    }
+    
+    // Botón crear nuevo evento
+    const btnCrearEvento = document.getElementById('btnCrearEvento');
+    if (btnCrearEvento) {
+        btnCrearEvento.addEventListener('click', (e) => {
+            e.preventDefault();
+            redirectToCreateForm();
+        });
+    }
+    
+    // Modal - botón confirmar eliminar
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', () => {
+            if (eventoAEliminar) {
+                deleteEvento(eventoAEliminar.id);
+                closeDeleteModal();
+            }
+        });
+    }
+    
+    // Modal - botón cancelar
+    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', () => {
+            closeDeleteModal();
+        });
+    }
+    
+    // Modal - cerrar con la X
+    const modalClose = document.querySelector('.modal-close');
+    if (modalClose) {
+        modalClose.addEventListener('click', () => {
+            closeDeleteModal();
+        });
+    }
+    
+    // Cerrar modal al hacer clic fuera del contenido
+    const modal = document.getElementById('deleteModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeDeleteModal();
+            }
         });
     }
 }
