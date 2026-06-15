@@ -8,6 +8,10 @@
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="manifest" href="/manifest.json">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- CSS Global y componentes persistentes (navbar + footer) -->
     <link rel="stylesheet" href="/src/css/main.css">
     <!-- Los CSS específicos de cada página se cargarán dinámicamente desde el router o los controladores -->
@@ -22,9 +26,10 @@
     </div>
 
     <!-- Elementos donde se inyectarán el navbar y el footer -->
-        <div id="navbar"></div>
+    <div id="navbar"></div>
     <main id="app"></main>
     <div id="footer"></div>
+    
     <!-- Script principal (carga layout e inicia router) -->
     <script type="module" src="/src/main.js"></script>
 </body>

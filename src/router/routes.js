@@ -15,6 +15,9 @@ import { eventCrudController } from '/src/modules/host/eventCrud/eventCrudContro
 import { eventEditFormController } from '/src/modules/host/eventEditForm/eventEditFormController.js';
 import { homeSysadminController } from '/src/modules/sysadmin/homeSysadminController/homeSysadminController.js';
 import { profileController } from '/src/modules/host/profile/profileController.js';
+import { crudHostController } from '/src/modules/sysadmin/crudHost/crudHostController.js';
+import { hostFormController } from '/src/modules/sysadmin/hostForm/hostFormController.js';
+import { hostEditController } from '/src/modules/sysadmin/hostEdit/hostEditController.js';
 
 export const routes = {
     "/": {
@@ -57,9 +60,25 @@ export const routes = {
         view: "/public/modules/host/eventEditForm/eventEditForm.html",
         controller: eventEditFormController,
     },
+    "/host/profile": {
+        view: "/public/modules/host/profile/profile.html",
+        controller: profileController,
+    },
     "/sysadmin/home": {
         view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
         controller: homeSysadminController,
+    },
+    "/sysadmin/hosts": {
+        view: "/public/modules/sysadmin/crudHost/crudHost.html",
+        controller: crudHostController,
+    },
+    "/sysadmin/hosts/create": {
+        view: "/public/modules/sysadmin/hostForm/hostForm.html",
+        controller: hostFormController,
+    },
+    "/sysadmin/hosts/edit": {
+        view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
+        controller: hostEditController,
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
@@ -68,9 +87,5 @@ export const routes = {
     "/404": {
         view: "/public/modules/shared/errors/404.html",
         controller: init404Controller,
-    },
-    "/host/profile": {
-        view: "/public/modules/host/profile/profile.html",
-        controller: profileController,
     },
 };
