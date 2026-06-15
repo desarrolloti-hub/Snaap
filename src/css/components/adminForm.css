@@ -33,16 +33,19 @@
     gap: 8px;
     font-family: 'Poppins', sans-serif;
     margin-bottom: 20px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
 }
 
 .btn-back i {
     color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
 }
 
 .btn-back:hover {
     background: rgba(255, 0, 122, 0.1);
     border-color: rgba(255, 0, 122, 1);
     transform: translateX(-5px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
 }
 
 .btn-back:hover i {
@@ -59,7 +62,7 @@
 }
 
 .form-header h1 i {
-    color: rgba(255, 0, 122, 1);
+    color: rgba(77, 184, 255, 1);
 }
 
 .form-header p {
@@ -99,7 +102,7 @@
 
 .form-group label i {
     margin-right: 8px;
-    color: rgba(255, 0, 122, 1);
+    color: rgba(77, 184, 255, 1);
 }
 
 .form-group input,
@@ -112,6 +115,7 @@
     border-radius: 12px;
     color: rgba(255, 255, 255, 1);
     font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
     font-size: 0.9rem;
 }
 
@@ -119,8 +123,9 @@
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: rgba(255, 0, 122, 1);
+    border-color: rgba(77, 184, 255, 1);
     background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
 }
 
 .form-group input::placeholder,
@@ -161,12 +166,13 @@
 
 .btn-cancel:hover {
     background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
 }
 
 .btn-save {
     background: transparent;
-    border: 2px solid rgba(255, 0, 122, 1);
+    border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
     padding: 12px 28px;
     color: rgba(255, 255, 255, 1);
@@ -177,16 +183,23 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
 }
 
 .btn-save i {
-    color: rgba(255, 0, 122, 1);
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
 }
 
 .btn-save:hover {
     background: rgba(255, 0, 122, 0.1);
     border-color: rgba(255, 0, 122, 1);
     transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-save:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 @media (max-width: 768px) {

@@ -30,7 +30,7 @@
 }
 
 .crud-header h1 i {
-    color: rgba(255, 0, 122, 1);
+    color: rgba(77, 184, 255, 1);
 }
 
 .crud-header p {
@@ -48,7 +48,7 @@
 
 .btn-create {
     background: transparent;
-    border: 2px solid rgba(255, 0, 122, 1);
+    border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
     padding: 12px 24px;
     color: rgba(255, 255, 255, 1);
@@ -59,10 +59,11 @@
     gap: 10px;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
 }
 
 .btn-create i {
-    color: rgba(255, 0, 122, 1);
+    color: rgba(77, 184, 255, 1);
     transition: all 0.3s ease;
 }
 
@@ -70,6 +71,11 @@
     background: rgba(255, 0, 122, 0.1);
     border-color: rgba(255, 0, 122, 1);
     transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-create:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 .search-box {
@@ -93,11 +99,13 @@
     border-radius: 50px;
     color: rgba(255, 255, 255, 1);
     font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
 }
 
 .search-box input:focus {
     outline: none;
     border-color: rgba(77, 184, 255, 1);
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
 }
 
 .table-container {
@@ -116,8 +124,8 @@
 .admins-table th {
     text-align: left;
     padding: 15px 20px;
-    color: rgba(255, 0, 122, 1);
-    border-bottom: 2px solid rgba(255, 0, 122, 0.3);
+    color: rgba(77, 184, 255, 1);
+    border-bottom: 2px solid rgba(77, 184, 255, 0.3);
     font-size: 0.85rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -133,7 +141,7 @@
 }
 
 .admins-table tr:hover td {
-    background: rgba(255, 0, 122, 0.08);
+    background: rgba(77, 184, 255, 0.08);
 }
 
 .admins-table tr:last-child td {
