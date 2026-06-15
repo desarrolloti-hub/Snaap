@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - SNAAP Host</title>
+    <link rel="stylesheet" href="/src/css/components/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <div class="profile-page">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <button type="button" class="btn-back" id="btnVolver">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <h1><i class="fas fa-user-circle"></i> Mi Perfil</h1>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-avatar-section">
+                        <div class="avatar-container">
+                            <img id="profileAvatar" class="profile-avatar" src="https://ui-avatars.com/api/?background=4db8ff&color=fff&size=120&bold=true&name=Usuario" alt="Avatar">
+                            <button type="button" class="btn-change-avatar" id="btnChangeAvatar">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <input type="file" id="avatarInput" accept="image/jpeg, image/png, image/jpg, image/webp" style="display: none;">
+                        </div>
+                        <h2 id="profileName">Nombre del Host</h2>
+                        <p class="profile-role"><i class="fas fa-certificate"></i> Host Verificado</p>
+                    </div>
+
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-section">
+                            <div class="section-header">
+                                <i class="fas fa-user"></i>
+                                <h3>Información Personal</h3>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fullName"><i class="fas fa-user"></i> Nombre Completo</label>
+                                    <input type="text" id="fullName" required placeholder="Ej: Juan Pérez">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                                    <input type="email" id="email" required placeholder="ejemplo@correo.com">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone"><i class="fas fa-phone"></i> Teléfono</label>
+                                    <input type="tel" id="phone" placeholder="+52 123 456 7890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="company"><i class="fas fa-building"></i> Empresa / Organización</label>
+                                    <input type="text" id="company" placeholder="Ej: Eventos SNAAP">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <div class="section-header">
+                                <i class="fas fa-chart-line"></i>
+                                <h3>Información de Negocio</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="bio"><i class="fas fa-align-left"></i> Biografía / Descripción</label>
+                                <textarea id="bio" rows="4" placeholder="Cuéntanos sobre ti y tu experiencia organizando eventos..."></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="website"><i class="fas fa-globe"></i> Sitio Web</label>
+                                    <input type="url" id="website" placeholder="https://tusitio.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="specialty"><i class="fas fa-star"></i> Especialidad</label>
+                                    <select id="specialty">
+                                        <option value="">Selecciona una especialidad</option>
+                                        <option value="weddings">Bodas</option>
+                                        <option value="birthdays">Cumpleaños</option>
+                                        <option value="corporate">Eventos Corporativos</option>
+                                        <option value="concerts">Conciertos</option>
+                                        <option value="private">Fiestas Privadas</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="experience"><i class="fas fa-calendar-alt"></i> Años de Experiencia</label>
+                                    <input type="number" id="experience" min="0" placeholder="Ej: 5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventsCompleted"><i class="fas fa-check-circle"></i> Eventos Completados</label>
+                                    <input type="number" id="eventsCompleted" min="0" placeholder="Ej: 50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section readonly-section">
+                            <div class="section-header">
+                                <i class="fas fa-chart-simple"></i>
+                                <h3>Estadísticas de la Cuenta</h3>
+                            </div>
+
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Eventos Creados</span>
+                                        <span class="stat-value" id="totalEvents">0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-users"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Total Invitados</span>
+                                        <span class="stat-value" id="totalGuests">0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-camera"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Fotos Subidas</span>
+                                        <span class="stat-value" id="totalPhotos">0</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-heart"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-label">Miembro Desde</span>
+                                        <span class="stat-value" id="memberSince">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" id="cancelBtn">
+                                <i class="fas fa-undo-alt"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn-save">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="danger-section">
+                        <div class="danger-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>Zona de Peligro</h3>
+                        </div>
+                        <p>Una vez que elimines tu cuenta, no podrás recuperar tus datos.</p>
+                        <button type="button" class="btn-danger" id="deleteAccountBtn">
+                            <i class="fas fa-trash-alt"></i> Eliminar Cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="customModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <h3><i class="fas fa-info-circle"></i> <span id="modalTitle">Aviso</span></h3>
+                <span class="custom-modal-close">&times;</span>
+            </div>
+            <div class="custom-modal-body">
+                <p id="modalMessage">Mensaje de aviso</p>
+            </div>
+            <div class="custom-modal-footer">
+                <button id="modalConfirmBtn" class="custom-btn-confirm">Aceptar</button>
+                <button id="modalCancelBtn" class="custom-btn-cancel" style="display: none;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/host/profile/profileController.js"></script>
+</body>
+</html>

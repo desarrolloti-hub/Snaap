@@ -13,6 +13,8 @@ import { navbarHostController } from '/src/modules/host/layout/navbarHostControl
 import { registerController } from '/src/modules/visitor/register/registerController.js';
 import { eventCrudController } from '/src/modules/host/eventCrud/eventCrudController.js';
 import { eventEditFormController } from '/src/modules/host/eventEditForm/eventEditFormController.js';
+import { homeSysadminController } from '/src/modules/sysadmin/homeSysadminController/homeSysadminController.js';
+import { profileController } from '/src/modules/host/profile/profileController.js';
 
 export const routes = {
     "/": {
@@ -55,6 +57,10 @@ export const routes = {
         view: "/public/modules/host/eventEditForm/eventEditForm.html",
         controller: eventEditFormController,
     },
+    "/sysadmin/home": {
+        view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
+        controller: homeSysadminController,
+    },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
         controller: termsController,
@@ -62,5 +68,9 @@ export const routes = {
     "/404": {
         view: "/public/modules/shared/errors/404.html",
         controller: init404Controller,
-    }
+    },
+    "/host/profile": {
+        view: "/public/modules/host/profile/profile.html",
+        controller: profileController,
+    },
 };
