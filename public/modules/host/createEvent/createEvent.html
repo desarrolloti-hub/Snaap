@@ -64,7 +64,22 @@
             </form>
         </div>
     </div>
-
+<!-- Modal de confirmación personalizado -->
+<div id="customModal" class="custom-modal">
+    <div class="custom-modal-content">
+        <div class="custom-modal-header">
+            <h3 id="modalIcon"><i class="fas fa-info-circle"></i> <span id="modalTitle">Aviso</span></h3>
+            <span class="custom-modal-close" id="modalCloseBtn">&times;</span>
+        </div>
+        <div class="custom-modal-body">
+            <p id="modalMessage">Mensaje de aviso</p>
+        </div>
+        <div class="custom-modal-footer" id="modalFooter">
+            <button id="modalConfirmBtn" class="custom-btn-confirm">Aceptar</button>
+            <button id="modalCancelBtn" class="custom-btn-cancel" style="display: none;">Cancelar</button>
+        </div>
+    </div>
+</div>
     <script type="module">
         import { initCreateEvent } from '/src/modules/host/createEvent/createEventController.js';
         initCreateEvent();
