@@ -14,7 +14,10 @@ const loadEventos = () => {
                 img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop", 
                 date: "15 Marzo 2024",
                 attendees: 120,
-                uploadedPhotos: 45
+                uploadedPhotos: 45,
+                description: "Fiesta de 15 años con música en vivo y buffet",
+                location: "Salón Eventos Plaza",
+                time: "20:00"
             },
             { 
                 id: 2,
@@ -22,7 +25,10 @@ const loadEventos = () => {
                 img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop", 
                 date: "22 Febrero 2024",
                 attendees: 250,
-                uploadedPhotos: 128
+                uploadedPhotos: 128,
+                description: "Boda civil y religiosa con recepción",
+                location: "Hacienda Los Sueños",
+                time: "18:30"
             },
             { 
                 id: 3,
@@ -30,7 +36,10 @@ const loadEventos = () => {
                 img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop", 
                 date: "10 Enero 2024",
                 attendees: 180,
-                uploadedPhotos: 92
+                uploadedPhotos: 92,
+                description: "Fiesta electrónica con los mejores DJs",
+                location: "Club Night",
+                time: "22:00"
             },
         ];
         saveEventos();
@@ -77,14 +86,37 @@ const closeDeleteModal = () => {
 const redirectToEditForm = (eventoId) => {
     console.log('Redirigiendo a editar con ID:', eventoId);
     localStorage.setItem('eventoParaEditar', eventoId);
-    window.location.hash = '#/host/event-edit';
+    // Cambiado: usar navigateTo en lugar de window.location.hash
+    if (typeof navigateTo === 'function') {
+        navigateTo('/host/event-edit');
+    } else {
+        window.location.href = '/host/event-edit';
+    }
 };
 
-// Función para redirigir al formulario de creación
+// Función para redirigir a la página de detalles
+const redirectToViewDetails = (eventoId) => {
+    console.log('Redirigiendo a ver detalles del evento ID:', eventoId);
+    localStorage.setItem('eventoParaVer', eventoId);
+    // Cambia esto según la ruta que tengas para detalles
+    if (typeof navigateTo === 'function') {
+        navigateTo('/host/event-details');
+    } else {
+        window.location.href = '/host/event-details';
+    }
+};
+
+// Función para redirigir al formulario de creación - CORREGIDA
 const redirectToCreateForm = () => {
     console.log('Redirigiendo a crear nuevo evento');
     localStorage.removeItem('eventoParaEditar');
-    window.location.hash = '#/host/event-create';
+    localStorage.removeItem('eventoParaVer');
+    // Usar la misma navegación que tu sistema de rutas
+    if (typeof navigateTo === 'function') {
+        navigateTo('/host/create-event');
+    } else {
+        window.location.href = '/host/create-event';
+    }
 };
 
 const renderEventosList = (filter = '') => {
@@ -110,15 +142,30 @@ const renderEventosList = (filter = '') => {
                 <p><i class="fas fa-camera"></i> ${evento.uploadedPhotos} fotos</p>
             </div>
             <div class="evento-actions">
-                <button class="btn-edit" data-id="${evento.id}">
-                    <i class="fas fa-edit"></i> Editar
+                <button class="btn-view" data-id="${evento.id}" title="Ver detalles del evento">
+                    <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn-delete" data-id="${evento.id}" data-title="${evento.title}">
-                    <i class="fas fa-trash-alt"></i> Eliminar
+                <button class="btn-edit" data-id="${evento.id}" title="Editar evento">
+                    <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="btn-delete" data-id="${evento.id}" data-title="${evento.title}" title="Eliminar evento">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         </div>
     `).join('');
+    
+    // Agregar event listeners a los botones de ver detalles
+    const viewButtons = document.querySelectorAll('.btn-view');
+    viewButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = parseInt(btn.getAttribute('data-id'));
+            console.log('Botón Ver Detalles clickeado, ID:', id);
+            redirectToViewDetails(id);
+        });
+    });
     
     // Agregar event listeners a los botones de editar
     const editButtons = document.querySelectorAll('.btn-edit');
@@ -139,7 +186,6 @@ const renderEventosList = (filter = '') => {
             e.preventDefault();
             e.stopPropagation();
             const id = parseInt(btn.getAttribute('data-id'));
-            const title = btn.getAttribute('data-title');
             const evento = eventos.find(e => e.id === id);
             if (evento) {
                 showDeleteModal(evento);
