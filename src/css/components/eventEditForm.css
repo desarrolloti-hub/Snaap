@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0f2aa3 0%, #764ba2 100%);
+    background: linear-gradient(135deg, rgba(15, 42, 163, 1) 0%, rgba(118, 75, 162, 1) 100%);
     min-height: 100vh;
 }
 
@@ -36,33 +36,45 @@ body {
 }
 
 .btn-back {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 1);
     padding: 10px 20px;
-    border-radius: 8px;
-    border: none;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+}
+
+.btn-back i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
 }
 
 .btn-back:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
     transform: translateX(-3px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+}
+
+.btn-back:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 .edit-header h1 {
-    color: white;
+    color: rgba(255, 255, 255, 1);
     font-size: 1.8rem;
     margin: 0;
 }
 
 .edit-header h1 i {
-    color: #00a3ff;
+    color: rgba(0, 163, 255, 1);
     margin-right: 10px;
 }
 
@@ -79,40 +91,97 @@ body {
 
 .form-group label {
     display: block;
-    color: white;
+    color: rgba(255, 255, 255, 1);
     margin-bottom: 8px;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .form-group label i {
-    color: #00a3ff;
+    color: rgba(77, 184, 255, 1);
     margin-right: 8px;
 }
 
 .form-group input {
     width: 100%;
-    padding: 12px;
+    padding: 12px 15px;
     background: rgba(20, 20, 30, 0.8);
-    border: 1px solid rgba(0, 163, 255, 0.3);
-    border-radius: 8px;
-    color: white;
+    border: 1px solid rgba(77, 184, 255, 0.3);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 1);
     font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #00a3ff;
-    box-shadow: 0 0 10px rgba(0, 163, 255, 0.5);
+    border-color: rgba(77, 184, 255, 1);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.5);
 }
 
 .form-group input:hover {
-    border-color: rgba(0, 163, 255, 0.6);
+    border-color: rgba(77, 184, 255, 0.6);
 }
 
 .form-group input::placeholder {
     color: rgba(255, 255, 255, 0.4);
+}
+
+/* Estilos para campos de solo lectura (readonly/disabled) */
+.readonly-field {
+    opacity: 0.8;
+    cursor: not-allowed;
+    background: rgba(20, 20, 30, 0.5);
+    border-color: rgba(77, 184, 255, 0.2);
+}
+
+.readonly-field:hover {
+    border-color: rgba(77, 184, 255, 0.2);
+}
+
+.form-group input[type="file"] {
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+    background: transparent;
+    border: 1px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    color: rgba(255, 0, 122, 1);
+}
+
+.form-hint {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    margin-top: 5px;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(77, 184, 255, 0.3);
+    background: rgba(20, 20, 30, 0.8);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .form-buttons {
@@ -121,36 +190,72 @@ body {
     margin-top: 30px;
 }
 
-.btn-save, .btn-cancel {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
+.btn-save {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 16px;
     font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+}
+
+.btn-save i {
+    color: rgba(77, 184, 255, 1);
     transition: all 0.3s ease;
 }
 
-.btn-save {
-    background: linear-gradient(135deg, #00a3ff, #0055ff);
-    color: white;
+.btn-save:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
 }
 
-.btn-save:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0, 163, 255, 0.4);
+.btn-save:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 .btn-cancel {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 1;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+}
+
+.btn-cancel i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
 }
 
 .btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
     transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+}
+
+.btn-cancel:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 @media (max-width: 768px) {
@@ -173,6 +278,178 @@ body {
     }
     
     .btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .image-preview {
+        width: 120px;
+        height: 120px;
+    }
+}
+/* Modal de confirmación personalizado */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: rgba(20, 20, 30, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    animation: modalFadeIn 0.3s ease;
+    border: 1px solid rgba(0, 163, 255, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(0, 163, 255, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-header h3 i {
+    font-size: 1.2rem;
+}
+
+.modal-close {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+    color: rgba(255, 68, 68, 1);
+}
+
+.modal-body {
+    padding: 20px;
+    text-align: center;
+    color: rgba(255, 255, 255, 1);
+}
+
+.modal-body p {
+    margin: 10px 0;
+    font-size: 1rem;
+}
+
+.modal-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(0, 163, 255, 0.3);
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+}
+
+/* Botones del modal */
+.btn-confirm-delete {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 10px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 1);
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+}
+
+.btn-confirm-delete i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-delete:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    color: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+}
+
+.btn-confirm-delete:hover i {
+    color: rgba(255, 0, 122, 1);
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 10px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 1);
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+}
+
+.btn-cancel i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+}
+
+.btn-cancel:hover i {
+    color: rgba(255, 0, 122, 1);
+}
+
+@media (max-width: 768px) {
+    .modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn-confirm-delete,
+    .btn-cancel {
         width: 100%;
         justify-content: center;
     }

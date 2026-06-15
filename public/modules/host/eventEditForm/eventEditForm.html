@@ -22,29 +22,51 @@
                     <form id="eventoEditForm">
                         <input type="hidden" id="eventoId">
                         
+                        <!-- Vista previa de la imagen actual -->
+                        <div class="form-group">
+                            <label><i class="fas fa-image"></i> Imagen Actual</label>
+                            <div class="image-preview">
+                                <img id="currentImage" src="" alt="Imagen del evento">
+                            </div>
+                        </div>
+                        
+                        <!-- SOLO nombre del evento (EDITABLE) -->
                         <div class="form-group">
                             <label for="title"><i class="fas fa-tag"></i> Nombre del Evento:</label>
                             <input type="text" id="title" required placeholder="Ej: Los XV de Rusi">
                         </div>
                         
+                        <!-- FECHA - Solo lectura (NO EDITABLE) -->
                         <div class="form-group">
-                            <label for="date"><i class="fas fa-calendar-day"></i> Fecha:</label>
-                            <input type="text" id="date" required placeholder="Ej: 15 Marzo 2024">
+                            <label for="date"><i class="fas fa-calendar-day"></i> Fecha del Evento:</label>
+                            <input type="text" id="date" readonly disabled class="readonly-field">
                         </div>
                         
+                        <!-- ASISTENTES - Solo lectura (NO EDITABLE) -->
                         <div class="form-group">
-                            <label for="attendees"><i class="fas fa-users"></i> Asistentes:</label>
-                            <input type="number" id="attendees" required min="0" placeholder="0">
+                            <label for="attendees"><i class="fas fa-users"></i> Cantidad de Asistentes:</label>
+                            <input type="text" id="attendees" readonly disabled class="readonly-field">
                         </div>
                         
+                        <!-- FOTOS SUBIDAS - Solo lectura (NO EDITABLE) -->
                         <div class="form-group">
                             <label for="uploadedPhotos"><i class="fas fa-camera"></i> Fotos Subidas:</label>
-                            <input type="number" id="uploadedPhotos" required min="0" placeholder="0">
+                            <input type="text" id="uploadedPhotos" readonly disabled class="readonly-field">
                         </div>
                         
+                        <!-- Subir nueva imagen (EDITABLE) -->
                         <div class="form-group">
-                            <label for="img"><i class="fas fa-image"></i> URL de la Imagen del Evento:</label>
-                            <input type="url" id="img" required placeholder="https://ejemplo.com/imagen.jpg">
+                            <label for="eventImage"><i class="fas fa-cloud-upload-alt"></i> Cambiar Imagen del Evento:</label>
+                            <input type="file" id="eventImage" accept="image/jpeg, image/png, image/jpg, image/webp">
+                            <small class="form-hint">Formatos permitidos: JPG, PNG, WEBP. Tamaño máximo: 5MB</small>
+                        </div>
+                        
+                        <!-- Vista previa de la nueva imagen -->
+                        <div class="form-group" id="newImagePreviewGroup" style="display: none;">
+                            <label><i class="fas fa-eye"></i> Vista Previa Nueva Imagen</label>
+                            <div class="image-preview">
+                                <img id="newImagePreview" src="" alt="Vista previa">
+                            </div>
                         </div>
                         
                         <div class="form-buttons">
@@ -60,6 +82,22 @@
             </div>
         </div>
     </div>
+    <!-- Modal de confirmación personalizado -->
+<div id="customModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalIcon"><i class="fas fa-info-circle"></i> <span id="modalTitle">Aviso</span></h3>
+            <span class="modal-close" id="modalCloseBtn">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p id="modalMessage">Mensaje de aviso</p>
+        </div>
+        <div class="modal-footer" id="modalFooter">
+            <button id="modalConfirmBtn" class="btn-confirm-delete">Aceptar</button>
+            <button id="modalCancelBtn" class="btn-cancel" style="display: none;">Cancelar</button>
+        </div>
+    </div>
+</div>
 
     <script type="module" src="/src/modules/host/eventEditForm/eventEditFormController.js"></script>
 </body>
