@@ -18,6 +18,10 @@ import { profileController } from '/src/modules/host/profile/profileController.j
 import { crudHostController } from '/src/modules/sysadmin/crudHost/crudHostController.js';
 import { hostFormController } from '/src/modules/sysadmin/hostForm/hostFormController.js';
 import { hostEditController } from '/src/modules/sysadmin/hostEdit/hostEditController.js';
+import { crudAdminController } from '/src/modules/sysadmin/crudAdmin/crudAdminController.js';
+import { adminFormController } from '/src/modules/sysadmin/adminForm/adminFormController.js';
+import { adminEditController } from '/src/modules/sysadmin/adminEdit/adminEditController.js';
+
 
 export const routes = {
     "/": {
@@ -80,6 +84,18 @@ export const routes = {
         view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
         controller: hostEditController,
     },
+    "/sysadmin/admins": {
+    view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
+    controller: crudAdminController,
+},
+"/sysadmin/admins/create": {
+    view: "/public/modules/sysadmin/adminForm/adminForm.html",
+    controller: adminFormController,
+},
+"/sysadmin/admins/edit": {
+    view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
+    controller: adminEditController,
+},
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
         controller: termsController,

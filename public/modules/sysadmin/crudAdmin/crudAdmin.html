@@ -1,0 +1,37 @@
+<div class="crud-admin-container">
+    <div class="crud-header">
+        <h1><i class="fas fa-shield-alt"></i> Gestión de Administradores</h1>
+        <p>Administra los usuarios con acceso total al sistema</p>
+    </div>
+
+    <div class="crud-actions">
+        <button id="createAdminBtn" class="btn-create">
+            <i class="fas fa-user-shield"></i> Nuevo Administrador
+        </button>
+        
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchAdmin" placeholder="Buscar administrador por nombre o email...">
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="admins-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Eventos</th>
+                    <th>Asistentes</th>
+                    <th>Estado</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </thead>
+                <tbody id="adminsTableBody">
+                    <tr><td colspan="8" class="loading-text">Cargando administradores...</td</tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

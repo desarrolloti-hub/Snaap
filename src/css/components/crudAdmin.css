@@ -1,0 +1,218 @@
+.crud-admin-container {
+    padding: 120px 40px 40px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.crud-header {
+    margin-bottom: 30px;
+}
+
+.crud-header h1 {
+    color: rgba(255, 255, 255, 1);
+    margin-bottom: 10px;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.crud-header h1 i {
+    color: rgba(255, 0, 122, 1);
+}
+
+.crud-header p {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.crud-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.btn-create {
+    background: transparent;
+    border: 2px solid rgba(255, 0, 122, 1);
+    border-radius: 50px;
+    padding: 12px 24px;
+    color: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.btn-create i {
+    color: rgba(255, 0, 122, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-create:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    transform: translateY(-2px);
+}
+
+.search-box {
+    position: relative;
+    min-width: 280px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(77, 184, 255, 1);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    background: rgba(10, 10, 20, 0.8);
+    border: 2px solid rgba(77, 184, 255, 0.3);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 1);
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: rgba(77, 184, 255, 1);
+}
+
+.table-container {
+    background: rgba(10, 10, 20, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(77, 184, 255, 0.2);
+}
+
+.admins-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admins-table th {
+    text-align: left;
+    padding: 15px 20px;
+    color: rgba(255, 0, 122, 1);
+    border-bottom: 2px solid rgba(255, 0, 122, 0.3);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.admins-table td {
+    padding: 12px 20px;
+    color: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.9rem;
+}
+
+.admins-table tr:hover td {
+    background: rgba(255, 0, 122, 0.08);
+}
+
+.admins-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: rgba(0, 255, 136, 0.2);
+    color: rgba(0, 255, 136, 1);
+}
+
+.status-inactive {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-suspended {
+    background: rgba(255, 0, 0, 0.2);
+    color: rgba(255, 0, 0, 0.8);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: rgba(77, 184, 255, 1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-action:hover {
+    color: rgba(255, 0, 122, 1);
+    transform: scale(1.1);
+    background: rgba(255, 0, 122, 0.1);
+}
+
+.loading-text {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+    .crud-admin-container {
+        padding: 100px 20px 20px 20px;
+    }
+    
+    .crud-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-box {
+        min-width: auto;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .admins-table {
+        min-width: 650px;
+    }
+}
