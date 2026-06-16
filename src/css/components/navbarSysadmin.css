@@ -1,0 +1,690 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+:root {
+    --snaap-z-navbar: 1000;
+    --snaap-border-glass: 1px solid rgba(255, 255, 255, 0.1);
+    --snaap-font-family: 'Poppins', sans-serif;
+    --snaap-text-white: #ffffff;
+    --snaap-azul-claro: #00a3ff;
+    --snaap-azul: #0055ff;
+    --snaap-rosa: #ff00aa;
+    --snaap-border-neon: 1.5px solid rgba(0, 163, 255, 0.5);
+    --snaap-radius-pill: 50px;
+    --snaap-transition: all 0.3s ease;
+    --snaap-transition-fast: 0.2s ease;
+    --snaap-spacing-lg: 20px;
+    --snaap-font-size-xs: 12px;
+}
+
+/* ============================================
+   NAVBAR SYSADMIN
+   ============================================ */
+.snaap-navbar-sysadmin {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    box-sizing: border-box;
+    z-index: var(--snaap-z-navbar);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: var(--snaap-border-glass);
+    font-family: var(--snaap-font-family);
+    padding: 0 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ============================================
+   LOGO
+   ============================================ */
+.snaap-logo-sysadmin {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.sn-glow-sysadmin {
+    color: var(--snaap-text-white);
+    text-shadow: 0 0 5px var(--snaap-azul);
+}
+
+.aa-neonblue-sysadmin {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--snaap-azul-claro);
+    filter: drop-shadow(0 0 8px var(--snaap-azul));
+}
+
+.p-solid-sysadmin {
+    color: var(--snaap-text-white);
+}
+
+/* ============================================
+   MENÚ PRINCIPAL
+   ============================================ */
+.snaap-menu-sysadmin {
+    display: flex;
+    list-style: none;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+/* ============================================
+   BOTÓN INICIO
+   ============================================ */
+.snaap-btn-inicio {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-inicio i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-inicio:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-inicio:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-inicio.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-inicio.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN HOSTS
+   ============================================ */
+.snaap-btn-hosts {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-hosts i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-hosts:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-hosts:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-hosts.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-hosts.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN ADMINS
+   ============================================ */
+.snaap-btn-admins {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-admins i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-admins:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-admins:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-admins.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-admins.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN EVENTOS
+   ============================================ */
+.snaap-btn-eventos {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-eventos i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-eventos:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-eventos:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-eventos.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-eventos.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN STATS
+   ============================================ */
+.snaap-btn-stats {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 110px;
+    min-width: 110px;
+    max-width: 110px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-stats i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-stats:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-stats:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-stats.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-stats.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN PERFIL
+   ============================================ */
+.snaap-btn-perfil {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-perfil i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-perfil:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-perfil:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-perfil.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-perfil.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   BOTÓN SALIR
+   ============================================ */
+.snaap-btn-salir {
+    background: transparent;
+    border: var(--snaap-border-neon);
+    padding: 6px 16px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    height: 38px;
+    border-radius: var(--snaap-radius-pill);
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: capitalize;
+    transition: var(--snaap-transition);
+    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
+    animation: neonPulse 2.5s infinite alternate;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
+    box-sizing: border-box;
+}
+
+.snaap-btn-salir i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.snaap-btn-salir:hover {
+    border-color: var(--snaap-rosa);
+    background: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+    animation: none;
+    color: var(--snaap-text-white);
+}
+
+.snaap-btn-salir:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+.snaap-btn-salir.active {
+    border-color: var(--snaap-azul-claro);
+    background: rgba(0, 163, 255, 0.1);
+    box-shadow: 0 0 20px var(--snaap-azul), inset 0 0 8px var(--snaap-azul);
+    animation: none;
+}
+
+.snaap-btn-salir.active i {
+    color: var(--snaap-azul-claro);
+}
+
+/* ============================================
+   ACCIONES (Perfil + Salir juntos)
+   ============================================ */
+.snaap-actions-sysadmin {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   ITEMS PARA MÓVIL
+   ============================================ */
+.snaap-mobile-item {
+    display: none;
+}
+
+/* ============================================
+   MENÚ MÓVIL - BURGER
+   ============================================ */
+.snaap-burger-sysadmin {
+    display: none;
+    color: var(--snaap-text-white);
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10001;
+    padding: 5px 10px;
+}
+
+.snaap-footer-item-sysadmin {
+    display: none;
+}
+
+.snaap-footer-link-sysadmin {
+    text-align: center;
+    padding: var(--snaap-spacing-lg);
+    font-size: var(--snaap-font-size-xs);
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   ANIMACIÓN NEON PULSE
+   ============================================ */
+@keyframes neonPulse {
+    from { 
+        box-shadow: 0 0 5px var(--snaap-azul); 
+        border-color: var(--snaap-azul); 
+    }
+    to { 
+        box-shadow: 0 0 15px var(--snaap-azul), inset 0 0 2px var(--snaap-azul); 
+        border-color: var(--snaap-azul-claro); 
+    }
+}
+
+/* ============================================
+   RESPONSIVE - TABLET Y MÓVIL
+   ============================================ */
+@media (max-width: 1024px) {
+    .snaap-burger-sysadmin { 
+        display: block; 
+    }
+    
+    .snaap-menu-sysadmin {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        background: rgba(5, 5, 10, 0.98);
+        backdrop-filter: blur(30px);
+        flex-direction: column;
+        justify-content: center;
+        transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+        gap: 20px;
+        padding: 0;
+    }
+    
+    .snaap-menu-sysadmin.active { 
+        right: 0; 
+    }
+    
+    /* En móvil, todos los botones se agrandan */
+    .snaap-btn-inicio,
+    .snaap-btn-hosts,
+    .snaap-btn-admins,
+    .snaap-btn-eventos,
+    .snaap-btn-stats,
+    .snaap-btn-perfil,
+    .snaap-btn-salir {
+        width: 220px;
+        min-width: 220px;
+        max-width: 220px;
+        height: 50px;
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    
+    .snaap-btn-inicio i,
+    .snaap-btn-hosts i,
+    .snaap-btn-admins i,
+    .snaap-btn-eventos i,
+    .snaap-btn-stats i,
+    .snaap-btn-perfil i,
+    .snaap-btn-salir i {
+        font-size: 1.1rem;
+        width: 22px;
+    }
+    
+    .snaap-actions-sysadmin {
+        display: none !important;
+    }
+    
+    .snaap-mobile-item {
+        display: block !important;
+        list-style: none;
+    }
+    
+    .snaap-footer-item-sysadmin {
+        display: block;
+        list-style: none;
+        margin-top: 40px;
+    }
+    
+    .snaap-footer-link-sysadmin {
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .snaap-btn-inicio,
+    .snaap-btn-hosts,
+    .snaap-btn-admins,
+    .snaap-btn-eventos,
+    .snaap-btn-stats,
+    .snaap-btn-perfil,
+    .snaap-btn-salir {
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
+        height: 45px;
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+    
+    .snaap-btn-inicio i,
+    .snaap-btn-hosts i,
+    .snaap-btn-admins i,
+    .snaap-btn-eventos i,
+    .snaap-btn-stats i,
+    .snaap-btn-perfil i,
+    .snaap-btn-salir i {
+        font-size: 1rem;
+        width: 20px;
+    }
+    
+    .snaap-logo-sysadmin {
+        font-size: 26px;
+    }
+}

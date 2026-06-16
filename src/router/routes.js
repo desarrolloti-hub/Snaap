@@ -21,6 +21,7 @@ import { hostEditController } from '/src/modules/sysadmin/hostEdit/hostEditContr
 import { crudAdminController } from '/src/modules/sysadmin/crudAdmin/crudAdminController.js';
 import { adminFormController } from '/src/modules/sysadmin/adminForm/adminFormController.js';
 import { adminEditController } from '/src/modules/sysadmin/adminEdit/adminEditController.js';
+import { profileAdminController } from '/src/modules/sysadmin/profileAdmin/profileAdminController.js';
 
 
 export const routes = {
@@ -33,19 +34,19 @@ export const routes = {
         controller: aboutUsController,
     },
     "/login": {
-        view: "/public/modules/visitor/login/login.html",  
+        view: "/public/modules/visitor/login/login.html",
         controller: loginController,
     },
     "/register": {
         view: "/public/modules/visitor/register/register.html",
         controller: registerController,
-    }, 
+    },
     "/paquetes": {
-        view: "/public/modules/visitor/packages/packages.html",  
+        view: "/public/modules/visitor/packages/packages.html",
         controller: packagesController,
     },
     "/host": {
-        view: "/public/modules/host/homeHost/homeHost.html", 
+        view: "/public/modules/host/homeHost/homeHost.html",
         controller: homeHostController,
     },
     "/host/create-event": {
@@ -85,17 +86,21 @@ export const routes = {
         controller: hostEditController,
     },
     "/sysadmin/admins": {
-    view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
-    controller: crudAdminController,
-},
-"/sysadmin/admins/create": {
-    view: "/public/modules/sysadmin/adminForm/adminForm.html",
-    controller: adminFormController,
-},
-"/sysadmin/admins/edit": {
-    view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
-    controller: adminEditController,
-},
+        view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
+        controller: crudAdminController,
+    },
+    "/sysadmin/admins/create": {
+        view: "/public/modules/sysadmin/adminForm/adminForm.html",
+        controller: adminFormController,
+    },
+    "/sysadmin/admins/edit": {
+        view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
+        controller: adminEditController,
+    },
+    "/sysadmin/profile": {
+    view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
+    controller: profileAdminController,
+    },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
         controller: termsController,
