@@ -18,7 +18,7 @@ export async function termsController() {
     const termsContent = `
         <div class="snaap-terms-container">
             <div class="snaap-terms-header">
-                <h1>Aviso de Privacidad y Términos de Uso</h1>
+                <h1>Aviso de Privacidad.</h1>
                 <p>Última actualización: <strong>28 de mayo de 2026</strong></p>
                 <div class="terms-neon-divider"></div>
             </div>

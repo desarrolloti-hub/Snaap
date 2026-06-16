@@ -1,0 +1,300 @@
+/* ============================================
+   ESTILOS PERSONALIZADOS PARA SWEETALERT2
+   SOLO ROSA, AZUL Y NEGRO
+   ============================================ */
+
+/* Fondo del modal - Negro con blur */
+.swal2-popup {
+    background: rgba(10, 10, 20, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(77, 184, 255, 0.3) !important;
+    border-radius: 20px !important;
+    padding: 30px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Título - Blanco */
+.swal2-title {
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.5rem !important;
+    margin-bottom: 10px !important;
+}
+
+/* Contenido / Mensaje - Blanco */
+.swal2-html-container {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+}
+
+/* ============================================
+   ICONOS - ROSA Y AZUL
+   ============================================ */
+
+/* Icono Éxito - Rosa */
+.swal2-icon.swal2-success {
+    border-color: rgba(255, 0, 122, 0.5) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border-color: rgba(255, 0, 122, 0.3) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-line-tip,
+.swal2-icon.swal2-success .swal2-success-line-long {
+    background-color: #ff007a !important;
+}
+
+/* Icono Error - Rosa */
+.swal2-icon.swal2-error {
+    border-color: rgba(255, 0, 122, 0.5) !important;
+}
+
+.swal2-icon.swal2-error .swal2-x-mark-line-left,
+.swal2-icon.swal2-error .swal2-x-mark-line-right {
+    background-color: #ff007a !important;
+}
+
+/* Icono Warning - Rosa */
+.swal2-icon.swal2-warning {
+    border-color: rgba(255, 0, 122, 0.5) !important;
+}
+
+.swal2-icon.swal2-warning .swal2-icon-content {
+    color: #ff007a !important;
+}
+
+/* Icono Info - Azul */
+.swal2-icon.swal2-info {
+    border-color: rgba(77, 184, 255, 0.5) !important;
+}
+
+.swal2-icon.swal2-info .swal2-icon-content {
+    color: #4db8ff !important;
+}
+
+/* Icono Question - Azul */
+.swal2-icon.swal2-question {
+    border-color: rgba(77, 184, 255, 0.5) !important;
+}
+
+.swal2-icon.swal2-question .swal2-icon-content {
+    color: #4db8ff !important;
+}
+
+/* ============================================
+   BOTONES - ROSA Y AZUL
+   ============================================ */
+
+.swal2-actions {
+    gap: 12px !important;
+    margin-top: 10px !important;
+}
+
+/* Botón Confirmar - Azul */
+.swal2-confirm {
+    background: transparent !important;
+    border: 2px solid #4db8ff !important;
+    border-radius: 50px !important;
+    padding: 10px 30px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3) !important;
+}
+
+/* Botón Confirmar Hover - Rosa */
+.swal2-confirm:hover {
+    background: rgba(255, 0, 122, 0.1) !important;
+    border-color: #ff007a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.4) !important;
+}
+
+.swal2-confirm:focus {
+    box-shadow: none !important;
+}
+
+/* Botón Cancelar - Rosa */
+.swal2-cancel {
+    background: transparent !important;
+    border: 2px solid #ff007a !important;
+    border-radius: 50px !important;
+    padding: 10px 30px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 0 5px rgba(255, 0, 122, 0.3) !important;
+}
+
+/* Botón Cancelar Hover - Rosa más intenso */
+.swal2-cancel:hover {
+    background: rgba(255, 0, 122, 0.2) !important;
+    border-color: #ff007a !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.4) !important;
+}
+
+.swal2-cancel:focus {
+    box-shadow: none !important;
+}
+
+/* ============================================
+   BOTÓN DE CIERRE (X)
+   ============================================ */
+.swal2-close {
+    color: rgba(255, 255, 255, 0.5) !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-close:hover {
+    color: #ff007a !important;
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+.swal2-input,
+.swal2-textarea,
+.swal2-select {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 2px solid rgba(77, 184, 255, 0.3) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus {
+    border-color: #4db8ff !important;
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2) !important;
+}
+
+.swal2-input::placeholder,
+.swal2-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.swal2-select option {
+    background: #0a0a14 !important;
+    color: #ffffff !important;
+}
+
+/* ============================================
+   CHECKBOX Y RADIO
+   ============================================ */
+.swal2-checkbox {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.swal2-checkbox input {
+    accent-color: #4db8ff !important;
+}
+
+/* ============================================
+   VALIDACIÓN DE ERRORES
+   ============================================ */
+.swal2-validation-message {
+    background: rgba(255, 0, 122, 0.1) !important;
+    color: #ff007a !important;
+    border-radius: 10px !important;
+    font-family: 'Poppins', sans-serif !important;
+    padding: 10px !important;
+    border: 1px solid rgba(255, 0, 122, 0.3) !important;
+}
+
+/* ============================================
+   FOOTER DEL MODAL
+   ============================================ */
+.swal2-footer {
+    border-top: 1px solid rgba(77, 184, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* ============================================
+   PROGRESS STEPS
+   ============================================ */
+.swal2-progress-steps .swal2-progress-step {
+    background: #4db8ff !important;
+}
+
+.swal2-progress-steps .swal2-progress-step-line {
+    background: rgba(77, 184, 255, 0.3) !important;
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+@keyframes swal2-show {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.swal2-show {
+    animation: swal2-show 0.3s ease !important;
+}
+
+@keyframes swal2-hide {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+}
+
+.swal2-hide {
+    animation: swal2-hide 0.3s ease !important;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 576px) {
+    .swal2-popup {
+        padding: 20px !important;
+        border-radius: 15px !important;
+        margin: 10px !important;
+        width: auto !important;
+    }
+    
+    .swal2-title {
+        font-size: 1.2rem !important;
+    }
+    
+    .swal2-html-container {
+        font-size: 0.9rem !important;
+    }
+    
+    .swal2-confirm,
+    .swal2-cancel {
+        padding: 8px 20px !important;
+        font-size: 0.85rem !important;
+        min-width: 100px !important;
+    }
+    
+    .swal2-actions {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+}

@@ -101,6 +101,9 @@
     border-top: 1px solid rgba(77, 184, 255, 0.2);
 }
 
+/* ============================================
+   BOTÓN EDITAR - AZUL CON HOVER ROSA
+   ============================================ */
 .btn-edit {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
