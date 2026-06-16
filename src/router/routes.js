@@ -22,7 +22,7 @@ import { crudAdminController } from '/src/modules/sysadmin/crudAdmin/crudAdminCo
 import { adminFormController } from '/src/modules/sysadmin/adminForm/adminFormController.js';
 import { adminEditController } from '/src/modules/sysadmin/adminEdit/adminEditController.js';
 import { profileAdminController } from '/src/modules/sysadmin/profileAdmin/profileAdminController.js';
-
+import { profileEditController } from '/src/modules/sysadmin/profileEdit/profileEditController.js';
 
 export const routes = {
     "/": {
@@ -98,8 +98,12 @@ export const routes = {
         controller: adminEditController,
     },
     "/sysadmin/profile": {
-    view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
-    controller: profileAdminController,
+        view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
+        controller: profileAdminController,
+    },
+    "/sysadmin/profile/edit": {
+        view: "/public/modules/sysadmin/profileEdit/profileEdit.html",
+        controller: profileEditController,
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",
