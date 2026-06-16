@@ -48,92 +48,6 @@ const packagesDetails = {
     }
 };
 
-// ============================================
-// MODAL PERSONALIZADO
-// ============================================
-
-let pendingCallback = null;
-
-const showModal = (title, message, icon = 'info', showCancel = false, onConfirm = null, onCancel = null) => {
-    const modal = document.getElementById('customModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalIcon = document.getElementById('modalIcon').querySelector('i');
-    const modalMessage = document.getElementById('modalMessage');
-    const confirmBtn = document.getElementById('modalConfirmBtn');
-    const cancelBtn = document.getElementById('modalCancelBtn');
-    const closeBtn = document.getElementById('modalCloseBtn');
-    
-    // Configurar iconos según el tipo
-    let iconClass = 'fas fa-info-circle';
-    let iconColor = '#4db8ff';
-    
-    if (icon === 'success') {
-        iconClass = 'fas fa-check-circle';
-        iconColor = '#4db8ff';
-    } else if (icon === 'error') {
-        iconClass = 'fas fa-exclamation-circle';
-        iconColor = '#ff4444';
-    } else if (icon === 'warning') {
-        iconClass = 'fas fa-exclamation-triangle';
-        iconColor = '#ffaa00';
-    }
-    
-    modalIcon.className = iconClass;
-    modalIcon.style.color = iconColor;
-    modalTitle.textContent = title;
-    modalTitle.style.color = iconColor;
-    modalMessage.textContent = message;
-    
-    // Configurar botones
-    if (showCancel) {
-        cancelBtn.style.display = 'inline-flex';
-        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmar';
-    } else {
-        cancelBtn.style.display = 'none';
-        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Aceptar';
-    }
-    
-    // Guardar callbacks
-    pendingCallback = { onConfirm, onCancel };
-    
-    // Mostrar modal
-    modal.style.display = 'flex';
-    
-    // Configurar eventos (una sola vez)
-    const handleConfirm = () => {
-        modal.style.display = 'none';
-        if (pendingCallback && pendingCallback.onConfirm) {
-            pendingCallback.onConfirm();
-        }
-        cleanup();
-    };
-    
-    const handleCancel = () => {
-        modal.style.display = 'none';
-        if (pendingCallback && pendingCallback.onCancel) {
-            pendingCallback.onCancel();
-        }
-        cleanup();
-    };
-    
-    const cleanup = () => {
-        confirmBtn.removeEventListener('click', handleConfirm);
-        cancelBtn.removeEventListener('click', handleCancel);
-        closeBtn.removeEventListener('click', handleCancel);
-    };
-    
-    confirmBtn.addEventListener('click', handleConfirm);
-    cancelBtn.addEventListener('click', handleCancel);
-    closeBtn.addEventListener('click', handleCancel);
-    
-    // Cerrar al hacer clic fuera
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            handleCancel();
-        }
-    });
-};
-
 export function initCreateEvent() {
     const form = document.getElementById('createEventForm');
     const packageSelect = document.getElementById('packageSelect');
@@ -180,12 +94,22 @@ export function initCreateEvent() {
         const selectedPackage = packageSelect.value;
         
         if (!eventName) {
-            showModal('Campo Requerido', 'Por favor, ingresa el nombre del evento', 'warning');
+            Swal.fire({
+                title: 'Campo Requerido',
+                text: 'Por favor, ingresa el nombre del evento',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
         if (!selectedPackage) {
-            showModal('Campo Requerido', 'Por favor, selecciona un paquete', 'warning');
+            Swal.fire({
+                title: 'Campo Requerido',
+                text: 'Por favor, selecciona un paquete',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             return;
         }
         
@@ -203,7 +127,12 @@ export function initCreateEvent() {
         localStorage.setItem('snaap_events', JSON.stringify(events));
         localStorage.setItem('snaap_current_event', JSON.stringify(eventData));
         
-        showModal('¡Éxito!', `¡Evento "${eventName}" creado exitosamente!`, 'success', false, () => {
+        Swal.fire({
+            title: '¡Éxito!',
+            text: `¡Evento "${eventName}" creado exitosamente!`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => {
             form.reset();
             packageDetailsDiv.classList.add('hidden');
         });
@@ -211,15 +140,21 @@ export function initCreateEvent() {
     
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
-            showModal('Confirmar', '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.', 'warning', true,
-                () => {
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff007a',
+                cancelButtonColor: '#4db8ff',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar'
+            }).then((result) => {
+                if (result.isConfirmed) {
                     form.reset();
                     packageDetailsDiv.classList.add('hidden');
-                },
-                () => {
-                    console.log('Creación continuada');
                 }
-            );
+            });
         });
     }
 }
