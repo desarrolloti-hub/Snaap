@@ -7,7 +7,6 @@
 <div class="profile-admin-container">
     <div class="profile-header">
         <h1><i class="fas fa-user-cog"></i> Mi Perfil</h1>
-        <p>Administra tu información personal</p>
     </div>
 
     <div class="profile-card">
@@ -31,46 +30,28 @@
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-phone"></i> Teléfono</label>
-                    <input type="tel" id="profilePhone" placeholder="+56 9 1234 5678">
+                    <input type="tel" id="profilePhone" readonly>
                 </div>
 
                 <div class="form-group">
                     <label><i class="fas fa-building"></i> Departamento</label>
-                    <input type="text" id="profileDepartment" placeholder="Ej: TI, Marketing, Operaciones">
+                    <input type="text" id="profileDepartment" readonly>
                 </div>
             </div>
 
             <div class="form-group full-width">
                 <label><i class="fas fa-info-circle"></i> Notas</label>
-                <textarea id="profileNotes" rows="3" placeholder="Información adicional..."></textarea>
-            </div>
-
-            <div class="form-divider">
-                <span>Cambiar Contraseña</span>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Contraseña actual</label>
-                    <input type="password" id="profileCurrentPassword" placeholder="Ingresa tu contraseña actual">
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-key"></i> Nueva contraseña</label>
-                    <input type="password" id="profileNewPassword" placeholder="Mínimo 6 caracteres">
-                </div>
-            </div>
-
-            <div class="form-group full-width">
-                <label><i class="fas fa-check-circle"></i> Confirmar nueva contraseña</label>
-                <input type="password" id="profileConfirmPassword" placeholder="Repite tu nueva contraseña">
+                <textarea id="profileNotes" rows="3" readonly></textarea>
             </div>
 
             <div class="form-actions">
-                <button type="button" id="cancelBtn" class="btn-cancel">
+                <button type="button" id="editBtn" class="btn-edit">
+                    <i class="fas fa-pen"></i> Editar Perfil
+                </button>
+                <button type="button" id="cancelBtn" class="btn-cancel" style="display: none;">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
-                <button type="submit" id="saveBtn" class="btn-save">
+                <button type="submit" id="saveBtn" class="btn-save" style="display: none;">
                     <i class="fas fa-save"></i> Guardar Cambios
                 </button>
             </div>

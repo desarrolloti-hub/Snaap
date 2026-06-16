@@ -1,12 +1,42 @@
 export function profileAdminController() {
-    console.log('ProfileAdmin Controller cargado');
     loadProfileData();
     setupEventListeners();
     checkAdminSession();
+    setReadOnlyMode(true);
+}
+
+let isEditing = false;
+
+function setReadOnlyMode(readonly) {
+    const phoneInput = document.getElementById('profilePhone');
+    const departmentInput = document.getElementById('profileDepartment');
+    const notesInput = document.getElementById('profileNotes');
+    const editBtn = document.getElementById('editBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    
+    if (readonly) {
+        // Modo lectura
+        if (phoneInput) phoneInput.readOnly = true;
+        if (departmentInput) departmentInput.readOnly = true;
+        if (notesInput) notesInput.readOnly = true;
+        if (editBtn) editBtn.style.display = 'inline-flex';
+        if (cancelBtn) cancelBtn.style.display = 'none';
+        if (saveBtn) saveBtn.style.display = 'none';
+        isEditing = false;
+    } else {
+        // Modo edición
+        if (phoneInput) phoneInput.readOnly = false;
+        if (departmentInput) departmentInput.readOnly = false;
+        if (notesInput) notesInput.readOnly = false;
+        if (editBtn) editBtn.style.display = 'none';
+        if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+        if (saveBtn) saveBtn.style.display = 'inline-flex';
+        isEditing = true;
+    }
 }
 
 function loadProfileData() {
-    console.log('Cargando datos del perfil...');
     const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
     
     if (!currentUser) {
@@ -32,17 +62,24 @@ function loadProfileData() {
     if (phoneInput) phoneInput.value = currentUser.phone || '';
     if (departmentInput) departmentInput.value = currentUser.department || '';
     if (notesInput) notesInput.value = currentUser.notes || '';
-    
-    console.log('Datos del perfil cargados');
 }
 
 function setupEventListeners() {
+    const editBtn = document.getElementById('editBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const profileForm = document.getElementById('profileForm');
     
+    if (editBtn) {
+        editBtn.addEventListener('click', () => {
+            setReadOnlyMode(false);
+        });
+    }
+    
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
-            window.location.href = '/sysadmin/home';
+            // Recargar datos originales
+            loadProfileData();
+            setReadOnlyMode(true);
         });
     }
     
@@ -54,9 +91,8 @@ function setupEventListeners() {
 async function saveProfile(e) {
     e.preventDefault();
     
-    const currentPassword = document.getElementById('profileCurrentPassword')?.value;
-    const newPassword = document.getElementById('profileNewPassword')?.value;
-    const confirmPassword = document.getElementById('profileConfirmPassword')?.value;
+    if (!isEditing) return;
+    
     const phone = document.getElementById('profilePhone')?.value;
     const department = document.getElementById('profileDepartment')?.value;
     const notes = document.getElementById('profileNotes')?.value;
@@ -71,50 +107,6 @@ async function saveProfile(e) {
             confirmButtonText: 'OK'
         });
         return;
-    }
-    
-    if (newPassword || confirmPassword || currentPassword) {
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            await Swal.fire({
-                title: 'Campos incompletos',
-                text: 'Para cambiar la contraseña debes completar todos los campos',
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        if (currentPassword !== currentUser.password) {
-            await Swal.fire({
-                title: 'Contraseña incorrecta',
-                text: 'La contraseña actual no coincide',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        if (newPassword.length < 6) {
-            await Swal.fire({
-                title: 'Contraseña muy corta',
-                text: 'La nueva contraseña debe tener al menos 6 caracteres',
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            await Swal.fire({
-                title: 'Las contraseñas no coinciden',
-                text: 'La nueva contraseña y su confirmación deben ser iguales',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        currentUser.password = newPassword;
     }
     
     currentUser.phone = phone || '';
@@ -137,13 +129,7 @@ async function saveProfile(e) {
         confirmButtonText: 'OK'
     });
     
-    const currentPassInput = document.getElementById('profileCurrentPassword');
-    const newPassInput = document.getElementById('profileNewPassword');
-    const confirmPassInput = document.getElementById('profileConfirmPassword');
-    
-    if (currentPassInput) currentPassInput.value = '';
-    if (newPassInput) newPassInput.value = '';
-    if (confirmPassInput) confirmPassInput.value = '';
+    setReadOnlyMode(true);
 }
 
 async function checkAdminSession() {
