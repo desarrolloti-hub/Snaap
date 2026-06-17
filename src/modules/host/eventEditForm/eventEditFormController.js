@@ -1,7 +1,6 @@
 // Cargar eventos del localStorage
 let eventos = [];
 let selectedImageFile = null;
-let pendingCallback = null;
 
 const loadEventos = () => {
     const stored = localStorage.getItem('eventos');
@@ -51,91 +50,6 @@ const saveEventos = () => {
     localStorage.setItem('eventos', JSON.stringify(eventos));
 };
 
-// ============================================
-// MODAL PERSONALIZADO
-// ============================================
-
-const showModal = (title, message, icon = 'info-circle', showCancel = false, onConfirm = null, onCancel = null) => {
-    const modal = document.getElementById('customModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalIcon = document.getElementById('modalIcon').querySelector('i');
-    const modalMessage = document.getElementById('modalMessage');
-    const confirmBtn = document.getElementById('modalConfirmBtn');
-    const cancelBtn = document.getElementById('modalCancelBtn');
-    const closeBtn = document.getElementById('modalCloseBtn');
-    
-    // Configurar iconos según el tipo
-    let iconClass = 'fas fa-info-circle';
-    let titleColor = 'white';
-    if (icon === 'success') {
-        iconClass = 'fas fa-check-circle';
-        titleColor = '#4db8ff';
-    } else if (icon === 'error') {
-        iconClass = 'fas fa-exclamation-circle';
-        titleColor = '#ff4444';
-    } else if (icon === 'warning') {
-        iconClass = 'fas fa-exclamation-triangle';
-        titleColor = '#ffaa00';
-    }
-    
-    modalIcon.className = iconClass;
-    modalIcon.style.color = titleColor;
-    modalTitle.textContent = title;
-    modalTitle.style.color = titleColor;
-    modalMessage.textContent = message;
-    
-    // Configurar botones
-    if (showCancel) {
-        cancelBtn.style.display = 'inline-flex';
-        confirmBtn.textContent = 'Confirmar';
-        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Confirmar';
-    } else {
-        cancelBtn.style.display = 'none';
-        confirmBtn.textContent = 'Aceptar';
-        confirmBtn.innerHTML = '<i class="fas fa-check"></i> Aceptar';
-    }
-    
-    // Guardar callbacks
-    pendingCallback = { onConfirm, onCancel };
-    
-    // Mostrar modal
-    modal.style.display = 'flex';
-    
-    // Configurar eventos (una sola vez)
-    const handleConfirm = () => {
-        modal.style.display = 'none';
-        if (pendingCallback && pendingCallback.onConfirm) {
-            pendingCallback.onConfirm();
-        }
-        cleanup();
-    };
-    
-    const handleCancel = () => {
-        modal.style.display = 'none';
-        if (pendingCallback && pendingCallback.onCancel) {
-            pendingCallback.onCancel();
-        }
-        cleanup();
-    };
-    
-    const cleanup = () => {
-        confirmBtn.removeEventListener('click', handleConfirm);
-        cancelBtn.removeEventListener('click', handleCancel);
-        closeBtn.removeEventListener('click', handleCancel);
-    };
-    
-    confirmBtn.addEventListener('click', handleConfirm);
-    cancelBtn.addEventListener('click', handleCancel);
-    closeBtn.addEventListener('click', handleCancel);
-    
-    // Cerrar al hacer clic fuera
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            handleCancel();
-        }
-    });
-};
-
 // Convertir imagen a Base64
 const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -158,7 +72,12 @@ const setupImagePreview = () => {
             if (file) {
                 // Validar tamaño (máximo 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    showModal('Error', 'La imagen es demasiado grande. El tamaño máximo es 5MB.', 'error');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'La imagen es demasiado grande. El tamaño máximo es 5MB.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                     imageInput.value = '';
                     return;
                 }
@@ -166,7 +85,12 @@ const setupImagePreview = () => {
                 // Validar tipo
                 const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
                 if (!validTypes.includes(file.type)) {
-                    showModal('Error', 'Formato no permitido. Usa JPG, PNG o WEBP.', 'error');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Formato no permitido. Usa JPG, PNG o WEBP.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                     imageInput.value = '';
                     return;
                 }
@@ -207,13 +131,23 @@ const getEventoToEdit = () => {
                 currentImage.src = evento.img;
             }
         } else {
-            showModal('Error', 'Evento no encontrado', 'error', false, () => {
+            Swal.fire({
+                title: 'Error',
+                text: 'Evento no encontrado',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then(() => {
                 window.location.href = '/host/event-crud';
             });
         }
         localStorage.removeItem('eventoParaEditar');
     } else {
-        showModal('Error', 'No se ha seleccionado ningún evento para editar', 'error', false, () => {
+        Swal.fire({
+            title: 'Error',
+            text: 'No se ha seleccionado ningún evento para editar',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
             window.location.href = '/host/event-crud';
         });
     }
@@ -226,7 +160,12 @@ const updateEvento = async (event) => {
     const title = document.getElementById('title').value.trim();
     
     if (!title) {
-        showModal('Campo Requerido', 'Por favor completa el nombre del evento', 'warning');
+        Swal.fire({
+            title: 'Campo Requerido',
+            text: 'Por favor completa el nombre del evento',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
         return;
     }
     
@@ -243,41 +182,68 @@ const updateEvento = async (event) => {
                     eventos[index].img = base64Image;
                 } catch (error) {
                     console.error('Error al convertir la imagen:', error);
-                    showModal('Error', 'Error al procesar la imagen. Por favor intenta de nuevo.', 'error');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Error al procesar la imagen. Por favor intenta de nuevo.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                     return;
                 }
             }
             
             saveEventos();
-            showModal('Éxito', ' Evento actualizado exitosamente', 'success', false, () => {
+            Swal.fire({
+                title: '¡Éxito!',
+                text: 'Evento actualizado exitosamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
                 window.location.href = '/host/event-crud';
             });
         } else {
-            showModal('Error', 'No se encontró el evento', 'error');
+            Swal.fire({
+                title: 'Error',
+                text: 'No se encontró el evento',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     }
 };
 
 const cancelEdit = () => {
-    showModal('Confirmar', '¿Estás seguro de que deseas cancelar la edición?', 'warning', true, 
-        () => {
+    Swal.fire({
+        title: '¿Cancelar edición?',
+        text: '¿Estás seguro de que deseas cancelar la edición?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff007a',
+        cancelButtonColor: '#4db8ff',
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'Continuar editando'
+    }).then((result) => {
+        if (result.isConfirmed) {
             window.location.href = '/host/event-crud';
-        },
-        () => {
-            console.log('Edición continuada');
         }
-    );
+    });
 };
 
 const goBack = () => {
-    showModal('Confirmar', '¿Estás seguro de que deseas volver? Los cambios no se guardarán.', 'warning', true,
-        () => {
+    Swal.fire({
+        title: '¿Volver atrás?',
+        text: '¿Estás seguro de que deseas volver? Los cambios no se guardarán.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff007a',
+        cancelButtonColor: '#4db8ff',
+        confirmButtonText: 'Sí, volver',
+        cancelButtonText: 'Continuar editando'
+    }).then((result) => {
+        if (result.isConfirmed) {
             window.location.href = '/host/event-crud';
-        },
-        () => {
-            console.log('Edición continuada');
         }
-    );
+    });
 };
 
 export function eventEditFormController() {

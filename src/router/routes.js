@@ -13,8 +13,10 @@ import { navbarHostController } from '/src/modules/host/layout/navbarHostControl
 import { registerController } from '/src/modules/visitor/register/registerController.js';
 import { eventCrudController } from '/src/modules/host/eventCrud/eventCrudController.js';
 import { eventEditFormController } from '/src/modules/host/eventEditForm/eventEditFormController.js';
+import { eventDetailsController } from '/src/modules/host/eventDetails/eventDetailsController.js';
 import { homeSysadminController } from '/src/modules/sysadmin/homeSysadminController/homeSysadminController.js';
 import { profileController } from '/src/modules/host/profile/profileController.js';
+import { profileEditController } from '/src/modules/host/profileEdit/profileEditController.js';
 import { crudHostController } from '/src/modules/sysadmin/crudHost/crudHostController.js';
 import { hostFormController } from '/src/modules/sysadmin/hostForm/hostFormController.js';
 import { hostEditController } from '/src/modules/sysadmin/hostEdit/hostEditController.js';
@@ -22,7 +24,7 @@ import { crudAdminController } from '/src/modules/sysadmin/crudAdmin/crudAdminCo
 import { adminFormController } from '/src/modules/sysadmin/adminForm/adminFormController.js';
 import { adminEditController } from '/src/modules/sysadmin/adminEdit/adminEditController.js';
 import { profileAdminController } from '/src/modules/sysadmin/profileAdmin/profileAdminController.js';
-import { profileEditController } from '/src/modules/sysadmin/profileEdit/profileEditController.js';
+import { profileEditController as profileAdminEditController } from '/src/modules/sysadmin/profileEdit/profileEditController.js';
 
 export const routes = {
     "/": {
@@ -65,9 +67,17 @@ export const routes = {
         view: "/public/modules/host/eventEditForm/eventEditForm.html",
         controller: eventEditFormController,
     },
+    "/host/event-details": {
+        view: "/public/modules/host/eventDetails/eventDetails.html",
+        controller: eventDetailsController,
+    },
     "/host/profile": {
         view: "/public/modules/host/profile/profile.html",
         controller: profileController,
+    },
+    "/host/profile/edit": {
+        view: "/public/modules/host/profileEdit/profileEdit.html",
+        controller: profileEditController,
     },
     "/sysadmin/home": {
         view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
@@ -103,7 +113,7 @@ export const routes = {
     },
     "/sysadmin/profile/edit": {
         view: "/public/modules/sysadmin/profileEdit/profileEdit.html",
-        controller: profileEditController,
+        controller: profileAdminEditController,
     },
     "/terms": {
         view: "/src/modules/visitor/terms/terms.html",

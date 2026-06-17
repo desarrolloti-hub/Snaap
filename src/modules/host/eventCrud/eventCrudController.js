@@ -95,11 +95,10 @@ const redirectToEditForm = (eventoId) => {
 // Función para redirigir a la página de detalles
 const redirectToViewDetails = (eventoId) => {
     console.log('Redirigiendo a ver detalles del evento ID:', eventoId);
-    localStorage.setItem('eventoParaVer', eventoId);
     if (typeof navigateTo === 'function') {
-        navigateTo('/host/event-details');
+        navigateTo(`/host/event-details?id=${eventoId}`);
     } else {
-        window.location.href = '/host/event-details';
+        window.location.href = `/host/event-details?id=${eventoId}`;
     }
 };
 
@@ -107,7 +106,6 @@ const redirectToViewDetails = (eventoId) => {
 const redirectToCreateForm = () => {
     console.log('Redirigiendo a crear nuevo evento');
     localStorage.removeItem('eventoParaEditar');
-    localStorage.removeItem('eventoParaVer');
     if (typeof navigateTo === 'function') {
         navigateTo('/host/create-event');
     } else {
