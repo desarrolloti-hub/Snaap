@@ -1,6 +1,5 @@
 // Cargar eventos del localStorage o usar datos iniciales
 let eventos = [];
-let eventoAEliminar = null;
 
 const loadEventos = () => {
     const stored = localStorage.getItem('eventos');
@@ -51,42 +50,41 @@ const saveEventos = () => {
 };
 
 // Función para eliminar un evento
-const deleteEvento = (id) => {
+const deleteEvento = async (id) => {
     eventos = eventos.filter(evento => evento.id !== id);
     saveEventos();
     renderEventosList(document.getElementById('searchInput')?.value || '');
-    console.log('Evento eliminado, ID:', id);
+    
+    await Swal.fire({
+        title: '¡Evento Eliminado!',
+        text: 'El evento ha sido eliminado correctamente',
+        icon: 'success',
+        confirmButtonText: 'OK'
+    });
 };
 
-// Mostrar modal de confirmación
+// Mostrar modal de confirmación con SweetAlert2
 const showDeleteModal = (evento) => {
-    eventoAEliminar = evento;
-    const modal = document.getElementById('deleteModal');
-    const deleteEventTitle = document.getElementById('deleteEventTitle');
-    
-    if (deleteEventTitle) {
-        deleteEventTitle.textContent = evento.title;
-    }
-    
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-};
-
-// Cerrar modal
-const closeDeleteModal = () => {
-    const modal = document.getElementById('deleteModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-    eventoAEliminar = null;
+    Swal.fire({
+        title: '¿Eliminar Evento?',
+        html: `¿Estás seguro de eliminar el evento <strong>${evento.title}</strong>?<br>Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff007a',
+        cancelButtonColor: '#4db8ff',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deleteEvento(evento.id);
+        }
+    });
 };
 
 // Función para redirigir al formulario de edición
 const redirectToEditForm = (eventoId) => {
     console.log('Redirigiendo a editar con ID:', eventoId);
     localStorage.setItem('eventoParaEditar', eventoId);
-    // Cambiado: usar navigateTo en lugar de window.location.hash
     if (typeof navigateTo === 'function') {
         navigateTo('/host/event-edit');
     } else {
@@ -98,7 +96,6 @@ const redirectToEditForm = (eventoId) => {
 const redirectToViewDetails = (eventoId) => {
     console.log('Redirigiendo a ver detalles del evento ID:', eventoId);
     localStorage.setItem('eventoParaVer', eventoId);
-    // Cambia esto según la ruta que tengas para detalles
     if (typeof navigateTo === 'function') {
         navigateTo('/host/event-details');
     } else {
@@ -106,12 +103,11 @@ const redirectToViewDetails = (eventoId) => {
     }
 };
 
-// Función para redirigir al formulario de creación - CORREGIDA
+// Función para redirigir al formulario de creación
 const redirectToCreateForm = () => {
     console.log('Redirigiendo a crear nuevo evento');
     localStorage.removeItem('eventoParaEditar');
     localStorage.removeItem('eventoParaVer');
-    // Usar la misma navegación que tu sistema de rutas
     if (typeof navigateTo === 'function') {
         navigateTo('/host/create-event');
     } else {
@@ -214,43 +210,6 @@ export function eventCrudController() {
         btnCrearEvento.addEventListener('click', (e) => {
             e.preventDefault();
             redirectToCreateForm();
-        });
-    }
-    
-    // Modal - botón confirmar eliminar
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', () => {
-            if (eventoAEliminar) {
-                deleteEvento(eventoAEliminar.id);
-                closeDeleteModal();
-            }
-        });
-    }
-    
-    // Modal - botón cancelar
-    const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-    if (cancelDeleteBtn) {
-        cancelDeleteBtn.addEventListener('click', () => {
-            closeDeleteModal();
-        });
-    }
-    
-    // Modal - cerrar con la X
-    const modalClose = document.querySelector('.modal-close');
-    if (modalClose) {
-        modalClose.addEventListener('click', () => {
-            closeDeleteModal();
-        });
-    }
-    
-    // Cerrar modal al hacer clic fuera del contenido
-    const modal = document.getElementById('deleteModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeDeleteModal();
-            }
         });
     }
 }
