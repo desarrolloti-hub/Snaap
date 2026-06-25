@@ -1,17 +1,14 @@
 <!-- public/modules/shared/navbar/navbar.html -->
 <nav class="snaap-navbar-unified" id="snaapNavbar">
     <div class="navbar-container">
-        <!-- Logo -->
         <a href="/" class="snaap-logo" data-link>
             Sn<span class="neon-aa">aa</span>p
         </a>
 
-        <!-- Menú hamburguesa -->
         <div class="snaap-burger" id="snaap-burger-btn">
             <i class="fas fa-bars"></i>
         </div>
 
-        <!-- Menú principal -->
         <ul class="snaap-menu" id="snaap-nav-list">
             <!-- 🔹 PÚBLICO (todos ven) -->
             <li data-role="guest,user,host,sysadmin">
@@ -34,15 +31,19 @@
                 <a href="#" class="snaap-btn" id="profile-link" data-link><i class="fas fa-user-circle"></i> <span id="profile-name">Perfil</span></a>
             </li>
 
-            <!-- 🔹 SOLO HOST + SYSADMIN -->
-            <li data-role="host,sysadmin">
-                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i>Inicio</a>
-            </li>
-            <li data-role="host,sysadmin">
+            <!-- 🔹 SOLO HOST (CREAR EVENTO Y MIS EVENTOS SOLO PARA HOST) -->
+            <!-- ✅ Crear evento - SOLO HOST -->
+            <li data-role="host">
                 <a href="/host/create-event" class="snaap-btn" data-link><i class="fas fa-plus-circle"></i> Crear evento</a>
             </li>
-            <li data-role="host,sysadmin">
+            <!-- ✅ Mis Eventos - SOLO HOST -->
+            <li data-role="host">
                 <a href="/host/event-crud" class="snaap-btn" data-link><i class="fas fa-calendar-alt"></i> Mis Eventos</a>
+            </li>
+
+            <!-- 🔹 SOLO HOST + SYSADMIN (Mi Espacio lo ven ambos) -->
+            <li data-role="host,sysadmin">
+                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i> Mi Espacio</a>
             </li>
 
             <!-- 🔹 SOLO SYSADMIN -->
