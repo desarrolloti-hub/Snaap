@@ -31,7 +31,7 @@ export const routePermissions = {
     '/host/profile/edit': { roles: ['host', 'sysadmin'], auth: true },
 
     // ============================================
-    // 👑 RUTAS DE ADMIN (SYSADMIN)
+    // RUTAS DE ADMIN (SYSADMIN)
     // ============================================
     '/sysadmin/home': { roles: ['sysadmin'], auth: true },
     '/sysadmin/hosts': { roles: ['sysadmin'], auth: true },
@@ -44,7 +44,7 @@ export const routePermissions = {
     '/sysadmin/profile/edit': { roles: ['sysadmin'], auth: true },
 
     // ============================================
-    // 🔴 ERROR
+    // ERROR
     // ============================================
     '/404': { roles: ['user', 'host', 'sysadmin'], auth: false },
 };
