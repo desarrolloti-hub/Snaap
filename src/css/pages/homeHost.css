@@ -1,8 +1,13 @@
+/* src/css/pages/homeHost.css */
 /* Home Host Styles */
 .host-dashboard {
     padding-top: 100px;
     min-height: 100vh;
     font-family: 'Poppins', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* Hero Section */
@@ -225,6 +230,18 @@
     border: 1px solid #00ff00;
 }
 
+.status-badge.pendiente {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid #ffc107;
+}
+
+.status-badge.cancelado {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff0000;
+    border: 1px solid #ff0000;
+}
+
 .btn-view-event {
     background: linear-gradient(135deg, #00a3ff, #0055ff);
     border: none;
@@ -239,6 +256,28 @@
 .btn-view-event:hover {
     transform: scale(1.05);
     box-shadow: 0 0 15px rgba(0, 163, 255, 0.4);
+}
+
+/* No Events */
+.no-events {
+    text-align: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.no-events i {
+    font-size: 3rem;
+    color: #00a3ff;
+    margin-bottom: 15px;
+}
+
+.no-events p {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.no-events small {
+    color: rgba(255, 255, 255, 0.3);
 }
 
 /* Chart Section */
@@ -285,32 +324,34 @@
 @media (max-width: 768px) {
     .host-dashboard {
         padding-top: 80px;
+        padding-left: 15px;
+        padding-right: 15px;
     }
-    
+
     .dashboard-hero h1 {
         font-size: 1.8rem;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
     }
-    
+
     .stat-number {
         font-size: 1.8rem;
     }
-    
+
     .recent-event-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
     }
-    
+
     .event-status {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .event-details {
         flex-direction: column;
         gap: 8px;
@@ -321,8 +362,16 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .actions-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-hero {
+        padding: 20px;
+    }
+
+    .dashboard-hero h1 {
+        font-size: 1.4rem;
     }
 }

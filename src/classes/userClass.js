@@ -1,62 +1,131 @@
-// src/classes/Usuario.js
-export class Usuario {
+// src/classes/userClass.js
+export class User {
   constructor({
     id = null,
-    nombre = '',
-    email = '',
-    provider = 'email',
     uid = null,
+    username = '',
+    email = '',
+    password = '',
+    phone = '',
+    role = 'user',
+    status = 'active',
     createdAt = null,
     updatedAt = null,
+    lastLogin = null,
     emailVerified = false,
     photoURL = null,
-    role = 'user'
+    eventsAttended = 0,
+    eventsCreated = 0,
+    bio = '',
+    // 🔥 NUEVOS CAMPOS PARA PERFIL
+    company = '',
+    website = '',
+    specialty = '',
+    experience = 0
   } = {}) {
     this.id = id;
-    this.nombre = nombre;
+    this.uid = uid || id;
+    this.username = username;
     this.email = email;
-    this.provider = provider;
-    this.uid = uid;
+    this.password = password;
+    this.phone = phone;
+    this.role = role;
+    this.status = status;
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
-    this.emailVerified = emailVerified;
-    this.photoURL = photoURL;
-    this.role = role;
+    this.lastLogin = lastLogin || null;
+    this.emailVerified = emailVerified || false;
+    this.photoURL = photoURL || null;
+    this.eventsAttended = eventsAttended || 0;
+    this.eventsCreated = eventsCreated || 0;
+    this.bio = bio || '';
+    // 🔥 NUEVOS CAMPOS
+    this.company = company || '';
+    this.website = website || '';
+    this.specialty = specialty || '';
+    this.experience = experience || 0;
   }
 
-  // Métodos de utilidad
   toFirestore() {
     return {
-      nombre: this.nombre,
-      email: this.email,
-      provider: this.provider,
       uid: this.uid,
+      username: this.username,
+      email: this.email,
+      phone: this.phone,
+      role: this.role,
+      status: this.status,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      lastLogin: this.lastLogin,
       emailVerified: this.emailVerified,
       photoURL: this.photoURL,
-      role: this.role
+      eventsAttended: this.eventsAttended,
+      eventsCreated: this.eventsCreated,
+      bio: this.bio,
+      // 🔥 NUEVOS CAMPOS
+      company: this.company,
+      website: this.website,
+      specialty: this.specialty,
+      experience: this.experience
     };
   }
 
   static fromFirestore(doc) {
     const data = doc.data();
-    return new Usuario({
+    return new User({
       id: doc.id,
       ...data,
       createdAt: data.createdAt?.toDate?.() || data.createdAt,
-      updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+      updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
+      lastLogin: data.lastLogin?.toDate?.() || data.lastLogin
     });
   }
 
-  // Método para validar si el usuario está completo
   isValid() {
-    return this.nombre && this.nombre.length > 0 && 
-           this.email && this.email.length > 0;
+    return this.username && this.username.length >= 3 && this.email && this.email.length > 0;
   }
 
-  // Método para obtener nombre para mostrar
+  isValidEmail() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(this.email);
+  }
+
   getDisplayName() {
-    return this.nombre || this.email?.split('@')[0] || 'Usuario';
+    return this.username || this.email?.split('@')[0] || 'Usuario';
+  }
+
+  isActive() {
+    return this.status === 'active';
+  }
+
+  isSuspended() {
+    return this.status === 'suspended';
+  }
+
+  isAdmin() {
+    return this.role === 'sysadmin';
+  }
+
+  isHost() {
+    return this.role === 'host';
+  }
+
+  isUser() {
+    return this.role === 'user';
+  }
+
+  incrementEventsAttended() {
+    this.eventsAttended += 1;
+    this.updatedAt = new Date();
+  }
+
+  incrementEventsCreated() {
+    this.eventsCreated += 1;
+    this.updatedAt = new Date();
+  }
+
+  updateLastLogin() {
+    this.lastLogin = new Date();
+    this.updatedAt = new Date();
   }
 }

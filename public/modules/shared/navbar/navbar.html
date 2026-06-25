@@ -1,0 +1,72 @@
+<!-- public/modules/shared/navbar/navbar.html -->
+<nav class="snaap-navbar-unified" id="snaapNavbar">
+    <div class="navbar-container">
+        <!-- Logo -->
+        <a href="/" class="snaap-logo" data-link>
+            Sn<span class="neon-aa">aa</span>p
+        </a>
+
+        <!-- Menú hamburguesa -->
+        <div class="snaap-burger" id="snaap-burger-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+
+        <!-- Menú principal -->
+        <ul class="snaap-menu" id="snaap-nav-list">
+            <!-- 🔹 PÚBLICO (todos ven) -->
+            <li data-role="guest,user,host,sysadmin">
+                <a href="/" class="snaap-btn" data-link><i class="fas fa-house"></i> Inicio</a>
+            </li>
+            <li data-role="guest,user,host,sysadmin">
+                <a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Sobre nosotros</a>
+            </li>
+            <li data-role="guest,user,host,sysadmin">
+                <a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Paquetes</a>
+            </li>
+
+            <!-- 🔹 SOLO INVITADOS (no autenticados) -->
+            <li data-role="guest">
+                <a href="/login" class="snaap-btn" data-link><i class="fas fa-user"></i> Inicio de sesión</a>
+            </li>
+
+            <!-- 🔹 SOLO AUTENTICADOS -->
+            <li data-role="user,host,sysadmin">
+                <a href="#" class="snaap-btn" id="profile-link" data-link><i class="fas fa-user-circle"></i> <span id="profile-name">Perfil</span></a>
+            </li>
+
+            <!-- 🔹 SOLO HOST + SYSADMIN -->
+            <li data-role="host,sysadmin">
+                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i>Inicio</a>
+            </li>
+            <li data-role="host,sysadmin">
+                <a href="/host/create-event" class="snaap-btn" data-link><i class="fas fa-plus-circle"></i> Crear evento</a>
+            </li>
+            <li data-role="host,sysadmin">
+                <a href="/host/event-crud" class="snaap-btn" data-link><i class="fas fa-calendar-alt"></i> Mis Eventos</a>
+            </li>
+
+            <!-- 🔹 SOLO SYSADMIN -->
+            <li data-role="sysadmin">
+                <a href="/sysadmin/home" class="snaap-btn" data-link><i class="fas fa-tachometer-alt"></i> Panel Admin</a>
+            </li>
+            <li data-role="sysadmin">
+                <a href="/sysadmin/hosts" class="snaap-btn" data-link><i class="fas fa-users"></i> Hosts</a>
+            </li>
+            <li data-role="sysadmin">
+                <a href="/sysadmin/admins" class="snaap-btn" data-link><i class="fas fa-shield-alt"></i> Admins</a>
+            </li>
+
+            <!-- 🔹 CERRAR SESIÓN (solo autenticados) -->
+            <li data-role="user,host,sysadmin">
+                <button class="snaap-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+            </li>
+
+            <!-- Footer -->
+            <li class="snaap-footer-item">
+                <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link">
+                    desarrollada por rsi enterprise mexico
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

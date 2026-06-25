@@ -1,3 +1,4 @@
+/* src/css/components/eventDetails.css */
 .event-details-container {
     padding: 120px 40px 40px 40px;
     max-width: 900px;
@@ -97,27 +98,6 @@
     height: 100%;
     object-fit: cover;
     min-height: 300px;
-}
-
-.event-image img:not([src]), 
-.event-image img[src=""],
-.event-image img[src="#"] {
-    display: none;
-}
-
-.event-image::after {
-    content: '\f03e';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 400;
-    font-size: 4rem;
-    color: rgba(77, 184, 255, 0.3);
-    display: none;
-}
-
-.event-image img:not([src]), 
-.event-image img[src=""],
-.event-image img[src="#"] + .event-image::after {
-    display: block;
 }
 
 .event-info {

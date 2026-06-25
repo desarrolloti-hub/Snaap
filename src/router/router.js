@@ -1,8 +1,13 @@
+// src/router/router.js
 import { routes } from './routes.js';
+import { authGuard } from '../core/authGuard.js';
+import { getCurrentUserRole, getRedirectPathByRole } from '../core/permissions.js';
+import { userService } from '../services/userService.js';
 
 let isNavigating = false;
 
 export function initRouter() {
+    // 🔥 Escuchar eventos de navegación
     document.addEventListener('click', async (e) => {
         const link = e.target.closest('[data-link]');
         if (link && !isNavigating) {
@@ -16,37 +21,62 @@ export function initRouter() {
     });
 
     window.addEventListener('popstate', async () => {
-        if (!isNavigating) await handleRoute();
+        if (!isNavigating) {
+            const path = window.location.pathname;
+            await handleRoute(path, true); // true = es navegación por popstate
+        }
     });
 
     window.navigateTo = navigateTo;
-    handleRoute();
+    
+    // 🔥 Inicializar con la ruta actual
+    const currentPath = window.location.pathname;
+    handleRoute(currentPath);
 }
 
 async function navigateTo(path) {
     if (isNavigating) return;
     isNavigating = true;
+    
     let cleanPath = path.startsWith('/') ? path : '/' + path;
     if (cleanPath !== '/' && cleanPath.endsWith('/')) {
         cleanPath = cleanPath.slice(0, -1);
     }
+    
     window.history.pushState({}, '', cleanPath);
-    await handleRoute();
+    await handleRoute(cleanPath);
     isNavigating = false;
 }
 
-async function handleRoute() {
-    let path = window.location.pathname;
-    console.log('📍 Navegando a:', path);
+async function handleRoute(path, isPopState = false) {
+    console.log(`📍 Navegando a: ${path}`);
 
+    // 🔥 1. VERIFICAR AUTENTICACIÓN Y PERMISOS
+    const canAccess = await authGuard(path, (redirectPath) => {
+        // Si no tiene permisos, redirigir
+        if (!isPopState) {
+            window.history.pushState({}, '', redirectPath);
+            handleRoute(redirectPath);
+        } else {
+            window.location.href = redirectPath;
+        }
+    });
+
+    // Si no puede acceder, no continuar (ya se redirigió)
+    if (!canAccess) {
+        return;
+    }
+
+    // 🔥 2. ACTUALIZAR NAVBAR SEGÚN ROL
+    updateNavbar();
+
+    // 🔥 3. CARGAR LA VISTA
     document.dispatchEvent(new CustomEvent('route:changing', { detail: { path } }));
 
-    // 🔥 Lo importante: si la ruta no existe en routes, usa '/404'
     let route = routes[path];
     if (!route) {
         console.warn(`⚠️ Ruta no encontrada: ${path}, redirigiendo a 404`);
         route = routes['/404'];
-        // Cambiar la URL a /404 sin recargar (para que coincida)
         if (path !== '/404') {
             window.history.pushState({}, '', '/404');
             path = '/404';
@@ -75,9 +105,38 @@ async function handleRoute() {
         console.error('❌ Error cargando ruta:', error);
         const appContainer = document.getElementById('app');
         if (appContainer) {
-            appContainer.innerHTML = `<div style="text-align:center; padding:100px;"><h1>Error</h1><p>${error.message}</p><a href="/" data-link>Volver al inicio</a></div>`;
+            appContainer.innerHTML = `
+                <div style="text-align:center; padding:100px; background:#0a0a14; color:white; min-height:100vh;">
+                    <h1 style="color:#ff007a;">⚠️ Error</h1>
+                    <p style="color:#999;">${error.message}</p>
+                    <a href="/" data-link style="color:#4db8ff; text-decoration:none;">← Volver al inicio</a>
+                </div>
+            `;
         }
     }
 
     document.dispatchEvent(new CustomEvent('route:changed', { detail: { path } }));
 }
+
+// ============================================
+// 🔄 ACTUALIZAR NAVBAR SEGÚN ROL
+// ============================================
+function updateNavbar() {
+    const user = userService.getCurrentUser();
+    const role = user ? user.role : null;
+    
+    // Disparar evento para que los controladores de navbar actualicen
+    document.dispatchEvent(new CustomEvent('auth:changed', { 
+        detail: { 
+            user: user,
+            role: role,
+            isAuthenticated: !!user
+        } 
+    }));
+}
+
+// ============================================
+// 🔥 EXPONER FUNCIONES GLOBALES
+// ============================================
+window.navigateTo = navigateTo;
+window.updateNavbar = updateNavbar;

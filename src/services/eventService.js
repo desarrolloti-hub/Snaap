@@ -7,19 +7,13 @@ class EventoService {
     this.usuarioActual = null;
   }
 
-  /**
-   * Establecer el usuario actual para asociarlo a los eventos
-   */
   setUsuarioActual(usuario) {
     this.usuarioActual = usuario;
   }
 
-  /**
-   * Crear un nuevo evento
-   */
+  // 🔥 CREAR EVENTO
   async crearEvento(eventoData) {
     try {
-      // Validaciones de negocio
       if (!eventoData.nombre || eventoData.nombre.trim().length === 0) {
         throw new Error('El nombre del evento es requerido');
       }
@@ -32,32 +26,40 @@ class EventoService {
         throw new Error('Debes seleccionar un paquete para el evento');
       }
 
-      // Validar que el paquete sea válido
       const paquetesValidos = ['basico', 'estandar', 'premium', 'empresarial'];
       if (!paquetesValidos.includes(eventoData.paquete)) {
         throw new Error('Paquete no válido');
       }
 
-      // Obtener detalles del paquete
       const paqueteDetalles = this.getPaqueteDetalles(eventoData.paquete);
 
-      // Crear la entidad Evento
+      // 🔥 Usar el usuario actual o el proporcionado
+      const usuario = this.usuarioActual || { uid: 'usuario-anonimo', email: '', username: 'Anónimo' };
+
       const evento = new Evento({
         nombre: eventoData.nombre.trim(),
         paquete: eventoData.paquete,
         paqueteDetalles: paqueteDetalles,
-        creadoPor: this.usuarioActual?.uid || 'usuario-anonimo',
-        creadoPorEmail: this.usuarioActual?.email || '',
+        creadoPor: eventoData.creadoPor || usuario.uid,
+        creadoPorEmail: eventoData.creadoPorEmail || usuario.email || '',
+        creadoPorNombre: eventoData.creadoPorNombre || usuario.username || 'Host',
         fechaEvento: eventoData.fechaEvento || new Date(),
         descripcion: eventoData.descripcion || '',
         ubicacion: eventoData.ubicacion || '',
         invitados: eventoData.invitados || [],
-        estado: 'pending'
+        estado: eventoData.estado || 'pending',
+        attendees: eventoData.attendees || 0,
+        uploadedPhotos: eventoData.uploadedPhotos || 0,
+        tipo: eventoData.tipo || 'evento'
       });
 
-      // Guardar en Firestore
       const eventoGuardado = await eventoRepository.create(evento);
-      
+
+      // 🔥 Incrementar contador de eventos del usuario
+      if (usuario.uid && usuario.uid !== 'usuario-anonimo') {
+        await this.incrementarEventosUsuario(usuario.uid);
+      }
+
       return {
         success: true,
         evento: eventoGuardado,
@@ -73,9 +75,80 @@ class EventoService {
     }
   }
 
-  /**
-   * Obtener detalles de un paquete
-   */
+  // 🔥 INCREMENTAR CONTADOR DE EVENTOS DEL USUARIO
+  async incrementarEventosUsuario(uid) {
+    try {
+      const { userRepository } = await import('../repositories/userRepository.js');
+      const user = await userRepository.getByUid(uid);
+      if (user) {
+        user.incrementEventsCreated();
+        await userRepository.update(user);
+        console.log(`✅ Eventos del usuario ${user.username} incrementado a ${user.eventsCreated}`);
+      }
+    } catch (error) {
+      console.error('Error al incrementar eventos del usuario:', error);
+    }
+  }
+
+  // 🔥 OBTENER EVENTOS DE UN USUARIO
+  async obtenerEventosPorUsuario(uid) {
+    try {
+      if (!uid) {
+        throw new Error('Se requiere el UID del usuario');
+      }
+
+      const eventos = await eventoRepository.getByCreador(uid);
+      return {
+        success: true,
+        eventos: eventos
+      };
+    } catch (error) {
+      console.error('Error al obtener eventos del usuario:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // 🔥 OBTENER ESTADÍSTICAS DE EVENTOS PARA EL PERFIL
+  async obtenerEstadisticasPerfil(uid) {
+    try {
+      const result = await this.obtenerEventosPorUsuario(uid);
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      const eventos = result.eventos;
+
+      const totalEventos = eventos.length;
+      const totalInvitados = eventos.reduce((sum, e) => sum + (e.invitados?.length || 0), 0);
+      const totalFotos = eventos.reduce((sum, e) => sum + (e.uploadedPhotos || 0), 0);
+      const eventosActivos = eventos.filter(e => e.estado === 'active').length;
+      const eventosCompletados = eventos.filter(e => e.estado === 'completed').length;
+      const eventosPendientes = eventos.filter(e => e.estado === 'pending').length;
+
+      return {
+        success: true,
+        estadisticas: {
+          totalEventos,
+          totalInvitados,
+          totalFotos,
+          eventosActivos,
+          eventosCompletados,
+          eventosPendientes
+        },
+        eventos: eventos
+      };
+    } catch (error) {
+      console.error('Error al obtener estadísticas del perfil:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
   getPaqueteDetalles(paquete) {
     const paquetesInfo = {
       basico: {
@@ -130,9 +203,6 @@ class EventoService {
     return paquetesInfo[paquete] || null;
   }
 
-  /**
-   * Obtener evento por ID
-   */
   async getEventoPorId(id) {
     try {
       if (!id) {
@@ -156,9 +226,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Obtener eventos del usuario actual
-   */
   async getEventosDelUsuario() {
     try {
       if (!this.usuarioActual || !this.usuarioActual.uid) {
@@ -182,9 +249,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Actualizar evento
-   */
   async actualizarEvento(id, data) {
     try {
       if (!id) {
@@ -225,9 +289,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Cambiar estado del evento
-   */
   async cambiarEstadoEvento(id, nuevoEstado) {
     try {
       if (!id) {
@@ -253,9 +314,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Agregar invitado al evento
-   */
   async agregarInvitado(eventoId, invitadoData) {
     try {
       if (!eventoId) {
@@ -286,9 +344,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Eliminar invitado del evento
-   */
   async eliminarInvitado(eventoId, email) {
     try {
       if (!eventoId || !email) {
@@ -310,9 +365,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Obtener estadísticas de eventos
-   */
   async getEstadisticas() {
     try {
       if (!this.usuarioActual || !this.usuarioActual.uid) {
@@ -343,9 +395,6 @@ class EventoService {
     }
   }
 
-  /**
-   * Buscar eventos por código de acceso
-   */
   async buscarPorCodigo(codigo) {
     try {
       if (!codigo) {
@@ -373,8 +422,5 @@ class EventoService {
   }
 }
 
-// ✅ EXPORTACIÓN CORRECTA - Exportar una instancia del servicio
 export const eventService = new EventoService();
-
-// También exportamos la clase por si se necesita
 export { EventoService };

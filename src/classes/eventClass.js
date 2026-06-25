@@ -1,4 +1,4 @@
-// src/classes/Evento.js
+// src/classes/eventClass.js
 export class Evento {
   constructor({
     id = null,
@@ -7,6 +7,7 @@ export class Evento {
     paqueteDetalles = null,
     creadoPor = null,
     creadoPorEmail = null,
+    creadoPorNombre = null,  // 🔥 NUEVO
     fechaEvento = null,
     estado = 'pending',
     invitados = [],
@@ -15,16 +16,22 @@ export class Evento {
     codigoAcceso = null,
     descripcion = '',
     ubicacion = '',
-    fechaLimite = null
+    fechaLimite = null,
+    // 🔥 NUEVOS CAMPOS
+    attendees = 0,
+    uploadedPhotos = 0,
+    tipo = '',
+    imagenUrl = ''
   } = {}) {
     this.id = id;
     this.nombre = nombre;
     this.paquete = paquete;
     this.paqueteDetalles = paqueteDetalles;
-    this.creadoPor = creadoPor; // UID del usuario que crea el evento
+    this.creadoPor = creadoPor;
     this.creadoPorEmail = creadoPorEmail;
+    this.creadoPorNombre = creadoPorNombre;
     this.fechaEvento = fechaEvento || new Date();
-    this.estado = estado; // pending, active, completed, cancelled
+    this.estado = estado;
     this.invitados = invitados || [];
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
@@ -32,9 +39,13 @@ export class Evento {
     this.descripcion = descripcion;
     this.ubicacion = ubicacion;
     this.fechaLimite = fechaLimite || this.calcularFechaLimite(paquete);
+    // 🔥 NUEVOS CAMPOS
+    this.attendees = attendees || 0;
+    this.uploadedPhotos = uploadedPhotos || 0;
+    this.tipo = tipo || '';
+    this.imagenUrl = imagenUrl || '';
   }
 
-  // Generar código de acceso único
   generarCodigoAcceso() {
     const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let codigo = '';
@@ -44,26 +55,16 @@ export class Evento {
     return codigo;
   }
 
-  // Calcular fecha límite según el paquete
   calcularFechaLimite(paquete) {
     const ahora = new Date();
-    let dias = 1; // Por defecto 1 día
+    let dias = 1;
     
     switch(paquete) {
-      case 'basico':
-        dias = 1;
-        break;
-      case 'estandar':
-        dias = 2;
-        break;
-      case 'premium':
-        dias = 3;
-        break;
-      case 'empresarial':
-        dias = 7;
-        break;
-      default:
-        dias = 1;
+      case 'basico': dias = 1; break;
+      case 'estandar': dias = 2; break;
+      case 'premium': dias = 3; break;
+      case 'empresarial': dias = 7; break;
+      default: dias = 1;
     }
     
     const fechaLimite = new Date(ahora);
@@ -71,7 +72,6 @@ export class Evento {
     return fechaLimite;
   }
 
-  // Convertir a objeto para Firestore
   toFirestore() {
     return {
       nombre: this.nombre,
@@ -79,6 +79,7 @@ export class Evento {
       paqueteDetalles: this.paqueteDetalles,
       creadoPor: this.creadoPor,
       creadoPorEmail: this.creadoPorEmail,
+      creadoPorNombre: this.creadoPorNombre,
       fechaEvento: this.fechaEvento,
       estado: this.estado,
       invitados: this.invitados,
@@ -87,11 +88,15 @@ export class Evento {
       codigoAcceso: this.codigoAcceso,
       descripcion: this.descripcion,
       ubicacion: this.ubicacion,
-      fechaLimite: this.fechaLimite
+      fechaLimite: this.fechaLimite,
+      // 🔥 NUEVOS CAMPOS
+      attendees: this.attendees,
+      uploadedPhotos: this.uploadedPhotos,
+      tipo: this.tipo,
+      imagenUrl: this.imagenUrl
     };
   }
 
-  // Crear desde Firestore
   static fromFirestore(doc) {
     const data = doc.data();
     return new Evento({
@@ -104,7 +109,6 @@ export class Evento {
     });
   }
 
-  // Validar que el evento esté completo
   isValid() {
     return this.nombre && 
            this.nombre.length > 0 && 
@@ -112,13 +116,11 @@ export class Evento {
            this.paquete.length > 0;
   }
 
-  // Método para obtener información resumida del paquete
   getPaqueteInfo() {
     if (this.paqueteDetalles) {
       return this.paqueteDetalles;
     }
     
-    // Información por defecto si no hay detalles
     const paquetesInfo = {
       basico: {
         nombre: "Paquete Básico",
@@ -172,22 +174,18 @@ export class Evento {
     return paquetesInfo[this.paquete] || null;
   }
 
-  // Método para obtener invitados activos
   getInvitadosActivos() {
     return this.invitados.filter(invitado => invitado.estado !== 'rechazado');
   }
 
-  // Método para contar invitados confirmados
   getTotalInvitadosConfirmados() {
     return this.invitados.filter(invitado => invitado.estado === 'confirmado').length;
   }
 
-  // Método para verificar si el evento está activo
   isActive() {
     return this.estado === 'active';
   }
 
-  // Método para verificar si el evento ha expirado
   isExpired() {
     if (!this.fechaLimite) return false;
     return new Date() > new Date(this.fechaLimite);

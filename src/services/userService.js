@@ -1,361 +1,358 @@
-// src/services/UsuarioService.js
+// src/services/userService.js
+import { User } from '../classes/userClass.js';
+import { userRepository } from '../repositories/userRepository.js';
 import { 
-  createUserWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   sendEmailVerification,
   updateProfile,
   signOut,
+  sendPasswordResetEmail,
   onAuthStateChanged
 } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig.js';
-import { Usuario } from '../classes/userClass.js';
-import { usuarioRepository } from '../repositories/userRepository.js';
 
-class UsuarioService {
+class UserService {
   constructor() {
+    this.usuarioActual = null;
     this.googleProvider = new GoogleAuthProvider();
-    this.currentUser = null;
-    this.authStateListeners = [];
   }
 
-  /**
-   * Registrar un nuevo usuario con email y contraseña
-   */
-  async registrarConEmail(email, password, nombre) {
+  // ============================================
+  // 🔐 REGISTRO CON EMAIL
+  // ============================================
+  async registrarUsuario(email, password, username) {
     try {
-      // Validaciones de negocio
-      if (!email || !password || !nombre) {
-        throw new Error('Todos los campos son requeridos');
+      // Validaciones
+      if (!username || username.length < 3) {
+        throw new Error('El nombre debe tener al menos 3 caracteres');
       }
-
-      if (password.length < 6) {
+      if (!email || !this.isValidEmail(email)) {
+        throw new Error('Email inválido');
+      }
+      if (!password || password.length < 6) {
         throw new Error('La contraseña debe tener al menos 6 caracteres');
       }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        throw new Error('Correo electrónico inválido');
+      // Verificar si ya existe
+      const existingUser = await userRepository.getByEmail(email);
+      if (existingUser) {
+        throw new Error('Ya existe un usuario con este email');
       }
 
-      // Crear usuario en Firebase Auth
+      // Crear en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Actualizar perfil en Auth
-      await updateProfile(firebaseUser, {
-        displayName: nombre
-      });
-
-      // Crear entidad Usuario
-      const usuario = new Usuario({
-        uid: firebaseUser.uid,
-        nombre: nombre,
-        email: email,
-        provider: 'email',
-        emailVerified: firebaseUser.emailVerified,
-        photoURL: firebaseUser.photoURL || null,
-        createdAt: new Date()
-      });
-
-      // Guardar en Firestore
-      await usuarioRepository.create(usuario);
+      // Actualizar perfil
+      await updateProfile(firebaseUser, { displayName: username });
 
       // Enviar email de verificación
       await sendEmailVerification(firebaseUser);
 
-      // Actualizar usuario actual
-      this.currentUser = usuario;
+      // 🔥 CREAR USUARIO CON ROL 'host'
+      const user = new User({
+        uid: firebaseUser.uid,
+        username: username,
+        email: email,
+        role: 'host',
+        status: 'active',
+        photoURL: firebaseUser.photoURL || null,
+        emailVerified: firebaseUser.emailVerified || false,
+        createdAt: new Date()
+      });
+
+      await userRepository.create(user);
+      this.usuarioActual = user;
+      localStorage.setItem('snaap_current_user', JSON.stringify(user));
 
       return {
         success: true,
-        user: usuario,
-        message: 'Usuario registrado exitosamente. Verifica tu email.'
+        user: user,
+        role: 'host',
+        message: `✅ Usuario "${username}" registrado exitosamente. Verifica tu email.`
       };
     } catch (error) {
-      console.error('Error en registro de usuario:', error);
-      
-      // Manejar errores específicos de Firebase
-      let mensaje = 'Error al registrar usuario';
+      console.error('Error en registro:', error);
+      let mensaje = error.message;
       if (error.code === 'auth/email-already-in-use') {
-        mensaje = 'El correo electrónico ya está registrado';
-      } else if (error.code === 'auth/invalid-email') {
-        mensaje = 'Correo electrónico inválido';
+        mensaje = 'El email ya está registrado';
       } else if (error.code === 'auth/weak-password') {
         mensaje = 'La contraseña es muy débil';
-      } else {
-        mensaje = error.message || 'Error al registrar usuario';
+      } else if (error.code === 'auth/invalid-email') {
+        mensaje = 'Email inválido';
       }
-
-      return {
-        success: false,
-        error: mensaje
-      };
+      return { success: false, error: mensaje };
     }
   }
 
-  /**
-   * Iniciar sesión con email y contraseña
-   */
-  async loginConEmail(email, password) {
+  // ============================================
+  // 🔐 LOGIN CON EMAIL
+  // ============================================
+  async loginUsuario(email, password) {
     try {
       if (!email || !password) {
         throw new Error('Email y contraseña son requeridos');
       }
 
+      // Autenticar en Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Verificar si el usuario existe en Firestore
-      let usuario = await usuarioRepository.getByUid(firebaseUser.uid);
+      // Obtener de Firestore
+      let user = await userRepository.getByUid(firebaseUser.uid);
 
-      // Si no existe en Firestore, crearlo (por si se registró directamente en Auth)
-      if (!usuario) {
-        usuario = new Usuario({
+      // Si no existe en Firestore, crearlo con rol 'host'
+      if (!user) {
+        user = new User({
           uid: firebaseUser.uid,
-          nombre: firebaseUser.displayName || email.split('@')[0],
+          username: firebaseUser.displayName || email.split('@')[0],
           email: firebaseUser.email,
-          provider: 'email',
-          emailVerified: firebaseUser.emailVerified,
-          photoURL: firebaseUser.photoURL
+          role: 'host',
+          status: 'active',
+          photoURL: firebaseUser.photoURL || null,
+          emailVerified: firebaseUser.emailVerified || false,
+          createdAt: new Date()
         });
-        await usuarioRepository.create(usuario);
+        await userRepository.create(user);
       }
 
-      this.currentUser = usuario;
-      
+      // Actualizar último login
+      user.updateLastLogin();
+      await userRepository.update(user);
+
+      // Guardar en memoria
+      this.usuarioActual = user;
+      localStorage.setItem('snaap_current_user', JSON.stringify(user));
+
       return {
         success: true,
-        user: usuario,
-        message: 'Inicio de sesión exitoso'
+        user: user,
+        message: `✅ ¡Bienvenido ${user.username}!`,
+        role: user.role
       };
     } catch (error) {
       console.error('Error en login:', error);
-      
       let mensaje = 'Error al iniciar sesión';
-      if (error.code === 'auth/user-not-found') {
-        mensaje = 'Usuario no encontrado';
-      } else if (error.code === 'auth/wrong-password') {
-        mensaje = 'Contraseña incorrecta';
-      } else if (error.code === 'auth/invalid-email') {
-        mensaje = 'Correo electrónico inválido';
-      } else if (error.code === 'auth/user-disabled') {
-        mensaje = 'Usuario deshabilitado';
-      } else {
-        mensaje = error.message || 'Error al iniciar sesión';
-      }
-
-      return {
-        success: false,
-        error: mensaje
-      };
+      if (error.code === 'auth/user-not-found') mensaje = 'Usuario no encontrado';
+      else if (error.code === 'auth/wrong-password') mensaje = 'Contraseña incorrecta';
+      else if (error.code === 'auth/invalid-email') mensaje = 'Email inválido';
+      else if (error.code === 'auth/user-disabled') mensaje = 'Usuario deshabilitado';
+      else if (error.code === 'auth/too-many-requests') mensaje = 'Demasiados intentos. Intenta más tarde';
+      else mensaje = error.message || 'Error al iniciar sesión';
+      return { success: false, error: mensaje };
     }
   }
 
-  /**
-   * Iniciar sesión con Google
-   */
+  // ============================================
+  // 🔐 LOGIN CON GOOGLE
+  // ============================================
   async loginConGoogle() {
     try {
       const result = await signInWithPopup(auth, this.googleProvider);
       const firebaseUser = result.user;
 
-      // Verificar si el usuario ya existe en Firestore
-      let usuario = await usuarioRepository.getByUid(firebaseUser.uid);
+      // Obtener de Firestore
+      let user = await userRepository.getByUid(firebaseUser.uid);
 
-      // Si no existe, crearlo
-      if (!usuario) {
-        usuario = new Usuario({
+      // Si no existe en Firestore, crearlo con rol 'host'
+      if (!user) {
+        user = new User({
           uid: firebaseUser.uid,
-          nombre: firebaseUser.displayName || 'Usuario Google',
+          username: firebaseUser.displayName || 'Usuario Google',
           email: firebaseUser.email,
-          provider: 'google',
-          emailVerified: firebaseUser.emailVerified,
+          role: 'host',
+          status: 'active',
           photoURL: firebaseUser.photoURL || null,
+          emailVerified: firebaseUser.emailVerified || false,
           createdAt: new Date()
         });
-        await usuarioRepository.create(usuario);
+        await userRepository.create(user);
       }
 
-      this.currentUser = usuario;
+      // Actualizar último login
+      user.updateLastLogin();
+      await userRepository.update(user);
+
+      // Guardar en memoria
+      this.usuarioActual = user;
+      localStorage.setItem('snaap_current_user', JSON.stringify(user));
 
       return {
         success: true,
-        user: usuario,
-        message: 'Inicio de sesión con Google exitoso'
+        user: user,
+        message: `✅ ¡Bienvenido ${user.username}!`,
+        role: user.role
       };
     } catch (error) {
       console.error('Error en login con Google:', error);
-      
       let mensaje = 'Error al iniciar sesión con Google';
       if (error.code === 'auth/popup-closed-by-user') {
         mensaje = 'Ventana de Google cerrada';
       } else if (error.code === 'auth/account-exists-with-different-credential') {
         mensaje = 'Ya existe una cuenta con este email usando otro método';
-      } else {
-        mensaje = error.message || 'Error al iniciar sesión con Google';
       }
-
-      return {
-        success: false,
-        error: mensaje
-      };
+      return { success: false, error: mensaje };
     }
   }
 
-  /**
-   * Cerrar sesión
-   */
+  // ============================================
+  // 🔐 RECUPERAR CONTRASEÑA
+  // ============================================
+  async recuperarContrasena(email) {
+    try {
+      if (!email || !this.isValidEmail(email)) {
+        throw new Error('Email inválido');
+      }
+      await sendPasswordResetEmail(auth, email);
+      return {
+        success: true,
+        message: '📧 Se ha enviado un enlace de recuperación a tu email'
+      };
+    } catch (error) {
+      console.error('Error en recuperación:', error);
+      let mensaje = 'Error al enviar el enlace de recuperación';
+      if (error.code === 'auth/user-not-found') {
+        mensaje = 'No existe una cuenta con este email';
+      }
+      return { success: false, error: mensaje };
+    }
+  }
+
+  // ============================================
+  // 🚪 CERRAR SESIÓN
+  // ============================================
   async logout() {
     try {
       await signOut(auth);
-      this.currentUser = null;
-      return {
-        success: true,
-        message: 'Sesión cerrada exitosamente'
-      };
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      return {
-        success: false,
-        error: error.message || 'Error al cerrar sesión'
-      };
-    }
-  }
-
-  /**
-   * Obtener usuario actual
-   */
-  getCurrentUser() {
-    return this.currentUser;
-  }
-
-  /**
-   * Verificar si el usuario está autenticado
-   */
-  isAuthenticated() {
-    return this.currentUser !== null;
-  }
-
-  /**
-   * Escuchar cambios en el estado de autenticación
-   */
-  onAuthStateChanged(callback) {
-    this.authStateListeners.push(callback);
-    
-    return onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Usuario autenticado
-        try {
-          let usuario = await usuarioRepository.getByUid(firebaseUser.uid);
-          if (!usuario) {
-            // Crear usuario si no existe en Firestore
-            usuario = new Usuario({
-              uid: firebaseUser.uid,
-              nombre: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuario',
-              email: firebaseUser.email,
-              provider: firebaseUser.providerData[0]?.providerId || 'email',
-              emailVerified: firebaseUser.emailVerified,
-              photoURL: firebaseUser.photoURL || null
-            });
-            await usuarioRepository.create(usuario);
-          }
-          this.currentUser = usuario;
-          callback({ user: usuario, authenticated: true });
-        } catch (error) {
-          console.error('Error al obtener usuario de Firestore:', error);
-          callback({ user: null, authenticated: false, error: error.message });
-        }
-      } else {
-        // Usuario no autenticado
-        this.currentUser = null;
-        callback({ user: null, authenticated: false });
-      }
-    });
-  }
-
-  /**
-   * Verificar si el email está verificado
-   */
-  async verificarEmail() {
-    try {
-      const firebaseUser = auth.currentUser;
-      if (firebaseUser) {
-        await firebaseUser.reload();
-        return firebaseUser.emailVerified;
-      }
-      return false;
-    } catch (error) {
-      console.error('Error al verificar email:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Enviar email de verificación
-   */
-  async enviarVerificacionEmail() {
-    try {
-      const firebaseUser = auth.currentUser;
-      if (firebaseUser) {
-        await sendEmailVerification(firebaseUser);
-        return { success: true, message: 'Email de verificación enviado' };
-      }
-      return { success: false, error: 'No hay usuario autenticado' };
+      this.usuarioActual = null;
+      localStorage.removeItem('snaap_current_user');
+      return { success: true, message: 'Sesión cerrada exitosamente' };
     } catch (error) {
       return { success: false, error: error.message };
     }
   }
 
-  /**
-   * Obtener usuario por ID
-   */
-  async getUsuarioPorId(id) {
-    return await usuarioRepository.getById(id);
+  // ============================================
+  // 👤 USUARIO ACTUAL
+  // ============================================
+  getCurrentUser() {
+    if (this.usuarioActual) return this.usuarioActual;
+    const storedUser = localStorage.getItem('snaap_current_user');
+    if (storedUser) {
+      try {
+        this.usuarioActual = JSON.parse(storedUser);
+        return this.usuarioActual;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
-  /**
-   * Actualizar perfil de usuario
-   */
-  async actualizarPerfil(usuarioData) {
+  isAuthenticated() {
+    return this.getCurrentUser() !== null;
+  }
+
+  // ============================================
+  // 🗺️ RUTAS POR ROL
+  // ============================================
+  getRedirectPath(role) {
+    const routes = {
+      'sysadmin': '/sysadmin/home',
+      'host': '/host',
+      'user': '/'
+    };
+    return routes[role] || '/';
+  }
+
+  // ============================================
+  // ✅ VALIDACIONES
+  // ============================================
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // ============================================
+  // 📡 ESCUCHAR ESTADO DE AUTENTICACIÓN
+  // ============================================
+  onAuthStateChanged(callback) {
+    return onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        let user = await userRepository.getByUid(firebaseUser.uid);
+        if (!user) {
+          user = new User({
+            uid: firebaseUser.uid,
+            username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuario',
+            email: firebaseUser.email,
+            role: 'host',
+            status: 'active',
+            photoURL: firebaseUser.photoURL || null,
+            emailVerified: firebaseUser.emailVerified || false
+          });
+          await userRepository.create(user);
+        }
+        this.usuarioActual = user;
+        localStorage.setItem('snaap_current_user', JSON.stringify(user));
+        callback({ user: user, authenticated: true });
+      } else {
+        this.usuarioActual = null;
+        localStorage.removeItem('snaap_current_user');
+        callback({ user: null, authenticated: false });
+      }
+    });
+  }
+
+  // ============================================
+  // ✏️ ACTUALIZAR PERFIL DEL USUARIO
+  // ============================================
+  async actualizarPerfil(userData) {
     try {
-      if (!this.currentUser) {
+      const user = this.getCurrentUser();
+      if (!user) {
         throw new Error('No hay usuario autenticado');
       }
 
-      const usuarioActual = this.currentUser;
-      const usuarioActualizado = new Usuario({
-        ...usuarioActual,
-        ...usuarioData,
-        updatedAt: new Date()
-      });
-
-      await usuarioRepository.update(usuarioActualizado);
-      
-      // Actualizar también en Firebase Auth si cambió el nombre
-      const firebaseUser = auth.currentUser;
-      if (firebaseUser && usuarioData.nombre) {
-        await updateProfile(firebaseUser, {
-          displayName: usuarioData.nombre
-        });
+      // Obtener datos actuales de Firestore
+      const userDoc = await userRepository.getByUid(user.uid);
+      if (!userDoc) {
+        throw new Error('Usuario no encontrado en Firestore');
       }
 
-      this.currentUser = usuarioActualizado;
-      
+      // Actualizar campos permitidos
+      userDoc.username = userData.username || userDoc.username;
+      userDoc.phone = userData.phone || userDoc.phone;
+      userDoc.bio = userData.bio || userDoc.bio;
+      userDoc.company = userData.company || userDoc.company;
+      userDoc.website = userData.website || userDoc.website;
+      userDoc.specialty = userData.specialty || userDoc.specialty;
+      userDoc.experience = userData.experience || userDoc.experience;
+      userDoc.photoURL = userData.photoURL || userDoc.photoURL;
+      userDoc.updatedAt = new Date();
+
+      // Guardar en Firestore
+      await userRepository.update(userDoc);
+
+      // Actualizar usuario actual
+      this.usuarioActual = userDoc;
+      localStorage.setItem('snaap_current_user', JSON.stringify(userDoc));
+
       return {
         success: true,
-        user: usuarioActualizado,
+        user: userDoc,
         message: 'Perfil actualizado exitosamente'
       };
     } catch (error) {
+      console.error('Error al actualizar perfil:', error);
       return {
         success: false,
-        error: error.message || 'Error al actualizar perfil'
+        error: error.message
       };
     }
   }
 }
 
-// Exportar una instancia única del servicio
-export const usuarioService = new UsuarioService();
+export const userService = new UserService();

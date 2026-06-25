@@ -1,3 +1,4 @@
+<!-- public/modules/visitor/login/login.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Login - Snaap</title>
     <link rel="stylesheet" href="/src/css/components/login.css">
+    <link rel="stylesheet" href="/src/css/components/sweetalert.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -29,27 +31,37 @@
                     <div class="terms-group">
                         <label class="terms-checkbox">
                             <input type="checkbox" id="acceptTerms"> Acepto los 
-                            <a href="/terms" data-link id="termsLinkInline">términos y condiciones</a>
+                            <a href="#" id="termsLinkInline">términos y condiciones</a>
                         </label>
                     </div>
 
                     <div class="login-actions">
+                        <!-- ✅ Botón Iniciar sesión -->
                         <button type="submit" class="btn-login" id="btn-login">Iniciar sesión</button>
-                        <button type="button" class="btn-login" id="btn-register">Crear cuenta</button>
+                        <!-- ✅ Botón Crear cuenta (separado) -->
+                        <button type="button" class="btn-login btn-register" id="btn-register">Crear cuenta</button>
                     </div>
+
+                    <!-- ✅ Enlace de recuperación -->
                     <div class="register-link">
-                        ¿Olvidaste tu contraseña? <a href="#" id="forgot-password">Recupérala aquí</a>
+                        <a href="#" id="forgot-password">¿Olvidaste tu contraseña?</a>
                     </div>
+                    
+                    <!-- ✅ Google como ícono (no botón) -->
                     <div class="social-login">
-                        <i class="fab fa-google social-icon" data-social="google"></i>
-                        <i class="fab fa-facebook-f social-icon" data-social="facebook"></i>
-                        <i class="fab fa-apple social-icon" data-social="apple"></i>
+                       
+                        <div class="social-icons">
+                            <i class="fab fa-google social-icon" id="google-login" data-social="google"></i>
+                            <i class="fab fa-facebook-f social-icon" data-social="facebook"></i>
+                            <i class="fab fa-apple social-icon" data-social="apple"></i>
+                        </div>
                     </div>
                 </form>
             </div>
         </section>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="/src/modules/visitor/login/loginController.js"></script>
 </body>
 </html>

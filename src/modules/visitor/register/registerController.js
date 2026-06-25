@@ -1,231 +1,230 @@
 // src/modules/visitor/register/registerController.js
-import { usuarioService } from '../../../services/userService.js';
+import { userService } from '../../../services/userService.js';
+import { getRedirectPathByRole } from '../../../core/permissions.js';
 
 export async function registerController() {
-    const form = document.getElementById('register-form');
-    const loadingOverlay = createLoadingOverlay();
+    console.log('🔥 Register Controller iniciado');
 
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Obtener datos del formulario
-            const name = document.getElementById('register-name').value.trim();
-            const email = document.getElementById('register-email').value.trim();
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-            const acceptTerms = document.getElementById('acceptTermsRegister').checked;
-
-            // Validaciones locales
-            if (!name || !email || !password || !confirmPassword) {
-                showNotification('❌ Por favor completa todos los campos', 'error');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showNotification('❌ Las contraseñas no coinciden', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showNotification('❌ La contraseña debe tener al menos 6 caracteres', 'error');
-                return;
-            }
-
-            if (!acceptTerms) {
-                showNotification('⚠️ Debes aceptar los términos y condiciones', 'warning');
-                return;
-            }
-
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showNotification('❌ Correo electrónico inválido', 'error');
-                return;
-            }
-
-            // Mostrar loading
-            showLoading(loadingOverlay);
-
-            try {
-                // Registrar usuario usando el servicio
-                const result = await usuarioService.registrarConEmail(email, password, name);
-                
-                if (result.success) {
-                    showNotification('✅ ' + result.message, 'success');
-                    
-                    // Redirigir al login después del registro exitoso
-                    setTimeout(() => {
-                        if (typeof window.navigateTo === 'function') {
-                            window.navigateTo('/login');
-                        } else {
-                            window.location.href = '/login';
-                        }
-                    }, 1500);
-                } else {
-                    showNotification('❌ ' + result.error, 'error');
-                }
-            } catch (error) {
-                console.error('Error en registro:', error);
-                showNotification('❌ Error al registrar usuario', 'error');
-            } finally {
-                hideLoading(loadingOverlay);
-            }
-        });
+    // Si ya está autenticado, redirigir a /host directamente
+    if (userService.isAuthenticated()) {
+        redirectTo('/host');
+        return;
     }
 
-    // Botón volver al login
+    const form = document.getElementById('register-form');
+    if (form) {
+        form.addEventListener('submit', handleRegister);
+    }
+
     const backToLoginBtn = document.getElementById('btn-back-login');
     if (backToLoginBtn) {
-        backToLoginBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/login');
-            } else {
-                window.location.href = '/login';
-            }
+        backToLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            redirectTo('/login');
         });
     }
 
-    // Link de términos y condiciones
     const termsLink = document.getElementById('termsLinkRegister');
     if (termsLink) {
         termsLink.addEventListener('click', (e) => {
             e.preventDefault();
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/terms');
-            } else {
-                window.location.href = '/terms';
-            }
+            redirectTo('/terms');
         });
     }
 
-    // Verificar si hay un usuario autenticado (redirigir si ya está logueado)
-    if (usuarioService.isAuthenticated()) {
-        if (typeof window.navigateTo === 'function') {
-            window.navigateTo('/dashboard');
+    const googleIcon = document.getElementById('google-register');
+    if (googleIcon) {
+        googleIcon.addEventListener('click', handleGoogleRegister);
+    }
+
+    const socialIcons = document.querySelectorAll('.social-icon:not([data-social="google"])');
+    socialIcons.forEach(icon => {
+        icon.addEventListener('click', () => {
+            const social = icon.getAttribute('data-social') || 'red social';
+            Swal.fire({
+                title: 'Próximamente',
+                text: `Registro con ${social} estará disponible pronto.`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+}
+
+// ============================================
+// 📧 REGISTRO CON EMAIL
+// ============================================
+async function handleRegister(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('register-name').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value;
+    const confirmPassword = document.getElementById('register-confirm-password').value;
+    const acceptTerms = document.getElementById('acceptTermsRegister').checked;
+
+    if (!name || !email || !password || !confirmPassword) {
+        Swal.fire({
+            title: 'Campos incompletos',
+            text: 'Por favor completa todos los campos',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        Swal.fire({
+            title: 'Contraseñas no coinciden',
+            text: 'Las contraseñas ingresadas no son iguales',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    if (password.length < 6) {
+        Swal.fire({
+            title: 'Contraseña muy corta',
+            text: 'La contraseña debe tener al menos 6 caracteres',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    if (!acceptTerms) {
+        Swal.fire({
+            title: 'Términos y condiciones',
+            text: 'Debes aceptar los términos y condiciones para registrarte.',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        Swal.fire({
+            title: 'Email inválido',
+            text: 'Por favor ingresa un correo electrónico válido',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Creando cuenta...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    try {
+        const result = await userService.registrarUsuario(email, password, name);
+        Swal.close();
+
+        if (result.success) {
+            // 🔥 Disparar evento de autenticación
+            document.dispatchEvent(new CustomEvent('auth:changed', {
+                detail: {
+                    user: result.user,
+                    role: result.role,
+                    isAuthenticated: true
+                }
+            }));
+
+            await Swal.fire({
+                title: '¡Registro exitoso!',
+                html: `${result.message}<br><br><small>Revisa tu correo para verificar tu cuenta.</small>`,
+                icon: 'success',
+                confirmButtonText: 'Continuar'
+            });
+
+            // 🔥 REDIRIGIR DIRECTAMENTE A /host
+            redirectTo('/host');
         } else {
-            window.location.href = '/dashboard';
+            Swal.fire({
+                title: 'Error',
+                text: result.error,
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+            });
         }
+    } catch (error) {
+        Swal.close();
+        console.error('Error en registro:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al registrar el usuario',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
-// Funciones auxiliares
-function createLoadingOverlay() {
-    const overlay = document.createElement('div');
-    overlay.id = 'loading-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        backdrop-filter: blur(4px);
-    `;
-    overlay.innerHTML = `
-        <div style="
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        ">
-            <div style="
-                border: 4px solid #f3f3f3;
-                border-top: 4px solid #00d4ff;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                animation: spin 1s linear infinite;
-                margin: 0 auto 15px;
-            "></div>
-            <p style="color: #333; font-family: 'Segoe UI', sans-serif;">Creando cuenta...</p>
-        </div>
-        <style>
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        </style>
-    `;
-    document.body.appendChild(overlay);
-    return overlay;
-}
+// ============================================
+// 🔐 REGISTRO CON GOOGLE (desde ícono)
+// ============================================
+async function handleGoogleRegister() {
+    Swal.fire({
+        title: 'Registrando con Google...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
 
-function showLoading(overlay) {
-    if (overlay) {
-        overlay.style.display = 'flex';
+    try {
+        const result = await userService.loginConGoogle();
+        Swal.close();
+
+        if (result.success) {
+            document.dispatchEvent(new CustomEvent('auth:changed', {
+                detail: {
+                    user: result.user,
+                    role: result.role,
+                    isAuthenticated: true
+                }
+            }));
+
+            await Swal.fire({
+                title: '¡Registro exitoso!',
+                text: `✅ ${result.message}`,
+                icon: 'success',
+                confirmButtonText: 'Continuar'
+            });
+
+            // 🔥 REDIRIGIR DIRECTAMENTE A /host
+            redirectTo('/host');
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: result.error,
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+            });
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('Error en Google register:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al registrar con Google',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
-function hideLoading(overlay) {
-    if (overlay) {
-        overlay.style.display = 'none';
+function redirectTo(path) {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
     }
-}
-
-function showNotification(message, type = 'info') {
-    // Crear notificación
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 25px;
-        border-radius: 8px;
-        color: white;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 500;
-        z-index: 10000;
-        max-width: 400px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        animation: slideIn 0.3s ease;
-        background: ${type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : '#17a2b8'};
-    `;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-
-    // Eliminar después de 4 segundos
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 4000);
-
-    // Estilos de animación
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Inicializar el controlador
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', registerController);
-} else {
-    registerController();
-    
 }

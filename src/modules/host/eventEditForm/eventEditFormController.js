@@ -1,56 +1,208 @@
-// Cargar eventos del localStorage
-let eventos = [];
+// src/modules/host/eventEditForm/eventEditFormController.js
+import { userService } from '../../../services/userService.js';
+import { eventService } from '../../../services/eventService.js';
+
+let currentEvent = null;
 let selectedImageFile = null;
 
-const loadEventos = () => {
-    const stored = localStorage.getItem('eventos');
-    if (stored) {
-        eventos = JSON.parse(stored);
-    } else {
-        eventos = [
-            { 
-                id: 1,
-                title: "Los XV de Rusi", 
-                img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop", 
-                date: "15 Marzo 2024",
-                attendees: 120,
-                uploadedPhotos: 45,
-                description: "Fiesta de 15 años con música en vivo y buffet",
-                location: "Salón Eventos Plaza",
-                time: "20:00"
-            },
-            { 
-                id: 2,
-                title: "Boda Legendaria", 
-                img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=600&auto=format&fit=crop", 
-                date: "22 Febrero 2024",
-                attendees: 250,
-                uploadedPhotos: 128,
-                description: "Boda civil y religiosa con recepción",
-                location: "Hacienda Los Sueños",
-                time: "18:30"
-            },
-            { 
-                id: 3,
-                title: "Fiesta Locura Total", 
-                img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=600&auto=format&fit=crop", 
-                date: "10 Enero 2024",
-                attendees: 180,
-                uploadedPhotos: 92,
-                description: "Fiesta electrónica con los mejores DJs",
-                location: "Club Night",
-                time: "22:00"
-            },
-        ];
-        saveEventos();
+// ============================================
+// 📥 CARGAR EVENTO DESDE FIRESTORE
+// ============================================
+const loadEventFromFirestore = async (id) => {
+    try {
+        const result = await eventService.getEventoPorId(id);
+        if (result.success) {
+            return result.evento;
+        } else {
+            console.error('Error al cargar evento:', result.error);
+            return null;
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar evento:', error);
+        return null;
     }
 };
 
-const saveEventos = () => {
-    localStorage.setItem('eventos', JSON.stringify(eventos));
+// ============================================
+// 🖼️ CARGAR EVENTO EN EL FORMULARIO
+// ============================================
+const loadEventToForm = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('id');
+    
+    if (!eventId) {
+        Swal.fire({
+            title: 'Error',
+            text: 'No se ha seleccionado ningún evento para editar',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '/host/event-crud';
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Cargando evento...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    try {
+        const evento = await loadEventFromFirestore(eventId);
+        Swal.close();
+        
+        if (!evento) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Evento no encontrado',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = '/host/event-crud';
+            });
+            return;
+        }
+        
+        currentEvent = evento;
+        
+        // Llenar formulario
+        document.getElementById('eventoId').value = evento.id;
+        document.getElementById('title').value = evento.nombre || '';
+        
+        // Fecha
+        let fecha = 'No especificada';
+        if (evento.fechaEvento) {
+            fecha = new Date(evento.fechaEvento).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        document.getElementById('date').value = fecha;
+        
+        // Asistentes
+        const attendees = evento.attendees || evento.invitados?.length || 0;
+        document.getElementById('attendees').value = `${attendees} asistentes`;
+        
+        // Fotos
+        document.getElementById('uploadedPhotos').value = `${evento.uploadedPhotos || 0} fotos`;
+        
+        // Código de acceso
+        document.getElementById('codigoAcceso').value = evento.codigoAcceso || 'No generado';
+        
+        // Imagen actual
+        const currentImage = document.getElementById('currentImage');
+        if (currentImage) {
+            const imgUrl = evento.imagenUrl || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop';
+            currentImage.src = imgUrl;
+            currentImage.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop';
+            };
+        }
+        
+        console.log('✅ Evento cargado para editar:', evento);
+    } catch (error) {
+        Swal.close();
+        console.error('❌ Error al cargar evento:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al cargar el evento',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '/host/event-crud';
+        });
+    }
 };
 
-// Convertir imagen a Base64
+// ============================================
+// 💾 GUARDAR CAMBIOS EN FIRESTORE
+// ============================================
+const updateEvento = async (event) => {
+    event.preventDefault();
+    
+    const id = document.getElementById('eventoId').value;
+    const nombre = document.getElementById('title').value.trim();
+    
+    if (!nombre) {
+        Swal.fire({
+            title: 'Campo Requerido',
+            text: 'Por favor completa el nombre del evento',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Guardando cambios...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
+    try {
+        const updateData = {
+            nombre: nombre
+        };
+        
+        if (selectedImageFile) {
+            try {
+                const base64Image = await convertImageToBase64(selectedImageFile);
+                updateData.imagenUrl = base64Image;
+            } catch (error) {
+                console.error('Error al convertir la imagen:', error);
+                Swal.close();
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error al procesar la imagen',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+        }
+        
+        const result = await eventService.actualizarEvento(id, updateData);
+        Swal.close();
+        
+        if (result.success) {
+            await Swal.fire({
+                title: '¡Éxito!',
+                text: 'Evento actualizado exitosamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            window.location.href = '/host/event-crud';
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: result.error || 'Error al actualizar el evento',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('❌ Error al guardar:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al guardar los cambios',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+};
+
+// ============================================
+// 🖼️ CONVERTIR IMAGEN A BASE64
+// ============================================
 const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -60,7 +212,9 @@ const convertImageToBase64 = (file) => {
     });
 };
 
-// Mostrar vista previa de la nueva imagen
+// ============================================
+// 🖼️ CONFIGURAR VISTA PREVIA DE IMAGEN
+// ============================================
 const setupImagePreview = () => {
     const imageInput = document.getElementById('eventImage');
     const newImagePreviewGroup = document.getElementById('newImagePreviewGroup');
@@ -70,11 +224,10 @@ const setupImagePreview = () => {
         imageInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                // Validar tamaño (máximo 5MB)
                 if (file.size > 5 * 1024 * 1024) {
                     Swal.fire({
                         title: 'Error',
-                        text: 'La imagen es demasiado grande. El tamaño máximo es 5MB.',
+                        text: 'La imagen es demasiado grande. Máximo 5MB.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
@@ -82,7 +235,6 @@ const setupImagePreview = () => {
                     return;
                 }
                 
-                // Validar tipo
                 const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
                 if (!validTypes.includes(file.type)) {
                     Swal.fire({
@@ -111,107 +263,9 @@ const setupImagePreview = () => {
     }
 };
 
-const getEventoToEdit = () => {
-    const eventoId = localStorage.getItem('eventoParaEditar');
-    
-    if (eventoId) {
-        const evento = eventos.find(e => e.id === parseInt(eventoId));
-        if (evento) {
-            document.getElementById('eventoId').value = evento.id;
-            document.getElementById('title').value = evento.title;
-            
-            // Mostrar datos de solo lectura (NO EDITABLES)
-            document.getElementById('date').value = evento.date;
-            document.getElementById('attendees').value = `${evento.attendees} asistentes`;
-            document.getElementById('uploadedPhotos').value = `${evento.uploadedPhotos} fotos`;
-            
-            // Mostrar la imagen actual
-            const currentImage = document.getElementById('currentImage');
-            if (currentImage) {
-                currentImage.src = evento.img;
-            }
-        } else {
-            Swal.fire({
-                title: 'Error',
-                text: 'Evento no encontrado',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '/host/event-crud';
-            });
-        }
-        localStorage.removeItem('eventoParaEditar');
-    } else {
-        Swal.fire({
-            title: 'Error',
-            text: 'No se ha seleccionado ningún evento para editar',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            window.location.href = '/host/event-crud';
-        });
-    }
-};
-
-const updateEvento = async (event) => {
-    event.preventDefault();
-    
-    const id = parseInt(document.getElementById('eventoId').value);
-    const title = document.getElementById('title').value.trim();
-    
-    if (!title) {
-        Swal.fire({
-            title: 'Campo Requerido',
-            text: 'Por favor completa el nombre del evento',
-            icon: 'warning',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    
-    if (id) {
-        const index = eventos.findIndex(e => e.id === id);
-        if (index !== -1) {
-            // Actualizar nombre
-            eventos[index].title = title;
-            
-            // Actualizar imagen si se seleccionó una nueva
-            if (selectedImageFile) {
-                try {
-                    const base64Image = await convertImageToBase64(selectedImageFile);
-                    eventos[index].img = base64Image;
-                } catch (error) {
-                    console.error('Error al convertir la imagen:', error);
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'Error al procesar la imagen. Por favor intenta de nuevo.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    return;
-                }
-            }
-            
-            saveEventos();
-            Swal.fire({
-                title: '¡Éxito!',
-                text: 'Evento actualizado exitosamente',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            }).then(() => {
-                window.location.href = '/host/event-crud';
-            });
-        } else {
-            Swal.fire({
-                title: 'Error',
-                text: 'No se encontró el evento',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    }
-};
-
+// ============================================
+// 🔙 CANCELAR Y VOLVER
+// ============================================
 const cancelEdit = () => {
     Swal.fire({
         title: '¿Cancelar edición?',
@@ -246,9 +300,19 @@ const goBack = () => {
     });
 };
 
-export function eventEditFormController() {
-    loadEventos();
-    getEventoToEdit();
+// ============================================
+// 🚀 CONTROLADOR PRINCIPAL
+// ============================================
+export async function eventEditFormController() {
+    console.log('🔥 Controlador eventEditFormController iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        window.location.href = '/login';
+        return;
+    }
+
+    await loadEventToForm();
     setupImagePreview();
     
     const form = document.getElementById('eventoEditForm');
@@ -265,6 +329,8 @@ export function eventEditFormController() {
     if (btnVolver) {
         btnVolver.addEventListener('click', goBack);
     }
+    
+    console.log('✅ EventEditForm Controller finalizado');
 }
 
 export default eventEditFormController;

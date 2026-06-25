@@ -1,5 +1,5 @@
+/* src/css/components/navbar.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 :root {
     --snaap-z-navbar: 1000;
@@ -17,8 +17,10 @@
     --snaap-font-size-xs: 12px;
 }
 
-/* Estilos navbar visitante */
-.snaap-navbar {
+/* ============================================
+   NAVBAR UNIFICADO
+   ============================================ */
+.snaap-navbar-unified {
     position: fixed;
     top: 0;
     left: 0;
@@ -28,14 +30,24 @@
     z-index: var(--snaap-z-navbar);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    background: rgba(0, 0, 0, 0.3);
     border-bottom: var(--snaap-border-glass);
     font-family: var(--snaap-font-family);
     padding: 0 5%;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-container {
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* ============================================
+   LOGO
+   ============================================ */
 .snaap-logo {
     font-size: 32px;
     font-weight: 800;
@@ -44,6 +56,7 @@
     letter-spacing: -1px;
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .snaap-logo .neon-aa {
@@ -53,35 +66,43 @@
     margin: 0 2px;
 }
 
+/* ============================================
+   MENÚ
+   ============================================ */
 .snaap-menu {
     display: flex;
     list-style: none;
-    gap: 12px;
+    gap: 8px;
     margin: 0;
     padding: 0;
     align-items: center;
+    flex-wrap: wrap;
 }
 
+/* ============================================
+   BOTONES
+   ============================================ */
 .snaap-btn {
     background: transparent;
     border: var(--snaap-border-neon);
-    padding: 6px 16px;
-    width: auto;
-    min-width: 100px;
+    padding: 6px 14px;
+    min-width: 80px;
     border-radius: var(--snaap-radius-pill);
     color: var(--snaap-text-white);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     text-transform: capitalize;
     transition: var(--snaap-transition);
     box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
     animation: neonPulse 2.5s infinite alternate;
     white-space: nowrap;
+    cursor: pointer;
+    font-family: var(--snaap-font-family);
 }
 
 @keyframes neonPulse {
@@ -92,7 +113,7 @@
 .snaap-btn i {
     color: var(--snaap-azul-claro);
     transition: color var(--snaap-transition-fast);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .snaap-btn:hover {
@@ -109,14 +130,42 @@
     filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
+/* ============================================
+   BOTÓN CERRAR SESIÓN (estilo especial)
+   ============================================ */
+#logout-btn {
+    border-color: rgba(255, 0, 170, 0.3);
+}
+
+#logout-btn:hover {
+    border-color: var(--snaap-rosa);
+    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+}
+
+#logout-btn i {
+    color: var(--snaap-rosa);
+}
+
+#logout-btn:hover i {
+    color: var(--snaap-rosa);
+    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+/* ============================================
+   HAMBURGUESA
+   ============================================ */
 .snaap-burger {
     display: none;
     color: var(--snaap-text-white);
     font-size: 28px;
     cursor: pointer;
     z-index: 10001;
+    padding: 5px 10px;
 }
 
+/* ============================================
+   FOOTER (móvil)
+   ============================================ */
 .snaap-footer-item {
     display: none;
 }
@@ -130,138 +179,15 @@
     letter-spacing: 0.5px;
 }
 
-/* Estilos navbar host */
-.snaap-navbar-host {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 80px;
-    box-sizing: border-box;
-    z-index: var(--snaap-z-navbar);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: var(--snaap-border-glass);
-    font-family: var(--snaap-font-family);
-    padding: 0 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.snaap-logo-host {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--snaap-text-white);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.sn-glow-host {
-    color: var(--snaap-azul-claro);
-    text-shadow: 0 0 5px var(--snaap-azul);
-}
-
-.aa-neonblue-host {
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--snaap-azul-claro);
-    filter: drop-shadow(0 0 8px var(--snaap-azul));
-}
-
-.p-solid-host {
-    color: var(--snaap-text-white);
-}
-
-.host-badge {
-    font-size: 12px;
-    background: linear-gradient(135deg, var(--snaap-azul), var(--snaap-rosa));
-    padding: 2px 8px;
-    border-radius: 20px;
-    margin-left: 8px;
-    font-weight: 600;
-}
-
-.snaap-menu-host {
-    display: flex;
-    list-style: none;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    align-items: center;
-}
-
-.snaap-btn-host {
-    background: transparent;
-    border: var(--snaap-border-neon);
-    padding: 6px 16px;
-    width: auto;
-    min-width: 100px;
-    border-radius: var(--snaap-radius-pill);
-    color: var(--snaap-text-white);
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-transform: capitalize;
-    transition: var(--snaap-transition);
-    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
-    animation: neonPulse 2.5s infinite alternate;
-    white-space: nowrap;
-}
-
-.snaap-btn-host i {
-    color: var(--snaap-azul-claro);
-    transition: color var(--snaap-transition-fast);
-    font-size: 0.9rem;
-}
-
-.snaap-btn-host:hover {
-    border-color: var(--snaap-rosa);
-    background: transparent;
-    transform: translateY(-3px);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    animation: none;
-    color: var(--snaap-text-white);
-}
-
-.snaap-btn-host:hover i {
-    color: var(--snaap-rosa);
-    filter: drop-shadow(0 0 5px var(--snaap-rosa));
-}
-
-.snaap-burger-host {
-    display: none;
-    color: var(--snaap-text-white);
-    font-size: 28px;
-    cursor: pointer;
-    z-index: 10001;
-}
-
-.snaap-footer-item-host {
-    display: none;
-}
-
-.snaap-footer-link-host {
-    text-align: center;
-    padding: var(--snaap-spacing-lg);
-    font-size: var(--snaap-font-size-xs);
-    color: rgba(255, 255, 255, 0.6);
-    text-decoration: none;
-    letter-spacing: 0.5px;
-}
-
-/* Responsive para ambos navbars */
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1024px) {
-    .snaap-burger, .snaap-burger-host { 
-        display: block; 
+    .snaap-burger {
+        display: block;
     }
-    
-    .snaap-menu, .snaap-menu-host {
+
+    .snaap-menu {
         position: fixed;
         top: 0;
         right: -100%;
@@ -272,40 +198,46 @@
         flex-direction: column;
         justify-content: center;
         transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-        gap: 20px;
-        padding: 0;
+        gap: 15px;
+        padding: 20px;
+        overflow-y: auto;
     }
-    
-    .snaap-menu.active, .snaap-menu-host.active { 
-        right: 0; 
+
+    .snaap-menu.active {
+        right: 0;
     }
-    
-    .snaap-btn, .snaap-btn-host {
+
+    .snaap-btn {
         font-size: 1rem;
         padding: 10px 20px;
-        min-width: 180px;
+        min-width: 200px;
         white-space: nowrap;
     }
-    
-    .snaap-footer-item, .snaap-footer-item-host {
+
+    .snaap-footer-item {
         display: block;
         list-style: none;
-        margin-top: 40px;
+        margin-top: 30px;
     }
-    
-    .snaap-footer-link, .snaap-footer-link-host {
+
+    .snaap-footer-link {
         display: block;
     }
 }
 
 @media (max-width: 480px) {
-    .snaap-btn, .snaap-btn-host {
-        min-width: 150px;
+    .snaap-btn {
+        min-width: 160px;
         font-size: 0.9rem;
         padding: 8px 16px;
     }
-    
-    .snaap-logo, .snaap-logo-host {
+
+    .snaap-logo {
         font-size: 26px;
+    }
+
+    .snaap-navbar-unified {
+        padding: 0 4%;
+        height: 70px;
     }
 }

@@ -15,9 +15,11 @@
     <!-- SweetAlert2 Estilos SNAAP -->
     <link rel="stylesheet" href="/src/css/components/sweetalert.css">
     
-    <!-- CSS Global y componentes persistentes (navbar + footer) -->
+    <!-- 🔥 CSS del navbar unificado -->
+    <link rel="stylesheet" href="/src/css/components/navbar.css">
+    
+    <!-- CSS Global y componentes persistentes -->
     <link rel="stylesheet" href="/src/css/main.css">
-    <!-- Los CSS específicos de cada página se cargarán dinámicamente desde el router o los controladores -->
 </head>
 
 <body>
@@ -28,12 +30,16 @@
         </video>
     </div>
 
-    <!-- Elementos donde se inyectarán el navbar y el footer -->
-    <div id="navbar"></div>
+    <!-- 🔥 CONTENEDOR DEL NAVBAR (UNIFICADO) -->
+    <div id="navbar-container"></div>
+    
+    <!-- CONTENIDO PRINCIPAL -->
     <main id="app"></main>
+    
+    <!-- FOOTER -->
     <div id="footer"></div>
     
-    <!-- Script principal (carga layout e inicia router) -->
+    <!-- Script principal -->
     <script type="module" src="/src/main.js"></script>
 </body>
 </html>
