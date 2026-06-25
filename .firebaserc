@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "snaap": "snaap-mx",
+    "default": "snaap-mx"
+  },
+  "targets": {},
+  "etags": {}
+}
