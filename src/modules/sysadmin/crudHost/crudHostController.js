@@ -1,8 +1,33 @@
-export function crudHostController() {
+// src/modules/sysadmin/crudHost/crudHostController.js
+import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js';
+
+export async function crudHostController() {
+    console.log('🔥 CRUD Host Controller iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    const user = userService.getCurrentUser();
+    
+    if (user.role !== 'sysadmin') {
+        Swal.fire({
+            title: 'Acceso Denegado',
+            text: 'No tienes permisos de administrador',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '/';
+        });
+        return;
+    }
+
     loadStyles();
-    loadHosts();
+    await loadHosts();
     setupEventListeners();
-    checkAdminSession();
 }
 
 let currentHosts = [];
@@ -22,19 +47,41 @@ function loadStyles() {
     });
 }
 
-function loadHosts() {
-    const allUsers = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-    currentHosts = allUsers.filter(user => user.role === 'host');
-    renderHostsTable();
+// ============================================
+// 📥 CARGAR HOSTS DESDE FIRESTORE
+// ============================================
+async function loadHosts() {
+    const tbody = document.getElementById('hostsTableBody');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="8" class="loading-text">Cargando hosts...</td></tr>';
+    }
+
+    try {
+        const allUsers = await userRepository.getAllUsers();
+        console.log('📊 Todos los usuarios:', allUsers);
+        
+        currentHosts = allUsers.filter(u => u.role === 'host');
+        
+        console.log(`📊 ${currentHosts.length} hosts encontrados en Firestore`);
+        renderHostsTable();
+    } catch (error) {
+        console.error('Error al cargar hosts:', error);
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="8" class="loading-text error">Error al cargar hosts</td></tr>';
+        }
+    }
 }
 
+// ============================================
+// 🖼️ RENDERIZAR TABLA DE HOSTS
+// ============================================
 function renderHostsTable() {
     const searchTerm = document.getElementById('searchHost')?.value.toLowerCase() || '';
     const tbody = document.getElementById('hostsTableBody');
     
     let filteredHosts = currentHosts.filter(host => 
-        host.username.toLowerCase().includes(searchTerm) ||
-        host.email.toLowerCase().includes(searchTerm)
+        host.username?.toLowerCase().includes(searchTerm) ||
+        host.email?.toLowerCase().includes(searchTerm)
     );
     
     if (!tbody) return;
@@ -46,21 +93,21 @@ function renderHostsTable() {
     
     tbody.innerHTML = filteredHosts.map(host => `
         <tr>
-            <td>${host.id}</td>
-            <td><i class="fas fa-user-circle"></i> ${escapeHtml(host.username)}</td>
-            <td>${escapeHtml(host.email)}</td>
+            <td>${host.id?.substring(0, 8) || host.uid?.substring(0, 8) || 'N/A'}</td>
+            <td><i class="fas fa-user-circle"></i> ${escapeHtml(host.username || 'Sin nombre')}</td>
+            <td>${escapeHtml(host.email || '')}</td>
             <td>${host.eventsCreated || 0}</td>
             <td>${host.totalAttendees || 0}</td>
-            <td><span class="status-badge status-${host.status}">${getStatusText(host.status)}</span></td>
-            <td>${new Date(host.createdAt).toLocaleDateString()}</td>
+            <td><span class="status-badge status-${host.status || 'active'}">${getStatusText(host.status || 'active')}</span></td>
+            <td>${host.createdAt ? new Date(host.createdAt).toLocaleDateString() : 'No registrado'}</td>
             <td class="actions-cell">
-                <button class="btn-action view-host" data-id="${host.id}" title="Ver">
+                <button class="btn-action view-host" data-id="${host.id || host.uid}" title="Ver">
                     <i class="fas fa-eye"></i>
                 </button>
-                <button class="btn-action edit-host" data-id="${host.id}" title="Editar">
+                <button class="btn-action edit-host" data-id="${host.id || host.uid}" title="Editar">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn-action delete-host" data-id="${host.id}" title="Eliminar">
+                <button class="btn-action delete-host" data-id="${host.id || host.uid}" title="Eliminar">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
@@ -68,90 +115,132 @@ function renderHostsTable() {
     `).join('');
     
     document.querySelectorAll('.view-host').forEach(btn => {
-        btn.addEventListener('click', () => viewHost(parseInt(btn.dataset.id)));
+        btn.addEventListener('click', () => viewHost(btn.dataset.id));
     });
     document.querySelectorAll('.edit-host').forEach(btn => {
-        btn.addEventListener('click', () => editHost(parseInt(btn.dataset.id)));
+        btn.addEventListener('click', () => editHost(btn.dataset.id));
     });
     document.querySelectorAll('.delete-host').forEach(btn => {
-        btn.addEventListener('click', () => deleteHost(parseInt(btn.dataset.id)));
+        btn.addEventListener('click', () => deleteHost(btn.dataset.id));
     });
 }
 
+// ============================================
+// 🔧 CONFIGURAR EVENTOS
+// ============================================
 function setupEventListeners() {
     document.getElementById('createHostBtn')?.addEventListener('click', () => {
-        window.location.href = '/sysadmin/hosts/create';
+        if (typeof window.navigateTo === 'function') {
+            window.navigateTo('/sysadmin/hosts/create');
+        } else {
+            window.location.href = '/sysadmin/hosts/create';
+        }
     });
+    
     document.getElementById('searchHost')?.addEventListener('input', () => renderHostsTable());
 }
 
-async function viewHost(hostId) {
-    const host = currentHosts.find(h => h.id === hostId);
-    if (!host) return;
+// ============================================
+// 👁️ VER HOST (REDIRIGE A PÁGINA DE DETALLES)
+// ============================================
+function viewHost(hostId) {
+    console.log('🔍 Ver detalles del host:', hostId);
     
-    await Swal.fire({
-        title: 'Detalles del Host',
-        html: `
-            Usuario: ${escapeHtml(host.username)}
-            Email: ${escapeHtml(host.email)}
-            Teléfono: ${host.phone || 'No registrado'}
-            Empresa: ${host.company || 'No registrada'}
-            Eventos: ${host.eventsCreated || 0}
-            Asistentes: ${host.totalAttendees || 0}
-            Estado: ${getStatusText(host.status)}
-            Registro: ${new Date(host.createdAt).toLocaleDateString()}
-        `,
-        icon: 'info',
-        confirmButtonText: 'Cerrar'
-    });
-}
-
-function editHost(hostId) {
-    window.location.href = `/sysadmin/hosts/edit?id=${hostId}`;
-}
-
-async function deleteHost(hostId) {
-    const host = currentHosts.find(h => h.id === hostId);
-    if (!host) return;
-    
-    const result = await Swal.fire({
-        title: '¿Eliminar Host?',
-        text: `¿Estás seguro de eliminar al host ${host.username}? Esta acción no se puede deshacer.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (result.isConfirmed) {
-        const allUsers = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-        const filteredUsers = allUsers.filter(u => u.id !== hostId);
-        localStorage.setItem('snaap_users', JSON.stringify(filteredUsers));
-        
-        await Swal.fire({
-            title: 'Eliminado',
-            text: 'El host ha sido eliminado correctamente',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-        
-        loadHosts();
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(`/sysadmin/host-details?id=${hostId}`);
+    } else {
+        window.location.href = `/sysadmin/host-details?id=${hostId}`;
     }
 }
 
-async function checkAdminSession() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    if (!currentUser || currentUser.role !== 'sysadmin') {
-        await Swal.fire({
-            title: 'Acceso Denegado',
-            text: 'No tienes permisos de administrador',
+// ============================================
+// ✏️ EDITAR HOST
+// ============================================
+function editHost(hostId) {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(`/sysadmin/hosts/edit?id=${hostId}`);
+    } else {
+        window.location.href = `/sysadmin/hosts/edit?id=${hostId}`;
+    }
+}
+
+// ============================================
+// 🗑️ ELIMINAR HOST
+// ============================================
+async function deleteHost(hostId) {
+    try {
+        console.log('🔍 ID del host a eliminar:', hostId);
+        
+        if (!hostId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'ID de host no válido',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        const host = await userRepository.getById(hostId);
+        if (!host) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Host no encontrado',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        const result = await Swal.fire({
+            title: '¿Eliminar Host?',
+            text: `¿Estás seguro de eliminar al host ${host.username}? Esta acción no se puede deshacer.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+        
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Eliminando...',
+                text: 'Por favor espera',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            console.log('🗑️ Eliminando host con ID:', hostId);
+            await userRepository.delete(hostId);
+            console.log('✅ Host eliminado correctamente');
+            
+            Swal.close();
+            
+            await Swal.fire({
+                title: 'Eliminado',
+                text: 'El host ha sido eliminado correctamente',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            
+            await loadHosts();
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('Error al eliminar host:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el host: ' + error.message,
             icon: 'error',
             confirmButtonText: 'OK'
         });
-        window.location.href = '/';
     }
 }
 
+// ============================================
+// 🔧 UTILIDADES
+// ============================================
 function getStatusText(status) {
     const statuses = {
         active: 'Activo',
@@ -170,3 +259,5 @@ function escapeHtml(str) {
         return m;
     });
 }
+
+export default crudHostController;

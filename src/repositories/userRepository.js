@@ -89,6 +89,21 @@ class UserRepository {
     }
   }
 
+  // 🔍 OBTENER TODOS LOS USUARIOS 🔥 NUEVO
+  async getAllUsers() {
+    try {
+      const querySnapshot = await getDocs(this.collectionRef);
+      const users = [];
+      querySnapshot.forEach((doc) => {
+        users.push(User.fromFirestore(doc));
+      });
+      return users;
+    } catch (error) {
+      console.error('Error al obtener todos los usuarios:', error);
+      throw error;
+    }
+  }
+
   // ✏️ ACTUALIZAR usuario
   async update(user) {
     try {

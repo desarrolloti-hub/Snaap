@@ -6,10 +6,8 @@ import { packagesController } from '../modules/visitor/packages/packagesControll
 import { init404Controller } from '../modules/shared/errors/404Controller.js';
 import { termsController } from '../modules/visitor/terms/termsController.js';
 import { homeHostController } from '../modules/host/homeHost/homeHostController.js';
-// ❌ ELIMINADA: import { navbarController } from '../modules/visitor/layout/navbarController.js';
 import { initCreateEvent } from '../modules/host/createEvent/createEventController.js';
 import { carroucelEventsController } from '../modules/host/carroucelEvents/carroucelEventsController.js';
-// ❌ ELIMINADA: import { navbarHostController } from '../modules/host/layout/navbarHostController.js';
 import { registerController } from '../modules/visitor/register/registerController.js';
 import { eventCrudController } from '../modules/host/eventCrud/eventCrudController.js';
 import { eventEditFormController } from '../modules/host/eventEditForm/eventEditFormController.js';
@@ -25,11 +23,12 @@ import { adminFormController } from '../modules/sysadmin/adminForm/adminFormCont
 import { adminEditController } from '../modules/sysadmin/adminEdit/adminEditController.js';
 import { profileAdminController } from '../modules/sysadmin/profileAdmin/profileAdminController.js';
 import { profileEditController as profileAdminEditController } from '../modules/sysadmin/profileEdit/profileEditController.js';
-
+// 🔥 IMPORT PARA HOST DETAILS
+import { hostDetailsController } from '../modules/sysadmin/hostDetails/hostDetailsController.js';
 
 export const routes = {
     // ============================================
-    // RUTAS PÚBLICAS
+    // 🏠 RUTAS PÚBLICAS
     // ============================================
     "/": {
         view: "/public/modules/visitor/home/home.html",
@@ -57,7 +56,7 @@ export const routes = {
     },
 
     // ============================================
-    //  RUTAS DE HOST
+    // 🎤 RUTAS DE HOST
     // ============================================
     "/host": {
         view: "/public/modules/host/homeHost/homeHost.html",
@@ -93,7 +92,7 @@ export const routes = {
     },
 
     // ============================================
-    //  RUTAS DE SYSADMIN
+    // 👑 RUTAS DE SYSADMIN
     // ============================================
     "/sysadmin/home": {
         view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
@@ -110,6 +109,11 @@ export const routes = {
     "/sysadmin/hosts/edit": {
         view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
         controller: hostEditController,
+    },
+    // 🔥 RUTA PARA DETALLES DE HOST (CON ID EN LA URL)
+    "/sysadmin/host-details": {
+        view: "/public/modules/sysadmin/hostDetails/hostDetails.html",
+        controller: hostDetailsController,
     },
     "/sysadmin/admins": {
         view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
