@@ -1,3 +1,18 @@
+/* src/css/components/profileAdmin.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(ellipse at center, #0a0a14 0%, #000000 100%);
+    min-height: 100vh;
+}
+
 .profile-admin-container {
     padding: 120px 40px 40px 40px;
     max-width: 800px;
@@ -22,7 +37,7 @@
 }
 
 .profile-header h1 {
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     margin-bottom: 10px;
     font-size: 2rem;
     display: flex;
@@ -31,7 +46,7 @@
 }
 
 .profile-header h1 i {
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
 }
 
 .profile-header p {
@@ -54,7 +69,7 @@
 
 .profile-avatar i {
     font-size: 80px;
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
 }
 
 .profile-info .info-row {
@@ -78,7 +93,7 @@
 
 .profile-info .info-group label i {
     margin-right: 8px;
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
 }
 
 .profile-info .info-group p {
@@ -102,14 +117,14 @@
 }
 
 /* ============================================
-   BOTÓN EDITAR - AZUL CON HOVER ROSA
+   BOTÓN EDITAR
    ============================================ */
 .btn-edit {
     background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
+    border: 2px solid #4db8ff;
     border-radius: 50px;
     padding: 12px 28px;
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
@@ -121,19 +136,19 @@
 }
 
 .btn-edit i {
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
     transition: all 0.3s ease;
 }
 
 .btn-edit:hover {
     background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
+    border-color: #ff007a;
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
 }
 
 .btn-edit:hover i {
-    color: rgba(255, 0, 122, 1);
+    color: #ff007a;
 }
 
 @media (max-width: 768px) {
@@ -143,7 +158,7 @@
     
     .profile-info .info-row {
         grid-template-columns: 1fr;
-        gap: 0;
+        gap: 15px;
     }
     
     .profile-card {

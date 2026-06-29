@@ -1,16 +1,22 @@
-export function profileEditController() {
-    loadProfileData();
-    setupEventListeners();
-    checkAdminSession();
-}
+// src/modules/sysadmin/profileEdit/profileEditController.js
+import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js';
 
-function loadProfileData() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
+export async function profileEditController() {
+    console.log('🔥 Profile Edit Admin Controller iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    const user = userService.getCurrentUser();
     
-    if (!currentUser) {
+    if (user.role !== 'sysadmin') {
         Swal.fire({
-            title: 'Error',
-            text: 'No has iniciado sesión',
+            title: 'Acceso Denegado',
+            text: 'No tienes permisos de administrador',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
@@ -18,57 +24,66 @@ function loadProfileData() {
         });
         return;
     }
-    
-    const usernameInput = document.getElementById('profileUsername');
-    const emailInput = document.getElementById('profileEmail');
-    const phoneInput = document.getElementById('profilePhone');
-    const departmentInput = document.getElementById('profileDepartment');
-    const notesInput = document.getElementById('profileNotes');
-    
-    if (usernameInput) usernameInput.value = currentUser.username || '';
-    if (emailInput) emailInput.value = currentUser.email || '';
-    if (phoneInput) phoneInput.value = currentUser.phone || '';
-    if (departmentInput) departmentInput.value = currentUser.department || '';
-    if (notesInput) notesInput.value = currentUser.notes || '';
+
+    await loadProfileData(user.uid);
+    setupEventListeners();
 }
 
-function setupEventListeners() {
-    const cancelBtn = document.getElementById('cancelBtn');
-    const profileForm = document.getElementById('profileForm');
-    
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            window.location.href = '/sysadmin/profile';
+async function loadProfileData(uid) {
+    try {
+        const userData = await userRepository.getByUid(uid);
+        
+        if (!userData) {
+            console.warn('⚠️ Usuario no encontrado en Firestore');
+            return;
+        }
+
+        console.log('📥 Datos del admin para editar:', userData);
+
+        const usernameEl = document.getElementById('editUsername');
+        const emailEl = document.getElementById('editEmail');
+        const phoneEl = document.getElementById('editPhone');
+        const departmentEl = document.getElementById('editDepartment');
+        const notesEl = document.getElementById('editNotes');
+
+        if (usernameEl) usernameEl.value = userData.username || '';
+        if (emailEl) emailEl.value = userData.email || '';
+        if (phoneEl) phoneEl.value = userData.phone || '';
+        if (departmentEl) departmentEl.value = userData.department || userData.company || '';
+        if (notesEl) notesEl.value = userData.bio || userData.notes || '';
+
+    } catch (error) {
+        console.error('❌ Error al cargar perfil:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudieron cargar los datos del perfil',
+            icon: 'error',
+            confirmButtonText: 'OK'
         });
-    }
-    
-    if (profileForm) {
-        profileForm.addEventListener('submit', saveProfile);
     }
 }
 
 async function saveProfile(e) {
     e.preventDefault();
-    
-    const username = document.getElementById('profileUsername')?.value.trim();
-    const email = document.getElementById('profileEmail')?.value.trim();
-    const phone = document.getElementById('profilePhone')?.value.trim();
-    const department = document.getElementById('profileDepartment')?.value.trim();
-    const notes = document.getElementById('profileNotes')?.value.trim();
-    
-    // Validaciones
-    if (!username || !email) {
-        await Swal.fire({
-            title: 'Campos requeridos',
-            text: 'El nombre de usuario y el correo electrónico son obligatorios',
+
+    const username = document.getElementById('editUsername').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const department = document.getElementById('editDepartment').value.trim();
+    const notes = document.getElementById('editNotes').value.trim();
+
+    if (!username || username.length < 3) {
+        Swal.fire({
+            title: 'Nombre inválido',
+            text: 'El nombre debe tener al menos 3 caracteres',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
         return;
     }
-    
-    if (!email.includes('@') || !email.includes('.')) {
-        await Swal.fire({
+
+    if (!email || !userService.isValidEmail(email)) {
+        Swal.fire({
             title: 'Email inválido',
             text: 'Por favor ingresa un correo electrónico válido',
             icon: 'warning',
@@ -76,79 +91,93 @@ async function saveProfile(e) {
         });
         return;
     }
-    
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    
-    if (!currentUser) {
-        await Swal.fire({
-            title: 'Error',
-            text: 'No has iniciado sesión',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    
-    const allUsers = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-    
-    // Verificar si el email ya existe en otro usuario
-    const emailExists = allUsers.some(u => u.email === email && u.id !== currentUser.id);
-    if (emailExists) {
-        await Swal.fire({
-            title: 'Email duplicado',
-            text: 'Este correo electrónico ya está registrado por otro usuario',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    
-    // Verificar si el username ya existe en otro usuario
-    const usernameExists = allUsers.some(u => u.username === username && u.id !== currentUser.id);
-    if (usernameExists) {
-        await Swal.fire({
-            title: 'Usuario duplicado',
-            text: 'Este nombre de usuario ya está registrado por otro usuario',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
-    }
-    
-    // Actualizar datos del usuario
-    currentUser.username = username;
-    currentUser.email = email;
-    currentUser.phone = phone || '';
-    currentUser.department = department || '';
-    currentUser.notes = notes || '';
-    
-    // Actualizar en la lista de usuarios
-    const userIndex = allUsers.findIndex(u => u.id === currentUser.id);
-    if (userIndex !== -1) {
-        allUsers[userIndex] = currentUser;
-        localStorage.setItem('snaap_users', JSON.stringify(allUsers));
-        localStorage.setItem('snaap_current_user', JSON.stringify(currentUser));
-    }
-    
-    await Swal.fire({
-        title: '¡Perfil actualizado!',
-        text: 'Tus datos han sido guardados correctamente',
-        icon: 'success',
-        confirmButtonText: 'OK'
+
+    Swal.fire({
+        title: 'Guardando cambios...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
-    
-    window.location.href = '/sysadmin/profile';
+
+    try {
+        const updateData = {
+            username: username,
+            email: email,
+            phone: phone || '',
+            company: department || '',
+            bio: notes || '',
+            department: department || ''
+        };
+
+        const result = await userService.actualizarPerfil(updateData);
+        Swal.close();
+
+        if (result.success) {
+            document.dispatchEvent(new CustomEvent('auth:changed', {
+                detail: {
+                    user: result.user,
+                    role: result.user.role,
+                    isAuthenticated: true
+                }
+            }));
+
+            await Swal.fire({
+                title: '¡Perfil actualizado!',
+                text: 'Tus datos han sido guardados correctamente',
+                icon: 'success',
+                confirmButtonText: 'Ver perfil'
+            });
+
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/sysadmin/profile');
+            } else {
+                window.location.href = '/sysadmin/profile';
+            }
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: result.error || 'Error al guardar los cambios',
+                icon: 'error',
+                confirmButtonText: 'Intentar de nuevo'
+            });
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('❌ Error al guardar:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Ocurrió un error al guardar los cambios',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
 }
 
-async function checkAdminSession() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    if (!currentUser || currentUser.role !== 'sysadmin') {
-        await Swal.fire({
-            title: 'Acceso Denegado',
-            text: 'No tienes permisos de administrador',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        window.location.href = '/';
+function goBack() {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo('/sysadmin/profile');
+    } else {
+        window.location.href = '/sysadmin/profile';
     }
 }
+
+function setupEventListeners() {
+    const form = document.getElementById('editProfileForm');
+    if (form) {
+        form.addEventListener('submit', saveProfile);
+    }
+
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', goBack);
+    }
+
+    const btnVolver = document.getElementById('btnVolver');
+    if (btnVolver) {
+        btnVolver.addEventListener('click', goBack);
+    }
+}
+
+export default profileEditController;

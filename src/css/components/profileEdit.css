@@ -1,3 +1,18 @@
+/* src/css/components/profileEditAdmin.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(ellipse at center, #0a0a14 0%, #000000 100%);
+    min-height: 100vh;
+}
+
 .profile-edit-container {
     padding: 120px 40px 40px 40px;
     max-width: 800px;
@@ -22,7 +37,7 @@
 }
 
 .profile-header h1 {
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     margin-bottom: 10px;
     font-size: 2rem;
     display: flex;
@@ -31,11 +46,44 @@
 }
 
 .profile-header h1 i {
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
 }
 
 .profile-header p {
     color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-back {
+    background: transparent;
+    border: 2px solid #4db8ff;
+    border-radius: 50px;
+    padding: 8px 20px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+    margin-bottom: 15px;
+}
+
+.btn-back i {
+    color: #4db8ff;
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateX(-3px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-back:hover i {
+    color: #ff007a;
 }
 
 .profile-card {
@@ -47,69 +95,59 @@
     border: 1px solid rgba(77, 184, 255, 0.2);
 }
 
-.profile-avatar {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.profile-avatar i {
-    font-size: 80px;
-    color: rgba(77, 184, 255, 1);
-}
-
-.profile-form .form-row {
+.form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 20px;
 }
 
-.profile-form .form-group {
-    margin-bottom: 20px;
+.form-group.full-width {
+    grid-column: 1 / -1;
 }
 
-.profile-form .form-group.full-width {
-    grid-column: span 2;
-}
-
-.profile-form .form-group label {
+.form-group label {
     display: block;
     margin-bottom: 8px;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
     font-weight: 500;
 }
 
-.profile-form .form-group label i {
+.form-group label i {
     margin-right: 8px;
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
 }
 
-.profile-form .form-group input,
-.profile-form .form-group textarea {
+.form-group input,
+.form-group textarea {
     width: 100%;
     padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(77, 184, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(77, 184, 255, 0.2);
     border-radius: 12px;
-    color: rgba(255, 255, 255, 1);
-    font-family: 'Poppins', sans-serif;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
     transition: all 0.3s ease;
-    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
     box-sizing: border-box;
 }
 
-.profile-form .form-group input:focus,
-.profile-form .form-group textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
     outline: none;
-    border-color: rgba(77, 184, 255, 1);
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
+    border-color: #4db8ff;
+    box-shadow: 0 0 15px rgba(77, 184, 255, 0.2);
 }
 
-.profile-form .form-group input::placeholder,
-.profile-form .form-group textarea::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 .form-actions {
@@ -121,50 +159,12 @@
     border-top: 1px solid rgba(77, 184, 255, 0.2);
 }
 
-/* ============================================
-   BOTÓN CANCELAR - AZUL CON HOVER ROSA
-   ============================================ */
-.btn-cancel {
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 12px 28px;
-    color: rgba(255, 255, 255, 1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-.btn-cancel i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-.btn-cancel:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-.btn-cancel:hover i {
-    color: rgba(255, 0, 122, 1);
-}
-
-/* ============================================
-   BOTÓN GUARDAR - AZUL CON HOVER ROSA
-   ============================================ */
 .btn-save {
     background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
+    border: 2px solid #4db8ff;
     border-radius: 50px;
     padding: 12px 28px;
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
@@ -176,19 +176,40 @@
 }
 
 .btn-save i {
-    color: rgba(77, 184, 255, 1);
+    color: #4db8ff;
     transition: all 0.3s ease;
 }
 
 .btn-save:hover {
     background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
+    border-color: #ff007a;
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
 }
 
 .btn-save:hover i {
-    color: rgba(255, 0, 122, 1);
+    color: #ff007a;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-cancel:hover {
+    border-color: #ff007a;
+    color: #ff007a;
+    background: rgba(255, 0, 122, 0.05);
 }
 
 @media (max-width: 768px) {
@@ -196,28 +217,21 @@
         padding: 100px 20px 20px 20px;
     }
     
-    .profile-form .form-row {
+    .form-row {
         grid-template-columns: 1fr;
-        gap: 0;
-    }
-    
-    .profile-form .form-group.full-width {
-        grid-column: span 1;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .btn-cancel, .btn-save {
-        justify-content: center;
+        gap: 15px;
     }
     
     .profile-card {
         padding: 20px;
     }
     
-    .profile-avatar i {
-        font-size: 60px;
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+        justify-content: center;
     }
 }

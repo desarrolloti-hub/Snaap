@@ -1,16 +1,22 @@
-export function profileAdminController() {
-    loadProfileData();
-    setupEventListeners();
-    checkAdminSession();
-}
+// src/modules/sysadmin/profileAdmin/profileAdminController.js
+import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js';
 
-function loadProfileData() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
+export async function profileAdminController() {
+    console.log('🔥 Profile Admin Controller iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    const user = userService.getCurrentUser();
     
-    if (!currentUser) {
+    if (user.role !== 'sysadmin') {
         Swal.fire({
-            title: 'Error',
-            text: 'No has iniciado sesión',
+            title: 'Acceso Denegado',
+            text: 'No tienes permisos de administrador',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
@@ -18,18 +24,43 @@ function loadProfileData() {
         });
         return;
     }
-    
-    const usernameEl = document.getElementById('profileUsername');
-    const emailEl = document.getElementById('profileEmail');
-    const phoneEl = document.getElementById('profilePhone');
-    const departmentEl = document.getElementById('profileDepartment');
-    const notesEl = document.getElementById('profileNotes');
-    
-    if (usernameEl) usernameEl.textContent = currentUser.username || '-';
-    if (emailEl) emailEl.textContent = currentUser.email || '-';
-    if (phoneEl) phoneEl.textContent = currentUser.phone || 'No registrado';
-    if (departmentEl) departmentEl.textContent = currentUser.department || 'No registrado';
-    if (notesEl) notesEl.textContent = currentUser.notes || 'Sin notas';
+
+    await loadProfileData(user.uid);
+    setupEventListeners();
+}
+
+async function loadProfileData(uid) {
+    try {
+        const userData = await userRepository.getByUid(uid);
+        
+        if (!userData) {
+            console.warn('⚠️ Usuario no encontrado en Firestore');
+            return;
+        }
+
+        console.log('📥 Datos del admin:', userData);
+
+        const usernameEl = document.getElementById('profileUsername');
+        const emailEl = document.getElementById('profileEmail');
+        const phoneEl = document.getElementById('profilePhone');
+        const departmentEl = document.getElementById('profileDepartment');
+        const notesEl = document.getElementById('profileNotes');
+
+        if (usernameEl) usernameEl.textContent = userData.username || '-';
+        if (emailEl) emailEl.textContent = userData.email || '-';
+        if (phoneEl) phoneEl.textContent = userData.phone || 'No registrado';
+        if (departmentEl) departmentEl.textContent = userData.department || userData.company || 'No registrado';
+        if (notesEl) notesEl.textContent = userData.bio || userData.notes || 'Sin notas';
+
+    } catch (error) {
+        console.error('❌ Error al cargar perfil:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'No se pudieron cargar los datos del perfil',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
 }
 
 function setupEventListeners() {
@@ -37,20 +68,13 @@ function setupEventListeners() {
     
     if (editBtn) {
         editBtn.addEventListener('click', () => {
-            window.location.href = '/sysadmin/profile/edit';
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/sysadmin/profile/edit');
+            } else {
+                window.location.href = '/sysadmin/profile/edit';
+            }
         });
     }
 }
 
-async function checkAdminSession() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    if (!currentUser || currentUser.role !== 'sysadmin') {
-        await Swal.fire({
-            title: 'Acceso Denegado',
-            text: 'No tienes permisos de administrador',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        window.location.href = '/';
-    }
-}
+export default profileAdminController;
