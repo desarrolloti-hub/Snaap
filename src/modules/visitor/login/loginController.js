@@ -1,6 +1,13 @@
 // src/modules/visitor/login/loginController.js
 import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js'; // 🔥 AGREGADO
 import { getRedirectPathByRole } from '../../../core/permissions.js';
+
+// 🔥 Credenciales del admin
+const ADMIN_CREDENTIALS = {
+    email: 'admin123@gmail.com',
+    password: 'Tuya5703'
+};
 
 export async function loginController() {
     console.log('🔥 Login Controller iniciado');
@@ -17,7 +24,6 @@ export async function loginController() {
         form.addEventListener('submit', handleLogin);
     }
 
-    // ✅ Botón "Crear cuenta"
     const btnRegister = document.getElementById('btn-register');
     if (btnRegister) {
         btnRegister.addEventListener('click', (e) => {
@@ -26,7 +32,6 @@ export async function loginController() {
         });
     }
 
-    // ✅ Enlace "Olvidé mi contraseña"
     const forgotLink = document.getElementById('forgot-password');
     if (forgotLink) {
         forgotLink.addEventListener('click', (e) => {
@@ -35,7 +40,6 @@ export async function loginController() {
         });
     }
 
-    // ✅ Enlace de términos
     const termsLinkInline = document.getElementById('termsLinkInline');
     if (termsLinkInline) {
         termsLinkInline.addEventListener('click', (e) => {
@@ -44,13 +48,11 @@ export async function loginController() {
         });
     }
 
-    // ✅ Google como ícono (no botón)
     const googleIcon = document.getElementById('google-login');
     if (googleIcon) {
         googleIcon.addEventListener('click', handleGoogleLogin);
     }
 
-    // ✅ Otros íconos sociales (Facebook, Apple)
     const socialIcons = document.querySelectorAll('.social-icon:not([data-social="google"])');
     socialIcons.forEach(icon => {
         icon.addEventListener('click', () => {
@@ -65,15 +67,14 @@ export async function loginController() {
     });
 }
 
-// ============================================
-// 📧 LOGIN CON EMAIL
-// ============================================
 async function handleLogin(e) {
     e.preventDefault();
 
     const email = document.getElementById('login-email').value.trim();
     const password = document.getElementById('login-password').value;
     const acceptTerms = document.getElementById('acceptTerms').checked;
+
+    console.log('🔍 Email ingresado:', email);
 
     if (!email || !password) {
         Swal.fire({
@@ -95,6 +96,9 @@ async function handleLogin(e) {
         return;
     }
 
+    const isAdmin = email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password;
+    console.log('🔍 Es admin?', isAdmin);
+
     Swal.fire({
         title: 'Iniciando sesión...',
         text: 'Por favor espera',
@@ -105,15 +109,38 @@ async function handleLogin(e) {
     });
 
     try {
-        const result = await userService.loginUsuario(email, password);
+        let result;
+
+        if (isAdmin) {
+            console.log('👑 Iniciando sesión como ADMIN');
+            result = await userService.loginUsuario(email, password);
+            
+            if (result.success) {
+                console.log('✅ Admin autenticado correctamente');
+                
+                // 🔥 FORZAR ROL SYSADMIN
+                await userService.actualizarPerfil({ role: 'sysadmin' });
+                
+                // 🔥 OBTENER USUARIO ACTUALIZADO
+                const userDoc = await userRepository.getByUid(result.user.uid);
+                userService.setUsuarioActual(userDoc);
+                
+                result.user = userDoc;
+                result.role = 'sysadmin';
+                
+                console.log('✅ Admin configurado como sysadmin correctamente');
+            }
+        } else {
+            result = await userService.loginUsuario(email, password);
+        }
+
         Swal.close();
 
         if (result.success) {
-            // ✅ Disparar evento de autenticación
             document.dispatchEvent(new CustomEvent('auth:changed', {
                 detail: {
                     user: result.user,
-                    role: result.role,
+                    role: result.role || result.user?.role || 'host',
                     isAuthenticated: true
                 }
             }));
@@ -125,31 +152,41 @@ async function handleLogin(e) {
                 confirmButtonText: 'Continuar'
             });
 
-            const redirectPath = getRedirectPathByRole(result.role);
+            const redirectPath = getRedirectPathByRole(result.role || result.user?.role || 'host');
+            console.log('🔀 Redirigiendo a:', redirectPath);
             redirectTo(redirectPath);
         } else {
             Swal.fire({
                 title: 'Error',
-                text: result.error,
+                text: result.error || 'Error al iniciar sesión',
                 icon: 'error',
                 confirmButtonText: 'Intentar de nuevo'
             });
         }
     } catch (error) {
         Swal.close();
-        console.error('Error en login:', error);
+        console.error('❌ ERROR COMPLETO:', error);
+        
+        let mensaje = 'Ocurrió un error al iniciar sesión';
+        if (error.code === 'auth/user-not-found') {
+            mensaje = 'Usuario no encontrado. Verifica tus credenciales.';
+        } else if (error.code === 'auth/wrong-password') {
+            mensaje = 'Contraseña incorrecta. Intenta de nuevo.';
+        } else if (error.code === 'auth/too-many-requests') {
+            mensaje = 'Demasiados intentos. Intenta más tarde.';
+        } else if (error.message) {
+            mensaje = error.message;
+        }
+        
         Swal.fire({
             title: 'Error',
-            text: 'Ocurrió un error al iniciar sesión',
+            text: mensaje,
             icon: 'error',
             confirmButtonText: 'OK'
         });
     }
 }
 
-// ============================================
-// 🔐 LOGIN CON GOOGLE (desde ícono)
-// ============================================
 async function handleGoogleLogin() {
     Swal.fire({
         title: 'Iniciando sesión con Google...',
@@ -165,7 +202,6 @@ async function handleGoogleLogin() {
         Swal.close();
 
         if (result.success) {
-            // ✅ Disparar evento de autenticación
             document.dispatchEvent(new CustomEvent('auth:changed', {
                 detail: {
                     user: result.user,
@@ -203,9 +239,6 @@ async function handleGoogleLogin() {
     }
 }
 
-// ============================================
-// 🔐 RECUPERAR CONTRASEÑA
-// ============================================
 async function handleForgotPassword() {
     const { value: email } = await Swal.fire({
         title: 'Recuperar Contraseña',
@@ -274,3 +307,5 @@ function redirectTo(path) {
         window.location.href = path;
     }
 }
+
+export default loginController;

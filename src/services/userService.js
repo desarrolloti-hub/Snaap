@@ -20,12 +20,20 @@ class UserService {
     this.googleProvider = new GoogleAuthProvider();
   }
 
+  setUsuarioActual(user) {
+    this.usuarioActual = user;
+    if (user) {
+      localStorage.setItem('snaap_current_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('snaap_current_user');
+    }
+  }
+
   // ============================================
   // 🔐 REGISTRO CON EMAIL
   // ============================================
   async registrarUsuario(email, password, username) {
     try {
-      // Validaciones
       if (!username || username.length < 3) {
         throw new Error('El nombre debe tener al menos 3 caracteres');
       }
@@ -36,23 +44,17 @@ class UserService {
         throw new Error('La contraseña debe tener al menos 6 caracteres');
       }
 
-      // Verificar si ya existe
       const existingUser = await userRepository.getByEmail(email);
       if (existingUser) {
         throw new Error('Ya existe un usuario con este email');
       }
 
-      // Crear en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Actualizar perfil
       await updateProfile(firebaseUser, { displayName: username });
-
-      // Enviar email de verificación
       await sendEmailVerification(firebaseUser);
 
-      // 🔥 CREAR USUARIO CON ROL 'host'
       const user = new User({
         uid: firebaseUser.uid,
         username: username,
@@ -65,8 +67,7 @@ class UserService {
       });
 
       await userRepository.create(user);
-      this.usuarioActual = user;
-      localStorage.setItem('snaap_current_user', JSON.stringify(user));
+      this.setUsuarioActual(user);
 
       return {
         success: true,
@@ -97,14 +98,11 @@ class UserService {
         throw new Error('Email y contraseña son requeridos');
       }
 
-      // Autenticar en Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Obtener de Firestore
       let user = await userRepository.getByUid(firebaseUser.uid);
 
-      // Si no existe en Firestore, crearlo con rol 'host'
       if (!user) {
         user = new User({
           uid: firebaseUser.uid,
@@ -119,13 +117,10 @@ class UserService {
         await userRepository.create(user);
       }
 
-      // Actualizar último login
       user.updateLastLogin();
       await userRepository.update(user);
 
-      // Guardar en memoria
-      this.usuarioActual = user;
-      localStorage.setItem('snaap_current_user', JSON.stringify(user));
+      this.setUsuarioActual(user);
 
       return {
         success: true,
@@ -154,10 +149,8 @@ class UserService {
       const result = await signInWithPopup(auth, this.googleProvider);
       const firebaseUser = result.user;
 
-      // Obtener de Firestore
       let user = await userRepository.getByUid(firebaseUser.uid);
 
-      // Si no existe en Firestore, crearlo con rol 'host'
       if (!user) {
         user = new User({
           uid: firebaseUser.uid,
@@ -172,13 +165,10 @@ class UserService {
         await userRepository.create(user);
       }
 
-      // Actualizar último login
       user.updateLastLogin();
       await userRepository.update(user);
 
-      // Guardar en memoria
-      this.usuarioActual = user;
-      localStorage.setItem('snaap_current_user', JSON.stringify(user));
+      this.setUsuarioActual(user);
 
       return {
         success: true,
@@ -227,8 +217,7 @@ class UserService {
   async logout() {
     try {
       await signOut(auth);
-      this.usuarioActual = null;
-      localStorage.removeItem('snaap_current_user');
+      this.setUsuarioActual(null);
       return { success: true, message: 'Sesión cerrada exitosamente' };
     } catch (error) {
       return { success: false, error: error.message };
@@ -295,12 +284,10 @@ class UserService {
           });
           await userRepository.create(user);
         }
-        this.usuarioActual = user;
-        localStorage.setItem('snaap_current_user', JSON.stringify(user));
+        this.setUsuarioActual(user);
         callback({ user: user, authenticated: true });
       } else {
-        this.usuarioActual = null;
-        localStorage.removeItem('snaap_current_user');
+        this.setUsuarioActual(null);
         callback({ user: null, authenticated: false });
       }
     });
@@ -316,29 +303,26 @@ class UserService {
         throw new Error('No hay usuario autenticado');
       }
 
-      // Obtener datos actuales de Firestore
       const userDoc = await userRepository.getByUid(user.uid);
       if (!userDoc) {
         throw new Error('Usuario no encontrado en Firestore');
       }
 
       // Actualizar campos permitidos
-      userDoc.username = userData.username || userDoc.username;
-      userDoc.phone = userData.phone || userDoc.phone;
-      userDoc.bio = userData.bio || userDoc.bio;
-      userDoc.company = userData.company || userDoc.company;
-      userDoc.website = userData.website || userDoc.website;
-      userDoc.specialty = userData.specialty || userDoc.specialty;
-      userDoc.experience = userData.experience || userDoc.experience;
-      userDoc.photoURL = userData.photoURL || userDoc.photoURL;
+      if (userData.username !== undefined) userDoc.username = userData.username;
+      if (userData.phone !== undefined) userDoc.phone = userData.phone;
+      if (userData.bio !== undefined) userDoc.bio = userData.bio;
+      if (userData.company !== undefined) userDoc.company = userData.company;
+      if (userData.website !== undefined) userDoc.website = userData.website;
+      if (userData.specialty !== undefined) userDoc.specialty = userData.specialty;
+      if (userData.experience !== undefined) userDoc.experience = userData.experience;
+      if (userData.photoURL !== undefined) userDoc.photoURL = userData.photoURL;
+      if (userData.role !== undefined) userDoc.role = userData.role; // 🔥 PERMITIR CAMBIAR ROL
       userDoc.updatedAt = new Date();
 
-      // Guardar en Firestore
       await userRepository.update(userDoc);
 
-      // Actualizar usuario actual
-      this.usuarioActual = userDoc;
-      localStorage.setItem('snaap_current_user', JSON.stringify(userDoc));
+      this.setUsuarioActual(userDoc);
 
       return {
         success: true,
