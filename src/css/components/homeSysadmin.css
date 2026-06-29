@@ -1,3 +1,4 @@
+/* src/css/components/homeSysadmin.css */
 .sysadmin-container {
     padding: 120px 40px 40px 40px;
     max-width: 1400px;
@@ -41,84 +42,12 @@
     font-size: 1rem;
 }
 
-/* Stats Cards */
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
-    margin-bottom: 50px;
-}
-
-.card {
-    background: linear-gradient(135deg, rgba(10, 10, 20, 0.9), rgba(20, 20, 40, 0.8));
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 25px 20px;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(77, 184, 255, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(77, 184, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.card:hover::before {
-    left: 100%;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(77, 184, 255, 0.8);
-    box-shadow: 0 10px 30px rgba(77, 184, 255, 0.2);
-}
-
-.card i {
-    font-size: 2.5rem;
-    color: rgba(77, 184, 255, 1);
-    margin-bottom: 15px;
-    transition: transform 0.3s ease;
-}
-
-.card:hover i {
-    transform: scale(1.1);
-}
-
-.card h3 {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-}
-
-.card p {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 1);
-    margin: 5px 0;
-}
-
-.card small {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.7rem;
-}
-
 /* Secciones */
-.recent-section, .roles-section, .events-section {
+.recent-section, .roles-section {
     margin-bottom: 50px;
 }
 
-.recent-section h2, .roles-section h2, .events-section h2 {
+.recent-section h2, .roles-section h2 {
     color: rgba(255, 255, 255, 1);
     font-size: 1.3rem;
     margin-bottom: 20px;
@@ -127,7 +56,7 @@
     gap: 10px;
 }
 
-.recent-section h2 i, .roles-section h2 i, .events-section h2 i {
+.recent-section h2 i, .roles-section h2 i {
     font-size: 1.2rem;
     color: rgba(77, 184, 255, 1);
 }
@@ -167,6 +96,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(77, 184, 255, 0.15);
+    flex-shrink: 0;
 }
 
 .activity-icon i {
@@ -184,16 +114,20 @@
     font-weight: 500;
 }
 
+.activity-message strong {
+    color: #ffffff;
+}
+
 .activity-time {
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.4);
     margin-top: 4px;
 }
 
-/* Roles Grid */
+/* Roles Grid - SOLO 2 COLUMNAS */
 .roles-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 25px;
 }
 
@@ -205,7 +139,6 @@
     text-align: center;
     transition: all 0.3s ease;
     border: 1px solid rgba(77, 184, 255, 0.2);
-    cursor: pointer;
 }
 
 .role-card:hover {
@@ -233,46 +166,12 @@
     margin: 0;
 }
 
-/* Events Table */
-.events-table-container {
-    background: rgba(10, 10, 20, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid rgba(77, 184, 255, 0.2);
+.role-card.admin i {
+    color: #ff007a;
 }
 
-.events-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.events-table th {
-    text-align: left;
-    padding: 15px 20px;
-    color: rgba(77, 184, 255, 1);
-    border-bottom: 2px solid rgba(77, 184, 255, 0.3);
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.events-table td {
-    padding: 12px 20px;
-    color: rgba(255, 255, 255, 0.85);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 0.9rem;
-}
-
-.events-table tr:hover td {
-    background: rgba(77, 184, 255, 0.08);
-}
-
-.events-table tr:last-child td {
-    border-bottom: none;
+.role-card.host i {
+    color: #4db8ff;
 }
 
 /* Loading */
@@ -281,46 +180,9 @@
     padding: 40px;
     color: rgba(255, 255, 255, 0.5);
 }
-#logoutBtn {
-    margin-top: 30px;
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 12px 30px;
-    color: rgba(255, 255, 255, 1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-#logoutBtn i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-#logoutBtn:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-#logoutBtn:hover i {
-    color: rgba(255, 0, 122, 1);
-}
 
 /* Responsive */
 @media (max-width: 1024px) {
-    .stats-cards {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-    
     .roles-grid {
         gap: 20px;
     }
@@ -331,10 +193,6 @@
         padding: 100px 20px 20px 20px;
     }
     
-    .stats-cards {
-        grid-template-columns: 1fr;
-    }
-    
     .roles-grid {
         grid-template-columns: 1fr;
     }
@@ -343,7 +201,7 @@
         font-size: 1.5rem;
     }
     
-    .card p {
+    .role-card p {
         font-size: 1.5rem;
     }
 }

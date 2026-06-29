@@ -1,11 +1,39 @@
-export function homeSysadminController() {
+// src/modules/sysadmin/homeSysadminController/homeSysadminController.js
+import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js';
+import { eventService } from '../../../services/eventService.js';
+
+export async function homeSysadminController() {
+    console.log('🔥 Home Sysadmin Controller iniciado');
+
+    // Verificar autenticación
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    const user = userService.getCurrentUser();
+    
+    // Verificar que sea admin
+    if (user.role !== 'sysadmin') {
+        Swal.fire({
+            title: 'Acceso Denegado',
+            text: 'No tienes permisos de administrador',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '/';
+        });
+        return;
+    }
+
+    // Cargar estilos
     loadStyles();
-    loadStats();
-    loadRolesDistribution();
-    loadRecentActivity();
-    loadRecentEvents();
-    setupEventListeners();
-    checkAdminSession();
+    
+    // Cargar datos desde Firestore
+    await loadRecentUsers();
+    await loadRolesDistribution();
 }
 
 // Cargar estilos necesarios
@@ -24,154 +52,128 @@ function loadStyles() {
     });
 }
 
-function loadStats() {
-    const users = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-    const events = JSON.parse(localStorage.getItem('eventos') || '[]');
-    const totalAttendees = events.reduce((sum, event) => sum + (event.attendees || 0), 0);
-    
-    const lastMonthEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        return eventDate >= lastMonth;
-    }).length;
-    
-    const previousMonthEvents = events.filter(event => {
-        const eventDate = new Date(event.date);
-        const twoMonthsAgo = new Date();
-        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-        const lastMonth = new Date();
-        lastMonth.setMonth(lastMonth.getMonth() - 1);
-        return eventDate >= twoMonthsAgo && eventDate < lastMonth;
-    }).length;
-    
-    const growthRate = previousMonthEvents === 0 ? 0 : Math.round(((lastMonthEvents - previousMonthEvents) / previousMonthEvents) * 100);
-    
-    const totalUsersEl = document.getElementById('totalUsers');
-    const totalEventsEl = document.getElementById('totalEvents');
-    const totalAttendeesEl = document.getElementById('totalAttendees');
-    const growthRateEl = document.getElementById('growthRate');
-    
-    if (totalUsersEl) totalUsersEl.textContent = users.length;
-    if (totalEventsEl) totalEventsEl.textContent = events.length;
-    if (totalAttendeesEl) totalAttendeesEl.textContent = totalAttendees;
-    if (growthRateEl) growthRateEl.textContent = `${growthRate > 0 ? '+' : ''}${growthRate}%`;
-}
-
-function loadRolesDistribution() {
-    const users = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-    
-    const sysadminCount = users.filter(u => u.role === 'sysadmin').length;
-    const hostCount = users.filter(u => u.role === 'host').length;
-    const visitorCount = users.filter(u => u.role === 'visitor').length;
-    
-    const sysadminEl = document.getElementById('sysadminCount');
-    const hostEl = document.getElementById('hostCount');
-    const visitorEl = document.getElementById('visitorCount');
-    
-    if (sysadminEl) sysadminEl.textContent = sysadminCount;
-    if (hostEl) hostEl.textContent = hostCount;
-    if (visitorEl) visitorEl.textContent = visitorCount;
-}
-
-function loadRecentActivity() {
-    const logs = JSON.parse(localStorage.getItem('snaap_logs') || '[]');
-    const recentLogs = logs.slice(-8).reverse();
-    const container = document.getElementById('recentActivity');
-    
+// ============================================
+// 📥 CARGAR USUARIOS RECIENTES (CUENTAS NUEVAS)
+// ============================================
+async function loadRecentUsers() {
+    const container = document.getElementById('recentUsers');
     if (!container) return;
-    
-    if (recentLogs.length === 0) {
-        container.innerHTML = '<div class="activity-item">No hay actividad reciente</div>';
-        return;
-    }
-    
-    container.innerHTML = recentLogs.map(log => `
-        <div class="activity-item">
-            <div class="activity-icon">
-                <i class="fas ${getActivityIcon(log.type)}"></i>
-            </div>
-            <div class="activity-detail">
-                <div class="activity-message">${escapeHtml(log.message || '')}</div>
-                <div class="activity-time">${formatDate(log.timestamp)}</div>
-            </div>
-        </div>
-    `).join('');
-}
 
-function loadRecentEvents() {
-    const events = JSON.parse(localStorage.getItem('eventos') || '[]');
-    const futureEvents = events
-        .filter(event => new Date(event.date) >= new Date())
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
-        .slice(0, 5);
-    
-    const container = document.getElementById('recentEvents');
-    
-    if (!container) return;
-    
-    if (futureEvents.length === 0) {
-        container.innerHTML = '<tr><td colspan="4" class="loading">No hay eventos próximos</td></tr>';
-        return;
-    }
-    
-    container.innerHTML = futureEvents.map(event => `
-        <tr>
-            <td>${escapeHtml(event.title)}</td>
-            <td>${new Date(event.date).toLocaleDateString()}</td>
-            <td>${escapeHtml(event.location || 'No especificada')}</td>
-            <td>${event.attendees || 0}</td>
-        </tr>
-    `).join('');
-}
+    try {
+        // Obtener todos los usuarios de Firestore
+        const users = await userRepository.getAllUsers();
+        
+        if (!users || users.length === 0) {
+            container.innerHTML = `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="activity-detail">
+                        <div class="activity-message">No hay usuarios registrados</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
 
-function setupEventListeners() {
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('snaap_current_user');
-            window.location.href = '/';
+        // Ordenar por fecha de creación (más recientes primero)
+        const sortedUsers = users.sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateB - dateA;
         });
+
+        // Tomar los 8 más recientes
+        const recentUsers = sortedUsers.slice(0, 8);
+
+        container.innerHTML = recentUsers.map(user => {
+            const fecha = user.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }) : 'Fecha desconocida';
+
+            const rolIcon = user.role === 'sysadmin' ? 'fa-shield-alt' : 
+                           user.role === 'host' ? 'fa-calendar-plus' : 'fa-user';
+            
+            const rolNombre = user.role === 'sysadmin' ? 'Administrador' : 
+                             user.role === 'host' ? 'Host' : 'Usuario';
+
+            return `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas ${rolIcon}"></i>
+                    </div>
+                    <div class="activity-detail">
+                        <div class="activity-message">
+                            <strong>${escapeHtml(user.username || 'Usuario')}</strong> 
+                            <span style="color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+                                (${rolNombre})
+                            </span>
+                            <br>
+                            <small style="color: rgba(255,255,255,0.4); font-size: 0.7rem;">
+                                <i class="fas fa-envelope"></i> ${escapeHtml(user.email || '')}
+                            </small>
+                        </div>
+                        <div class="activity-time">
+                            <i class="fas fa-calendar-alt"></i> Se unió el ${fecha}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('❌ Error al cargar usuarios recientes:', error);
+        container.innerHTML = `
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="activity-detail">
+                    <div class="activity-message" style="color: #ff007a;">
+                        Error al cargar usuarios
+                    </div>
+                </div>
+            </div>
+        `;
     }
 }
 
-function checkAdminSession() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    if (!currentUser || currentUser.role !== 'sysadmin') {
-        alert('Acceso denegado: No tienes permisos de administrador');
-        window.location.href = '/';
+// ============================================
+// 📊 CARGAR DISTRIBUCIÓN DE USUARIOS (SOLO HOSTS Y ADMINS)
+// ============================================
+async function loadRolesDistribution() {
+    try {
+        // Obtener todos los usuarios
+        const users = await userRepository.getAllUsers();
+        
+        if (!users) {
+            console.warn('⚠️ No se pudieron obtener usuarios');
+            return;
+        }
+
+        // Contar solo admins y hosts
+        const adminCount = users.filter(u => u.role === 'sysadmin').length;
+        const hostCount = users.filter(u => u.role === 'host').length;
+
+        const adminEl = document.getElementById('adminCount');
+        const hostEl = document.getElementById('hostCount');
+
+        if (adminEl) adminEl.textContent = adminCount;
+        if (hostEl) hostEl.textContent = hostCount;
+
+        console.log(`📊 Administradores: ${adminCount}, Hosts: ${hostCount}`);
+
+    } catch (error) {
+        console.error('❌ Error al cargar distribución de roles:', error);
     }
 }
 
-function getActivityIcon(type) {
-    const icons = {
-        user_created: 'fa-user-plus',
-        user_updated: 'fa-user-edit',
-        user_deleted: 'fa-user-minus',
-        event_created: 'fa-calendar-plus',
-        event_updated: 'fa-calendar-alt',
-        event_deleted: 'fa-calendar-minus',
-        login: 'fa-sign-in-alt',
-        logout: 'fa-sign-out-alt'
-    };
-    return icons[type] || 'fa-info-circle';
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'Justo ahora';
-    if (diffMins < 60) return `Hace ${diffMins} minutos`;
-    if (diffHours < 24) return `Hace ${diffHours} horas`;
-    if (diffDays < 7) return `Hace ${diffDays} días`;
-    return date.toLocaleDateString();
-}
-
+// ============================================
+// 🔧 UTILIDADES
+// ============================================
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>]/g, function(m) {
@@ -181,3 +183,5 @@ function escapeHtml(str) {
         return m;
     });
 }
+
+export default homeSysadminController;
