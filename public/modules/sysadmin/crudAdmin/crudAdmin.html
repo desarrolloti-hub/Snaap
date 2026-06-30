@@ -1,37 +1,57 @@
-<div class="crud-admin-container">
-    <div class="crud-header">
-        <h1><i class="fas fa-shield-alt"></i> Gestión de Administradores</h1>
-        <p>Administra los usuarios con acceso total al sistema</p>
-    </div>
+<!-- public/modules/sysadmin/crudAdmin/crudAdmin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Administradores - SNAAP Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/css/components/crudAdmin.css">
+    <link rel="stylesheet" href="/src/css/components/sweetalert.css">
+</head>
+<body>
+    <div id="app">
+        <div class="crud-admin-container">
+            <div class="crud-header">
+                <h1><i class="fas fa-shield-alt"></i> Gestión de Administradores</h1>
+                <p>Administra los usuarios con acceso total al sistema</p>
+            </div>
 
-    <div class="crud-actions">
-        <button id="createAdminBtn" class="btn-create">
-            <i class="fas fa-user-shield"></i> Nuevo Administrador
-        </button>
-        
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchAdmin" placeholder="Buscar administrador por nombre o email...">
+            <div class="crud-actions">
+                <!-- 🔥 BOTÓN CON ID CORRECTO Y CLASE -->
+                <button type="button" id="createAdminBtn" class="btn-create">
+                    <i class="fas fa-user-shield"></i> Nuevo Administrador
+                </button>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchAdmin" placeholder="Buscar administrador por nombre o email...">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="admins-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Email</th>
+                            <th>Eventos</th>
+                            <th>Asistentes</th>
+                            <th>Estado</th>
+                            <th>Fecha Registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminsTableBody">
+                        <tr><td colspan="8" class="loading-text">Cargando administradores...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="table-container">
-        <table class="admins-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Email</th>
-                    <th>Eventos</th>
-                    <th>Asistentes</th>
-                    <th>Estado</th>
-                    <th>Fecha Registro</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody id="adminsTableBody">
-                    <tr><td colspan="8" class="loading-text">Cargando administradores...</td</tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="/src/modules/sysadmin/crudAdmin/crudAdminController.js"></script>
+</body>
+</html>

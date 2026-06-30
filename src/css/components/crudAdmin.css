@@ -1,3 +1,4 @@
+/* src/css/components/crudAdmin.css */
 .crud-admin-container {
     padding: 120px 40px 40px 40px;
     max-width: 1400px;
@@ -200,6 +201,32 @@
     text-align: center;
     padding: 40px;
     color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-action.toggle-status {
+    color: rgba(77, 184, 255, 1);
+}
+
+.btn-action.toggle-status:hover {
+    color: rgba(255, 0, 122, 1);
+    transform: scale(1.1);
+    background: rgba(255, 0, 122, 0.1);
+}
+
+.btn-action.toggle-status .fa-ban {
+    color: rgba(255, 0, 0, 0.7);
+}
+
+.btn-action.toggle-status .fa-check-circle {
+    color: rgba(0, 255, 136, 0.8);
+}
+
+.btn-action.toggle-status:hover .fa-ban {
+    color: rgba(255, 0, 0, 1);
+}
+
+.btn-action.toggle-status:hover .fa-check-circle {
+    color: rgba(0, 255, 136, 1);
 }
 
 @media (max-width: 768px) {

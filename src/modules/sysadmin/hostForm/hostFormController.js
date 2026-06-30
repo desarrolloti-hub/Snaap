@@ -3,10 +3,10 @@ import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { hostService } from '../../../services/hostService.js';
 
+// ✅ EXPORTACIÓN CORRECTA
 export async function hostFormController() {
     console.log('🔥 Host Form Controller iniciado');
 
-    // Verificar autenticación
     if (!userService.isAuthenticated()) {
         console.warn('⚠️ Usuario no autenticado');
         window.location.href = '/login';
@@ -51,34 +51,69 @@ function setupForm() {
     const cancelBtn = document.getElementById('cancelBtn');
     const hostForm = document.getElementById('hostForm');
     
+    // 🔥 CONFIRMACIÓN PARA VOLVER
     if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/sysadmin/hosts');
-            } else {
-                window.location.href = '/sysadmin/hosts';
-            }
+        // Eliminar event listeners anteriores clonando el botón
+        const newBackBtn = backBtn.cloneNode(true);
+        backBtn.parentNode.replaceChild(newBackBtn, backBtn);
+        
+        newBackBtn.addEventListener('click', () => {
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ff007a',
+                cancelButtonColor: '#4db8ff',
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Continuar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof window.navigateTo === 'function') {
+                        window.navigateTo('/sysadmin/hosts');
+                    } else {
+                        window.location.href = '/sysadmin/hosts';
+                    }
+                }
+            });
         });
     }
     
+    // 🔥 CONFIRMACIÓN PARA CANCELAR
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/sysadmin/hosts');
-            } else {
-                window.location.href = '/sysadmin/hosts';
-            }
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        
+        newCancelBtn.addEventListener('click', () => {
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ff007a',
+                cancelButtonColor: '#4db8ff',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof window.navigateTo === 'function') {
+                        window.navigateTo('/sysadmin/hosts');
+                    } else {
+                        window.location.href = '/sysadmin/hosts';
+                    }
+                }
+            });
         });
     }
     
     if (hostForm) {
-        hostForm.addEventListener('submit', saveHost);
+        // Eliminar event listeners anteriores del formulario
+        const newForm = hostForm.cloneNode(true);
+        hostForm.parentNode.replaceChild(newForm, hostForm);
+        newForm.addEventListener('submit', saveHost);
     }
 }
 
-// ============================================
-// 💾 GUARDAR HOST EN FIRESTORE
-// ============================================
 async function saveHost(e) {
     e.preventDefault();
     
@@ -110,7 +145,6 @@ async function saveHost(e) {
         return;
     }
     
-    // Verificar si ya existe un usuario con este email
     const existingUser = await userRepository.getByEmail(email);
     if (existingUser) {
         await Swal.fire({
@@ -132,7 +166,6 @@ async function saveHost(e) {
     });
     
     try {
-        // 🔥 Crear host usando hostService
         const result = await hostService.crearHost({
             username,
             email,

@@ -18,14 +18,14 @@ import { profileEditController } from '../modules/host/profileEdit/profileEditCo
 import { crudHostController } from '../modules/sysadmin/crudHost/crudHostController.js';
 import { hostFormController } from '../modules/sysadmin/hostForm/hostFormController.js';
 import { hostEditController } from '../modules/sysadmin/hostEdit/hostEditController.js';
+import { hostDetailsController } from '../modules/sysadmin/hostDetails/hostDetailsController.js';
 import { crudAdminController } from '../modules/sysadmin/crudAdmin/crudAdminController.js';
 import { adminFormController } from '../modules/sysadmin/adminForm/adminFormController.js';
 import { adminEditController } from '../modules/sysadmin/adminEdit/adminEditController.js';
+import { adminDetailsController } from '../modules/sysadmin/adminDetails/adminDetailsController.js';
 import { profileAdminController } from '../modules/sysadmin/profileAdmin/profileAdminController.js';
 import { profileEditController as profileAdminEditController } from '../modules/sysadmin/profileEdit/profileEditController.js';
-import { hostDetailsController } from '../modules/sysadmin/hostDetails/hostDetailsController.js';
 
-// ✅ EXPORTACIÓN CORRECTA
 export const routes = {
     // ============================================
     // 🏠 RUTAS PÚBLICAS
@@ -125,6 +125,10 @@ export const routes = {
     "/sysadmin/admins/edit": {
         view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
         controller: adminEditController,
+    },
+    "/sysadmin/admin-details": {
+        view: "/public/modules/sysadmin/adminDetails/adminDetails.html",
+        controller: adminDetailsController,
     },
     "/sysadmin/profile": {
         view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",

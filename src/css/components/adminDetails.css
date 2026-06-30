@@ -1,0 +1,394 @@
+/* src/css/components/adminDetails.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(ellipse at center, #0a0a14 0%, #000000 100%);
+    min-height: 100vh;
+}
+
+.admin-details-container {
+    padding: 120px 40px 40px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeInUp 0.6s ease-out;
+    color: #ffffff;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.details-header {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-back {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 8px 20px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+}
+
+.btn-back i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-back:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateX(-5px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-back:hover i {
+    color: #ff007a;
+}
+
+.details-header h1 {
+    color: #ffffff;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.details-header h1 i {
+    color: rgba(77, 184, 255, 1);
+}
+
+/* ============================================
+   TARJETA DE DETALLES
+   ============================================ */
+.details-card {
+    background: rgba(10, 10, 20, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    border: 1px solid rgba(77, 184, 255, 0.2);
+    min-height: 400px;
+}
+
+.details-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.details-loading i {
+    font-size: 3rem;
+    color: rgba(77, 184, 255, 1);
+    margin-bottom: 20px;
+}
+
+/* ============================================
+   CONTENIDO DE DETALLES
+   ============================================ */
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detail-avatar {
+    text-align: center;
+    padding: 20px 0 30px 0;
+    border-bottom: 1px solid rgba(77, 184, 255, 0.15);
+}
+
+.detail-avatar i {
+    font-size: 80px;
+    color: rgba(77, 184, 255, 1);
+}
+
+.detail-avatar h2 {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    color: #ffffff;
+}
+
+.detail-avatar .detail-role {
+    color: rgba(77, 184, 255, 1);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(77, 184, 255, 1);
+}
+
+.detail-group label i {
+    margin-right: 6px;
+    width: 16px;
+}
+
+.detail-group .detail-value {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(77, 184, 255, 0.08);
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+}
+
+.detail-group .detail-value strong {
+    color: #ffffff;
+}
+
+.detail-group .detail-value .status-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+}
+
+.status-inactive {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.status-suspended {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff4444;
+}
+
+.detail-bio {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    min-height: 60px;
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN
+   ============================================ */
+.detail-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(77, 184, 255, 0.15);
+    justify-content: flex-end;
+}
+
+.btn-edit-admin {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+}
+
+.btn-edit-admin i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-edit-admin:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-edit-admin:hover i {
+    color: #ff007a;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .admin-details-container {
+        padding: 100px 20px 20px 20px;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .details-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .details-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .detail-avatar i {
+        font-size: 60px;
+    }
+    
+    .detail-actions {
+        flex-direction: column;
+    }
+    
+    .btn-edit-admin {
+        justify-content: center;
+    }
+}
+/* src/css/components/adminDetails.css */
+/* Agregar al final del archivo */
+
+/* 🔥 BOTÓN VOLVER - Estilo consistente con los demás */
+.btn-back-detail {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+}
+
+.btn-back-detail i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-back-detail:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-back-detail:hover i {
+    color: #ff007a;
+}
+
+/* Ajustar contenedor de acciones */
+.detail-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(77, 184, 255, 0.15);
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* Botón Editar (ya existente) */
+.btn-edit-admin {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+}
+
+.btn-edit-admin i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-edit-admin:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-edit-admin:hover i {
+    color: #ff007a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .detail-actions {
+        flex-direction: column;
+    }
+    
+    .btn-back-detail,
+    .btn-edit-admin {
+        justify-content: center;
+        width: 100%;
+    }
+}

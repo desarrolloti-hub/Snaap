@@ -90,6 +90,64 @@ class UserService {
   }
 
   // ============================================
+  // 🔐 CREAR USUARIO ADMIN
+  // ============================================
+  async crearUsuarioAdmin(userData) {
+    try {
+      if (!userData.username || userData.username.length < 3) {
+        throw new Error('El nombre de usuario debe tener al menos 3 caracteres');
+      }
+      if (!userData.email || !this.isValidEmail(userData.email)) {
+        throw new Error('El email no es válido');
+      }
+      if (!userData.password || userData.password.length < 6) {
+        throw new Error('La contraseña debe tener al menos 6 caracteres');
+      }
+
+      const existingUser = await userRepository.getByEmail(userData.email);
+      if (existingUser) {
+        throw new Error('Ya existe un usuario con este email');
+      }
+
+      // Crear en Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
+      const firebaseUser = userCredential.user;
+
+      await updateProfile(firebaseUser, { displayName: userData.username });
+      await sendEmailVerification(firebaseUser);
+
+      const user = new User({
+        uid: firebaseUser.uid,
+        username: userData.username,
+        email: userData.email,
+        phone: userData.phone || '',
+        department: userData.department || '',
+        notes: userData.notes || '',
+        role: 'sysadmin',
+        status: userData.status || 'active',
+        photoURL: firebaseUser.photoURL || null,
+        emailVerified: firebaseUser.emailVerified || false,
+        createdAt: new Date()
+      });
+
+      await userRepository.create(user);
+      this.setUsuarioActual(user);
+
+      return {
+        success: true,
+        user: user,
+        message: `Administrador "${user.username}" creado exitosamente`
+      };
+    } catch (error) {
+      console.error('Error al crear administrador:', error);
+      return {
+        success: false,
+        error: error.message || 'Error al crear el administrador'
+      };
+    }
+  }
+
+  // ============================================
   // 🔐 LOGIN CON EMAIL
   // ============================================
   async loginUsuario(email, password) {
@@ -124,7 +182,6 @@ class UserService {
         throw new Error('❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.');
       }
 
-      // Si está suspendida, también bloquear
       if (user.status === 'suspended') {
         console.warn('⚠️ Cuenta suspendida:', user.username);
         await signOut(auth);
@@ -145,15 +202,14 @@ class UserService {
     } catch (error) {
       console.error('Error en login:', error);
       
-      // 🔥 Manejar error de cuenta inhabilitada
-      if (error.message.includes('inhabilitada')) {
+      if (error.message && error.message.includes('inhabilitada')) {
         return {
           success: false,
           error: '❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.'
         };
       }
       
-      if (error.message.includes('suspendida')) {
+      if (error.message && error.message.includes('suspendida')) {
         return {
           success: false,
           error: '❌ Tu cuenta ha sido suspendida. Contacta con soporte.'
@@ -196,7 +252,6 @@ class UserService {
         await userRepository.create(user);
       }
 
-      // 🔥 VERIFICAR SI LA CUENTA ESTÁ INHABILITADA
       if (user.status === 'inactive') {
         console.warn('⚠️ Cuenta inhabilitada:', user.username);
         await signOut(auth);
@@ -379,7 +434,9 @@ class UserService {
       if (userData.experience !== undefined) userDoc.experience = userData.experience;
       if (userData.photoURL !== undefined) userDoc.photoURL = userData.photoURL;
       if (userData.role !== undefined) userDoc.role = userData.role;
-      if (userData.status !== undefined) userDoc.status = userData.status; // 🔥 PERMITIR CAMBIAR ESTADO
+      if (userData.status !== undefined) userDoc.status = userData.status;
+      if (userData.department !== undefined) userDoc.department = userData.department;
+      if (userData.notes !== undefined) userDoc.notes = userData.notes;
       userDoc.updatedAt = new Date();
 
       await userRepository.update(userDoc);

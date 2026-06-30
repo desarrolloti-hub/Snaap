@@ -1,0 +1,33 @@
+<!-- public/modules/sysadmin/adminDetails/adminDetails.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Administrador - SNAAP Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/css/components/adminDetails.css">
+    <link rel="stylesheet" href="/src/css/components/sweetalert.css">
+</head>
+<body>
+    <div id="app">
+        <div class="admin-details-container">
+            <!-- Header -->
+            <div class="details-header">
+                <h1><i class="fas fa-shield-alt"></i> Detalles del Administrador</h1>
+            </div>
+
+            <!-- Tarjeta de detalles -->
+            <div class="details-card" id="adminDetailsCard">
+                <div class="details-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Cargando detalles...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="/src/modules/sysadmin/adminDetails/adminDetailsController.js"></script>
+</body>
+</html>

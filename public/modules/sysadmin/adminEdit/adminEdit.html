@@ -1,68 +1,84 @@
-<div class="admin-edit-container">
-    <div class="form-header">
-        <button id="backBtn" class="btn-back">
-            <i class="fas fa-arrow-left"></i> Volver
-        </button>
-        <h1><i class="fas fa-user-edit"></i> Editar Administrador</h1>
-        <p>Modifica los datos del usuario administrador</p>
+<!-- public/modules/sysadmin/adminEdit/adminEdit.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Administrador - SNAAP Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/css/components/adminEdit.css">
+    <link rel="stylesheet" href="/src/css/components/sweetalert.css">
+</head>
+<body>
+    <div id="app">
+        <div class="admin-edit-container">
+            <div class="form-header">
+                <h1><i class="fas fa-user-edit"></i> Editar Administrador</h1>
+                <p>Modifica los datos del usuario administrador</p>
+            </div>
+
+            <div class="form-card">
+                <form id="adminForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Nombre de usuario *</label>
+                            <input type="text" id="adminUsername" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> Correo electrónico *</label>
+                            <input type="email" id="adminEmail" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-key"></i> Nueva Contraseña</label>
+                            <input type="password" id="adminPassword" placeholder="Dejar en blanco para no cambiar">
+                            <small class="form-hint">Mínimo 6 caracteres si desea cambiarla</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-phone"></i> Teléfono</label>
+                            <input type="tel" id="adminPhone" placeholder="+52 555 123 4567">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-building"></i> Departamento</label>
+                            <input type="text" id="adminDepartment" placeholder="Ej: Administración">
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-toggle-on"></i> Estado</label>
+                            <select id="adminStatus">
+                                <option value="active">Activo</option>
+                                <option value="inactive">Inactivo</option>
+                                <option value="suspended">Suspendido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-info-circle"></i> Notas</label>
+                        <textarea id="adminNotes" rows="3" placeholder="Información adicional..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="btnVolver" class="btn-back-edit">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </button>
+                        <button type="submit" id="saveBtn" class="btn-save">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="form-card">
-        <form id="adminForm">
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Nombre de usuario *</label>
-                    <input type="text" id="adminUsername" required>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Correo electrónico *</label>
-                    <input type="email" id="adminEmail" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-key"></i> Nueva Contraseña</label>
-                    <input type="password" id="adminPassword" placeholder="Dejar en blanco para no cambiar">
-                    <small class="form-hint">Mínimo 6 caracteres si desea cambiarla</small>
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Teléfono</label>
-                    <input type="tel" id="adminPhone">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-building"></i> Departamento</label>
-                    <input type="text" id="adminDepartment">
-                </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-toggle-on"></i> Estado</label>
-                    <select id="adminStatus">
-                        <option value="active">Activo</option>
-                        <option value="inactive">Inactivo</option>
-                        <option value="suspended">Suspendido</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group full-width">
-                <label><i class="fas fa-info-circle"></i> Notas</label>
-                <textarea id="adminNotes" rows="3"></textarea>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" id="cancelBtn" class="btn-cancel">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
-                <button type="submit" id="saveBtn" class="btn-save">
-                    <i class="fas fa-save"></i> Guardar Cambios
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="/src/modules/sysadmin/adminEdit/adminEditController.js"></script>
+</body>
+</html>

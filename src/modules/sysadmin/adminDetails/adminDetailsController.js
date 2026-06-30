@@ -1,11 +1,11 @@
-// src/modules/sysadmin/hostDetails/hostDetailsController.js
+// src/modules/sysadmin/adminDetails/adminDetailsController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
-let currentHostId = null;
+let currentAdminId = null;
 
-export async function hostDetailsController() {
-    console.log('🔥 Host Details Controller iniciado');
+export async function adminDetailsController() {
+    console.log('🔥 Admin Details Controller iniciado');
 
     if (!userService.isAuthenticated()) {
         console.warn('⚠️ Usuario no autenticado');
@@ -27,68 +27,67 @@ export async function hostDetailsController() {
         return;
     }
 
-    let hostId = localStorage.getItem('hostDetailId');
+    let adminId = localStorage.getItem('adminDetailId');
     
-    if (!hostId) {
+    if (!adminId) {
         const urlParams = new URLSearchParams(window.location.search);
-        hostId = urlParams.get('id');
-        if (hostId) {
-            localStorage.setItem('hostDetailId', hostId);
+        adminId = urlParams.get('id');
+        if (adminId) {
+            localStorage.setItem('adminDetailId', adminId);
         }
     }
     
-    if (!hostId) {
+    if (!adminId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificó qué host ver',
+            text: 'No se especificó qué administrador ver',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            localStorage.removeItem('hostDetailId');
-            window.location.href = '/sysadmin/hosts';
+            localStorage.removeItem('adminDetailId');
+            window.location.href = '/sysadmin/admins';
         });
         return;
     }
 
-    currentHostId = hostId;
+    currentAdminId = adminId;
     
-    await loadHostDetails(hostId);
-    setupEventListeners();
+    await loadAdminDetails(adminId);
 }
 
-async function loadHostDetails(hostId) {
-    const card = document.getElementById('hostDetailsCard');
+async function loadAdminDetails(adminId) {
+    const card = document.getElementById('adminDetailsCard');
     
     if (!card) {
-        console.error('❌ No se encontró el elemento hostDetailsCard');
+        console.error('❌ No se encontró el elemento adminDetailsCard');
         return;
     }
     
     try {
-        const host = await userRepository.getById(hostId);
+        const admin = await userRepository.getById(adminId);
         
-        if (!host) {
+        if (!admin) {
             card.innerHTML = `
                 <div class="details-loading" style="color: #ff007a;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>Host no encontrado</p>
+                    <p>Administrador no encontrado</p>
                 </div>
             `;
             return;
         }
 
-        if (host.role !== 'host') {
+        if (admin.role !== 'sysadmin') {
             card.innerHTML = `
                 <div class="details-loading" style="color: #ff007a;">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>El usuario no es un host</p>
+                    <p>El usuario no es un administrador</p>
                 </div>
             `;
             return;
         }
 
-        card.innerHTML = buildHostDetailsHTML(host);
-        setupDetailEvents(host);
+        card.innerHTML = buildAdminDetailsHTML(admin);
+        setupEventListeners();
 
     } catch (error) {
         console.error('❌ Error al cargar detalles:', error);
@@ -101,96 +100,89 @@ async function loadHostDetails(hostId) {
     }
 }
 
-function setupDetailEvents(host) {
-    const btnEditar = document.getElementById('btnEditarHost');
-    if (btnEditar) {
-        const newBtn = btnEditar.cloneNode(true);
-        btnEditar.parentNode.replaceChild(newBtn, btnEditar);
-        
-        newBtn.addEventListener('click', function() {
-            console.log('✏️ Editar host:', currentHostId);
-            window.location.href = `/sysadmin/hosts/edit?id=${currentHostId}`;
-        });
-    }
-}
-
-function buildHostDetailsHTML(host) {
+function buildAdminDetailsHTML(admin) {
+    const isActive = admin.status === 'active';
+    
     return `
         <div class="detail-content">
             <div class="detail-avatar">
-                <i class="fas fa-user-circle"></i>
-                <h2>${escapeHtml(host.username || 'Sin nombre')}</h2>
-                <p class="detail-role"><i class="fas fa-certificate"></i> Host</p>
+                <i class="fas fa-user-shield"></i>
+                <h2>${escapeHtml(admin.username || 'Sin nombre')}</h2>
+                <p class="detail-role"><i class="fas fa-certificate"></i> Administrador</p>
             </div>
 
             <div class="detail-grid">
                 <div class="detail-group">
                     <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
-                    <div class="detail-value"><strong>${escapeHtml(host.email || 'No registrado')}</strong></div>
+                    <div class="detail-value"><strong>${escapeHtml(admin.email || 'No registrado')}</strong></div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-phone"></i> Teléfono</label>
-                    <div class="detail-value">${host.phone || 'No registrado'}</div>
+                    <div class="detail-value">${admin.phone || 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-building"></i> Empresa</label>
-                    <div class="detail-value">${host.company || 'No registrada'}</div>
+                    <label><i class="fas fa-building"></i> Departamento</label>
+                    <div class="detail-value">${admin.department || admin.company || 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-toggle-on"></i> Estado</label>
                     <div class="detail-value">
-                        <span class="status-badge status-${host.status || 'active'}">${host.status === 'active' ? 'Activo' : 'Inactivo'}</span>
+                        <span class="status-badge status-${admin.status || 'active'}">${isActive ? 'Activo' : 'Inactivo'}</span>
                     </div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-calendar-alt"></i> Eventos Creados</label>
-                    <div class="detail-value"><strong>${host.eventsCreated || 0}</strong></div>
+                    <label><i class="fas fa-calendar-alt"></i> Eventos Gestionados</label>
+                    <div class="detail-value"><strong>${admin.eventsCreated || 0}</strong></div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-users"></i> Total Asistentes</label>
-                    <div class="detail-value"><strong>${host.totalAttendees || 0}</strong></div>
+                    <div class="detail-value"><strong>${admin.totalAttendees || 0}</strong></div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-check-circle"></i> Email Verificado</label>
-                    <div class="detail-value">${host.emailVerified ? '✅ Sí' : '❌ No'}</div>
+                    <div class="detail-value">${admin.emailVerified ? '✅ Sí' : '❌ No'}</div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-calendar-day"></i> Fecha de Registro</label>
-                    <div class="detail-value">${host.createdAt ? new Date(host.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'No registrado'}</div>
+                    <div class="detail-value">${admin.createdAt ? new Date(admin.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-clock"></i> Último Acceso</label>
-                    <div class="detail-value">${host.lastLogin ? new Date(host.lastLogin).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca'}</div>
+                    <div class="detail-value">${admin.lastLogin ? new Date(admin.lastLogin).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca'}</div>
                 </div>
-                ${host.bio ? `
+                ${admin.notes || admin.bio ? `
                 <div class="detail-group full-width">
-                    <label><i class="fas fa-info-circle"></i> Biografía</label>
-                    <div class="detail-value detail-bio">${escapeHtml(host.bio)}</div>
+                    <label><i class="fas fa-info-circle"></i> Notas</label>
+                    <div class="detail-value detail-bio">${escapeHtml(admin.notes || admin.bio)}</div>
                 </div>
                 ` : ''}
             </div>
 
+            <!-- 🔥 ACCIONES: Botón Volver y Editar juntos -->
             <div class="detail-actions">
-                <button type="button" class="btn-edit-host" id="btnEditarHost">
-                    <i class="fas fa-edit"></i> Editar Host
+                <button type="button" class="btn-back-detail" id="btnVolverDetail">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                <button type="button" class="btn-edit-admin" id="btnEditarAdmin">
+                    <i class="fas fa-edit"></i> Editar Administrador
                 </button>
             </div>
         </div>
     `;
 }
 
-// ============================================
-// 🔧 CONFIGURAR EVENTOS (BOTÓN VOLVER)
-// ============================================
 function setupEventListeners() {
-    const btnVolver = document.getElementById('btnVolver');
+    console.log('🔧 Configurando event listeners...');
     
+    // 🔥 BOTÓN VOLVER (nuevo, junto a editar)
+    const btnVolver = document.getElementById('btnVolverDetail');
     if (btnVolver) {
         const newBtn = btnVolver.cloneNode(true);
         btnVolver.parentNode.replaceChild(newBtn, btnVolver);
         
         newBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             console.log('🔙 Click en Volver');
             
             Swal.fire({
@@ -204,18 +196,30 @@ function setupEventListeners() {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    localStorage.removeItem('hostDetailId');
+                    localStorage.removeItem('adminDetailId');
                     if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/hosts');
+                        window.navigateTo('/sysadmin/admins');
                     } else {
-                        window.location.href = '/sysadmin/hosts';
+                        window.location.href = '/sysadmin/admins';
                     }
                 }
             });
         });
         console.log('✅ Event listener agregado al botón Volver');
-    } else {
-        console.error('❌ Botón Volver no encontrado');
+    }
+    
+    // 🔥 BOTÓN EDITAR
+    const btnEditar = document.getElementById('btnEditarAdmin');
+    if (btnEditar) {
+        const newBtn = btnEditar.cloneNode(true);
+        btnEditar.parentNode.replaceChild(newBtn, btnEditar);
+        
+        newBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('✏️ Editar administrador:', currentAdminId);
+            window.location.href = `/sysadmin/admins/edit?id=${currentAdminId}`;
+        });
+        console.log('✅ Event listener agregado al botón Editar');
     }
 }
 
@@ -229,4 +233,4 @@ function escapeHtml(str) {
     });
 }
 
-export default hostDetailsController;
+export default adminDetailsController;

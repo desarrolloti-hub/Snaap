@@ -1,8 +1,24 @@
+/* src/css/components/adminEdit.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(ellipse at center, #0a0a14 0%, #000000 100%);
+    min-height: 100vh;
+}
+
 .admin-edit-container {
     padding: 120px 40px 40px 40px;
     max-width: 800px;
     margin: 0 auto;
     animation: fadeInUp 0.6s ease-out;
+    color: #ffffff;
 }
 
 @keyframes fadeInUp {
@@ -20,40 +36,8 @@
     margin-bottom: 30px;
 }
 
-.btn-back {
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 8px 20px;
-    color: rgba(255, 255, 255, 1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Poppins', sans-serif;
-    margin-bottom: 20px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-.btn-back i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
-    transform: translateX(-5px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-.btn-back:hover i {
-    color: rgba(255, 0, 122, 1);
-}
-
 .form-header h1 {
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     margin-bottom: 10px;
     font-size: 2rem;
     display: flex;
@@ -113,7 +97,7 @@
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(77, 184, 255, 0.3);
     border-radius: 12px;
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
     font-size: 0.9rem;
@@ -128,6 +112,16 @@
     box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
 }
 
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
 .form-hint {
     display: block;
     margin-top: 5px;
@@ -135,6 +129,9 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
+/* ============================================
+   BOTONES
+   ============================================ */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -142,14 +139,15 @@
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid rgba(77, 184, 255, 0.2);
+    flex-wrap: wrap;
 }
 
-.btn-cancel {
+.btn-back-edit {
     background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
     padding: 12px 28px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
@@ -157,12 +155,23 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
 }
 
-.btn-cancel:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.5);
+.btn-back-edit i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-back-edit:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
     transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-back-edit:hover i {
+    color: #ff007a;
 }
 
 .btn-save {
@@ -170,7 +179,7 @@
     border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
     padding: 12px 28px;
-    color: rgba(255, 255, 255, 1);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
@@ -188,13 +197,13 @@
 
 .btn-save:hover {
     background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
+    border-color: #ff007a;
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
 }
 
 .btn-save:hover i {
-    color: rgba(255, 0, 122, 1);
+    color: #ff007a;
 }
 
 @media (max-width: 768px) {
@@ -215,8 +224,10 @@
         flex-direction: column;
     }
     
-    .btn-cancel, .btn-save {
+    .btn-back-edit,
+    .btn-save {
         justify-content: center;
+        width: 100%;
     }
     
     .form-card {

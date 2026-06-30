@@ -1,7 +1,32 @@
-export function adminFormController() {
+// src/modules/sysadmin/adminForm/adminFormController.js
+import { userService } from '../../../services/userService.js';
+import { userRepository } from '../../../repositories/userRepository.js';
+
+export async function adminFormController() {
+    console.log('🔥 Admin Form Controller iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    const user = userService.getCurrentUser();
+    
+    if (user.role !== 'sysadmin') {
+        Swal.fire({
+            title: 'Acceso Denegado',
+            text: 'No tienes permisos de administrador',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = '/';
+        });
+        return;
+    }
+
     loadStyles();
     setupForm();
-    checkAdminSession();
 }
 
 function loadStyles() {
@@ -24,15 +49,51 @@ function setupForm() {
     const cancelBtn = document.getElementById('cancelBtn');
     const adminForm = document.getElementById('adminForm');
     
+    // 🔥 CONFIRMACIÓN PARA VOLVER
     if (backBtn) {
         backBtn.addEventListener('click', () => {
-            window.location.href = '/sysadmin/admins';
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ff007a',
+                cancelButtonColor: '#4db8ff',
+                confirmButtonText: 'Sí, salir',
+                cancelButtonText: 'Continuar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof window.navigateTo === 'function') {
+                        window.navigateTo('/sysadmin/admins');
+                    } else {
+                        window.location.href = '/sysadmin/admins';
+                    }
+                }
+            });
         });
     }
     
+    // 🔥 CONFIRMACIÓN PARA CANCELAR
     if (cancelBtn) {
         cancelBtn.addEventListener('click', () => {
-            window.location.href = '/sysadmin/admins';
+            Swal.fire({
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#ff007a',
+                cancelButtonColor: '#4db8ff',
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Continuar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (typeof window.navigateTo === 'function') {
+                        window.navigateTo('/sysadmin/admins');
+                    } else {
+                        window.location.href = '/sysadmin/admins';
+                    }
+                }
+            });
         });
     }
     
@@ -44,13 +105,15 @@ function setupForm() {
 async function saveAdmin(e) {
     e.preventDefault();
     
-    const username = document.getElementById('adminUsername')?.value;
-    const email = document.getElementById('adminEmail')?.value;
+    const username = document.getElementById('adminUsername')?.value.trim();
+    const email = document.getElementById('adminEmail')?.value.trim();
     const password = document.getElementById('adminPassword')?.value;
-    const phone = document.getElementById('adminPhone')?.value;
-    const department = document.getElementById('adminDepartment')?.value;
+    const phone = document.getElementById('adminPhone')?.value.trim();
+    const department = document.getElementById('adminDepartment')?.value.trim();
     const status = document.getElementById('adminStatus')?.value;
-    const notes = document.getElementById('adminNotes')?.value;
+    const notes = document.getElementById('adminNotes')?.value.trim();
+    
+    console.log('📝 Datos del formulario:', { username, email, password, phone, department, status, notes });
     
     if (!username || !email) {
         await Swal.fire({
@@ -72,57 +135,74 @@ async function saveAdmin(e) {
         return;
     }
     
-    const allUsers = JSON.parse(localStorage.getItem('snaap_users') || '[]');
-    
-    const emailExists = allUsers.some(u => u.email === email);
-    if (emailExists) {
-        await Swal.fire({
-            title: 'Email duplicado',
-            text: 'Ya existe un usuario con este correo electrónico',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-        return;
+    try {
+        const existingUser = await userRepository.getByEmail(email);
+        if (existingUser) {
+            await Swal.fire({
+                title: 'Email duplicado',
+                text: 'Ya existe un usuario con este correo electrónico',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+    } catch (error) {
+        console.error('Error al verificar email:', error);
     }
     
-    const newAdmin = {
-        id: Date.now(),
-        username: username,
-        email: email,
-        password: password,
-        phone: phone || '',
-        department: department || '',
-        notes: notes || '',
-        role: 'sysadmin',
-        status: status,
-        createdAt: new Date().toISOString(),
-        lastLogin: null,
-        eventsCreated: 0,
-        totalAttendees: 0
-    };
-    
-    allUsers.push(newAdmin);
-    localStorage.setItem('snaap_users', JSON.stringify(allUsers));
-    
-    await Swal.fire({
-        title: '¡Creado!',
-        text: 'El administrador ha sido creado correctamente',
-        icon: 'success',
-        confirmButtonText: 'OK'
+    Swal.fire({
+        title: 'Creando administrador...',
+        text: 'Por favor espera',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
     
-    window.location.href = '/sysadmin/admins';
-}
-
-async function checkAdminSession() {
-    const currentUser = JSON.parse(localStorage.getItem('snaap_current_user') || 'null');
-    if (!currentUser || currentUser.role !== 'sysadmin') {
+    try {
+        const result = await userService.crearUsuarioAdmin({
+            username,
+            email,
+            password,
+            phone: phone || '',
+            department: department || '',
+            status: status || 'active',
+            notes: notes || ''
+        });
+        
+        Swal.close();
+        
+        if (result.success) {
+            await Swal.fire({
+                title: '¡Creado!',
+                text: `El administrador "${result.user.username}" ha sido creado correctamente`,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo('/sysadmin/admins');
+            } else {
+                window.location.href = '/sysadmin/admins';
+            }
+        } else {
+            await Swal.fire({
+                title: 'Error',
+                text: result.error || 'Error al crear el administrador',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    } catch (error) {
+        Swal.close();
+        console.error('❌ Error al crear administrador:', error);
         await Swal.fire({
-            title: 'Acceso Denegado',
-            text: 'No tienes permisos de administrador',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error al crear el administrador',
             icon: 'error',
             confirmButtonText: 'OK'
         });
-        window.location.href = '/';
     }
 }
+
+export default adminFormController;
