@@ -91,29 +91,33 @@ function renderHostsTable() {
         return;
     }
     
-    tbody.innerHTML = filteredHosts.map(host => `
+    tbody.innerHTML = filteredHosts.map(host => {
+        const isActive = host.status === 'active';
+        const statusText = isActive ? 'Activo' : 'Inactivo';
+        const statusClass = isActive ? 'active' : 'inactive';
+        
+        return `
         <tr>
             <td>${host.id?.substring(0, 8) || host.uid?.substring(0, 8) || 'N/A'}</td>
             <td><i class="fas fa-user-circle"></i> ${escapeHtml(host.username || 'Sin nombre')}</td>
             <td>${escapeHtml(host.email || '')}</td>
             <td>${host.eventsCreated || 0}</td>
             <td>${host.totalAttendees || 0}</td>
-            <td><span class="status-badge status-${host.status || 'active'}">${getStatusText(host.status || 'active')}</span></td>
+            <td><span class="status-badge status-${statusClass}">${statusText}</span></td>
             <td>${host.createdAt ? new Date(host.createdAt).toLocaleDateString() : 'No registrado'}</td>
             <td class="actions-cell">
-                <!-- 🔥 Botón Ver - Redirige a host-details -->
                 <button class="btn-action view-host" data-id="${host.id || host.uid}" title="Ver detalles">
                     <i class="fas fa-eye"></i>
                 </button>
                 <button class="btn-action edit-host" data-id="${host.id || host.uid}" title="Editar">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="btn-action delete-host" data-id="${host.id || host.uid}" title="Eliminar">
-                    <i class="fas fa-trash"></i>
+                <button class="btn-action toggle-status" data-id="${host.id || host.uid}" data-status="${host.status}" title="${isActive ? 'Inhabilitar' : 'Habilitar'}">
+                    <i class="fas ${isActive ? 'fa-ban' : 'fa-check-circle'}"></i>
                 </button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
     
     document.querySelectorAll('.view-host').forEach(btn => {
         btn.addEventListener('click', () => viewHost(btn.dataset.id));
@@ -121,8 +125,8 @@ function renderHostsTable() {
     document.querySelectorAll('.edit-host').forEach(btn => {
         btn.addEventListener('click', () => editHost(btn.dataset.id));
     });
-    document.querySelectorAll('.delete-host').forEach(btn => {
-        btn.addEventListener('click', () => deleteHost(btn.dataset.id));
+    document.querySelectorAll('.toggle-status').forEach(btn => {
+        btn.addEventListener('click', () => toggleHostStatus(btn.dataset.id, btn.dataset.status));
     });
 }
 
@@ -158,7 +162,6 @@ function viewHost(hostId) {
         return;
     }
     
-    // 🔥 REDIRIGIR A LA PÁGINA DE DETALLES
     const url = `/sysadmin/host-details?id=${hostId}`;
     console.log('🔀 Redirigiendo a:', url);
     
@@ -181,11 +184,11 @@ function editHost(hostId) {
 }
 
 // ============================================
-// 🗑️ ELIMINAR HOST
+// 🔄 HABILITAR/INHABILITAR HOST
 // ============================================
-async function deleteHost(hostId) {
+async function toggleHostStatus(hostId, currentStatus) {
     try {
-        console.log('🔍 ID del host a eliminar:', hostId);
+        console.log('🔄 Cambiando estado del host:', hostId, 'Estado actual:', currentStatus);
         
         if (!hostId) {
             Swal.fire({
@@ -207,46 +210,56 @@ async function deleteHost(hostId) {
             });
             return;
         }
-        
+
+        const isActive = currentStatus === 'active';
+        const newStatus = isActive ? 'inactive' : 'active';
+        const actionText = isActive ? 'inhabilitar' : 'habilitar';
+        const actionEmoji = isActive ? '🚫' : '✅';
+
         const result = await Swal.fire({
-            title: '¿Eliminar Host?',
-            text: `¿Estás seguro de eliminar al host ${host.username}? Esta acción no se puede deshacer.`,
-            icon: 'warning',
+            title: `${actionEmoji} ¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Host?`,
+            text: `¿Estás seguro de ${actionText} al host "${host.username}"?`,
+            icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Sí, eliminar',
+            confirmButtonText: `Sí, ${actionText}`,
             cancelButtonText: 'Cancelar'
         });
-        
+
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Eliminando...',
+                title: 'Actualizando...',
                 text: 'Por favor espera',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
+
+            // 🔥 ACTUALIZAR ESTADO EN FIRESTORE
+            host.status = newStatus;
+            host.updatedAt = new Date();
+            await userRepository.update(host);
             
-            await userRepository.delete(hostId);
-            console.log('✅ Host eliminado correctamente');
+            console.log(`✅ Host ${host.username} ${actionText}do correctamente`);
             
             Swal.close();
             
             await Swal.fire({
-                title: 'Eliminado',
-                text: 'El host ha sido eliminado correctamente',
+                title: '¡Actualizado!',
+                text: `El host ha sido ${actionText}do correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
             
+            // 🔥 RECARGAR LISTA
             await loadHosts();
         }
     } catch (error) {
         Swal.close();
-        console.error('Error al eliminar host:', error);
+        console.error('Error al cambiar estado del host:', error);
         Swal.fire({
             title: 'Error',
-            text: 'No se pudo eliminar el host: ' + error.message,
+            text: 'No se pudo cambiar el estado del host: ' + error.message,
             icon: 'error',
             confirmButtonText: 'OK'
         });

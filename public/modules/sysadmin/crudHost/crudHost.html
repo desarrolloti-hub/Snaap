@@ -1,3 +1,4 @@
+<!-- public/modules/sysadmin/crudHost/crudHost.html -->
 <div class="crud-host-container">
     <div class="crud-header">
         <h1><i class="fas fa-users-cog"></i> Gestión de Hosts</h1>
@@ -27,28 +28,28 @@
                     <th>Estado</th>
                     <th>Fecha Registro</th>
                     <th>Acciones</th>
-                </thead>
-                <tbody id="hostsTableBody">
-                    <tr><td colspan="8" class="loading-text">Cargando hosts......</td></tr>
-                </tbody>
-            </table>
-        </div>
+                </tr>
+            </thead>
+            <tbody id="hostsTableBody">
+                <tr><td colspan="8" class="loading-text">Cargando hosts......</td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Modal de confirmación para eliminar -->
-<div id="deleteModal" class="custom-modal">
+<!-- Modal de confirmación para Habilitar/Inhabilitar -->
+<div id="toggleModal" class="custom-modal">
     <div class="custom-modal-content">
         <div class="custom-modal-header">
-            <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Eliminación</h3>
-            <span class="custom-modal-close">&times;</span>
+            <h3><i class="fas fa-exchange-alt"></i> Confirmar Cambio de Estado</h3>
+            <span class="custom-modal-close" id="toggleModalClose">&times;</span>
         </div>
         <div class="custom-modal-body">
-            <p id="deleteMessage">¿Estás seguro de eliminar este host?</p>
+            <p id="toggleMessage">¿Estás seguro de cambiar el estado de este host?</p>
         </div>
         <div class="custom-modal-footer">
-            <button id="deleteConfirmBtn" class="custom-btn-confirm delete">Eliminar</button>
-            <button id="deleteCancelBtn" class="custom-btn-cancel">Cancelar</button>
+            <button id="toggleConfirmBtn" class="custom-btn-confirm toggle">Confirmar</button>
+            <button id="toggleCancelBtn" class="custom-btn-cancel">Cancelar</button>
         </div>
     </div>
 </div>

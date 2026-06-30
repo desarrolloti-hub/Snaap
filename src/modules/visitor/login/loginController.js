@@ -1,6 +1,6 @@
 // src/modules/visitor/login/loginController.js
 import { userService } from '../../../services/userService.js';
-import { userRepository } from '../../../repositories/userRepository.js'; // 🔥 AGREGADO
+import { userRepository } from '../../../repositories/userRepository.js';
 import { getRedirectPathByRole } from '../../../core/permissions.js';
 
 // 🔥 Credenciales del admin
@@ -67,6 +67,9 @@ export async function loginController() {
     });
 }
 
+// ============================================
+// 📧 LOGIN CON EMAIL
+// ============================================
 async function handleLogin(e) {
     e.preventDefault();
 
@@ -117,17 +120,11 @@ async function handleLogin(e) {
             
             if (result.success) {
                 console.log('✅ Admin autenticado correctamente');
-                
-                // 🔥 FORZAR ROL SYSADMIN
                 await userService.actualizarPerfil({ role: 'sysadmin' });
-                
-                // 🔥 OBTENER USUARIO ACTUALIZADO
                 const userDoc = await userRepository.getByUid(result.user.uid);
                 userService.setUsuarioActual(userDoc);
-                
                 result.user = userDoc;
                 result.role = 'sysadmin';
-                
                 console.log('✅ Admin configurado como sysadmin correctamente');
             }
         } else {
@@ -156,11 +153,15 @@ async function handleLogin(e) {
             console.log('🔀 Redirigiendo a:', redirectPath);
             redirectTo(redirectPath);
         } else {
+            // 🔥 DETECTAR CUENTA INHABILITADA
+            const errorMsg = result.error || 'Error al iniciar sesión';
+            const isDisabled = errorMsg.includes('inhabilitada') || errorMsg.includes('suspendida');
+            
             Swal.fire({
-                title: 'Error',
-                text: result.error || 'Error al iniciar sesión',
-                icon: 'error',
-                confirmButtonText: 'Intentar de nuevo'
+                title: isDisabled ? '⛔ Acceso Denegado' : 'Error',
+                text: errorMsg,
+                icon: isDisabled ? 'error' : 'error',
+                confirmButtonText: 'OK'
             });
         }
     } catch (error) {
@@ -187,6 +188,9 @@ async function handleLogin(e) {
     }
 }
 
+// ============================================
+// 🔐 LOGIN CON GOOGLE
+// ============================================
 async function handleGoogleLogin() {
     Swal.fire({
         title: 'Iniciando sesión con Google...',
@@ -220,11 +224,14 @@ async function handleGoogleLogin() {
             const redirectPath = getRedirectPathByRole(result.role);
             redirectTo(redirectPath);
         } else {
+            const errorMsg = result.error || 'Error al iniciar sesión con Google';
+            const isDisabled = errorMsg.includes('inhabilitada') || errorMsg.includes('suspendida');
+            
             Swal.fire({
-                title: 'Error',
-                text: result.error,
-                icon: 'error',
-                confirmButtonText: 'Intentar de nuevo'
+                title: isDisabled ? '⛔ Acceso Denegado' : 'Error',
+                text: errorMsg,
+                icon: isDisabled ? 'error' : 'error',
+                confirmButtonText: 'OK'
             });
         }
     } catch (error) {
@@ -239,6 +246,9 @@ async function handleGoogleLogin() {
     }
 }
 
+// ============================================
+// 🔐 RECUPERAR CONTRASEÑA
+// ============================================
 async function handleForgotPassword() {
     const { value: email } = await Swal.fire({
         title: 'Recuperar Contraseña',

@@ -117,6 +117,20 @@ class UserService {
         await userRepository.create(user);
       }
 
+      // 🔥 VERIFICAR SI LA CUENTA ESTÁ INHABILITADA
+      if (user.status === 'inactive') {
+        console.warn('⚠️ Cuenta inhabilitada:', user.username);
+        await signOut(auth);
+        throw new Error('❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.');
+      }
+
+      // Si está suspendida, también bloquear
+      if (user.status === 'suspended') {
+        console.warn('⚠️ Cuenta suspendida:', user.username);
+        await signOut(auth);
+        throw new Error('❌ Tu cuenta ha sido suspendida. Contacta con soporte.');
+      }
+
       user.updateLastLogin();
       await userRepository.update(user);
 
@@ -130,13 +144,30 @@ class UserService {
       };
     } catch (error) {
       console.error('Error en login:', error);
+      
+      // 🔥 Manejar error de cuenta inhabilitada
+      if (error.message.includes('inhabilitada')) {
+        return {
+          success: false,
+          error: '❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.'
+        };
+      }
+      
+      if (error.message.includes('suspendida')) {
+        return {
+          success: false,
+          error: '❌ Tu cuenta ha sido suspendida. Contacta con soporte.'
+        };
+      }
+
       let mensaje = 'Error al iniciar sesión';
       if (error.code === 'auth/user-not-found') mensaje = 'Usuario no encontrado';
       else if (error.code === 'auth/wrong-password') mensaje = 'Contraseña incorrecta';
       else if (error.code === 'auth/invalid-email') mensaje = 'Email inválido';
       else if (error.code === 'auth/user-disabled') mensaje = 'Usuario deshabilitado';
       else if (error.code === 'auth/too-many-requests') mensaje = 'Demasiados intentos. Intenta más tarde';
-      else mensaje = error.message || 'Error al iniciar sesión';
+      else if (error.message) mensaje = error.message;
+      
       return { success: false, error: mensaje };
     }
   }
@@ -165,6 +196,19 @@ class UserService {
         await userRepository.create(user);
       }
 
+      // 🔥 VERIFICAR SI LA CUENTA ESTÁ INHABILITADA
+      if (user.status === 'inactive') {
+        console.warn('⚠️ Cuenta inhabilitada:', user.username);
+        await signOut(auth);
+        throw new Error('❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.');
+      }
+
+      if (user.status === 'suspended') {
+        console.warn('⚠️ Cuenta suspendida:', user.username);
+        await signOut(auth);
+        throw new Error('❌ Tu cuenta ha sido suspendida. Contacta con soporte.');
+      }
+
       user.updateLastLogin();
       await userRepository.update(user);
 
@@ -178,11 +222,28 @@ class UserService {
       };
     } catch (error) {
       console.error('Error en login con Google:', error);
+      
+      if (error.message && error.message.includes('inhabilitada')) {
+        return {
+          success: false,
+          error: '❌ Tu cuenta ha sido inhabilitada por el administrador. Contacta con soporte.'
+        };
+      }
+      
+      if (error.message && error.message.includes('suspendida')) {
+        return {
+          success: false,
+          error: '❌ Tu cuenta ha sido suspendida. Contacta con soporte.'
+        };
+      }
+
       let mensaje = 'Error al iniciar sesión con Google';
       if (error.code === 'auth/popup-closed-by-user') {
         mensaje = 'Ventana de Google cerrada';
       } else if (error.code === 'auth/account-exists-with-different-credential') {
         mensaje = 'Ya existe una cuenta con este email usando otro método';
+      } else if (error.message) {
+        mensaje = error.message;
       }
       return { success: false, error: mensaje };
     }
@@ -317,7 +378,8 @@ class UserService {
       if (userData.specialty !== undefined) userDoc.specialty = userData.specialty;
       if (userData.experience !== undefined) userDoc.experience = userData.experience;
       if (userData.photoURL !== undefined) userDoc.photoURL = userData.photoURL;
-      if (userData.role !== undefined) userDoc.role = userData.role; // 🔥 PERMITIR CAMBIAR ROL
+      if (userData.role !== undefined) userDoc.role = userData.role;
+      if (userData.status !== undefined) userDoc.status = userData.status; // 🔥 PERMITIR CAMBIAR ESTADO
       userDoc.updatedAt = new Date();
 
       await userRepository.update(userDoc);
