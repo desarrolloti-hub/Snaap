@@ -27,6 +27,7 @@ export async function adminFormController() {
 
     loadStyles();
     setupForm();
+    setupDelegation();
 }
 
 function loadStyles() {
@@ -45,60 +46,52 @@ function loadStyles() {
 }
 
 function setupForm() {
-    const backBtn = document.getElementById('backBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
     const adminForm = document.getElementById('adminForm');
-    
-    // 🔥 CONFIRMACIÓN PARA VOLVER
-    if (backBtn) {
-        backBtn.addEventListener('click', () => {
-            Swal.fire({
-                title: '¿Cancelar creación?',
-                text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ff007a',
-                cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'Sí, salir',
-                cancelButtonText: 'Continuar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/admins');
-                    } else {
-                        window.location.href = '/sysadmin/admins';
-                    }
-                }
-            });
-        });
-    }
-    
-    // 🔥 CONFIRMACIÓN PARA CANCELAR
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            Swal.fire({
-                title: '¿Cancelar creación?',
-                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#ff007a',
-                cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'Sí, cancelar',
-                cancelButtonText: 'Continuar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/admins');
-                    } else {
-                        window.location.href = '/sysadmin/admins';
-                    }
-                }
-            });
-        });
-    }
-    
     if (adminForm) {
         adminForm.addEventListener('submit', saveAdmin);
+        console.log('✅ Event listener agregado al formulario');
+    }
+}
+
+// ============================================
+// 🔥 DELEGACIÓN DE EVENTOS
+// ============================================
+function setupDelegation() {
+    console.log('🔧 Configurando delegación de eventos...');
+    
+    document.removeEventListener('click', handleDocumentClick);
+    document.addEventListener('click', handleDocumentClick);
+    
+    console.log('✅ Delegación de eventos configurada');
+}
+
+function handleDocumentClick(e) {
+    // 🔥 BOTÓN VOLVER
+    const btnVolver = e.target.closest('#btnVolver');
+    if (btnVolver) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🔙 Click en Volver (delegación)');
+        
+        Swal.fire({
+            title: '¿Cancelar creación?',
+            text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ff007a',
+            cancelButtonColor: '#4db8ff',
+            confirmButtonText: 'Sí, salir',
+            cancelButtonText: 'Continuar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (typeof window.navigateTo === 'function') {
+                    window.navigateTo('/sysadmin/admins');
+                } else {
+                    window.location.href = '/sysadmin/admins';
+                }
+            }
+        });
+        return;
     }
 }
 

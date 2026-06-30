@@ -247,3 +247,62 @@ body {
         padding: 20px;
     }
 }
+/* src/css/components/adminForm.css */
+/* Agregar al final del archivo */
+
+/* 🔥 BOTÓN VOLVER - Mismo estilo que Guardar */
+.btn-back-form {
+    background: transparent;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+}
+
+.btn-back-form i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-back-form:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: #ff007a;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+}
+
+.btn-back-form:hover i {
+    color: #ff007a;
+}
+
+/* Ajustar contenedor de acciones */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(77, 184, 255, 0.2);
+    flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn-back-form,
+    .btn-save {
+        justify-content: center;
+        width: 100%;
+    }
+}
