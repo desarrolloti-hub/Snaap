@@ -101,7 +101,8 @@ function renderHostsTable() {
             <td><span class="status-badge status-${host.status || 'active'}">${getStatusText(host.status || 'active')}</span></td>
             <td>${host.createdAt ? new Date(host.createdAt).toLocaleDateString() : 'No registrado'}</td>
             <td class="actions-cell">
-                <button class="btn-action view-host" data-id="${host.id || host.uid}" title="Ver">
+                <!-- 🔥 Botón Ver - Redirige a host-details -->
+                <button class="btn-action view-host" data-id="${host.id || host.uid}" title="Ver detalles">
                     <i class="fas fa-eye"></i>
                 </button>
                 <button class="btn-action edit-host" data-id="${host.id || host.uid}" title="Editar">
@@ -141,15 +142,30 @@ function setupEventListeners() {
 }
 
 // ============================================
-// 👁️ VER HOST (REDIRIGE A PÁGINA DE DETALLES)
+// 👁️ VER HOST - REDIRIGE A PÁGINA DE DETALLES
 // ============================================
 function viewHost(hostId) {
-    console.log('🔍 Ver detalles del host:', hostId);
+    console.log('🔍 Ver detalles del host con ID:', hostId);
+    
+    if (!hostId) {
+        console.error('❌ ID de host no válido');
+        Swal.fire({
+            title: 'Error',
+            text: 'ID de host no válido',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    // 🔥 REDIRIGIR A LA PÁGINA DE DETALLES
+    const url = `/sysadmin/host-details?id=${hostId}`;
+    console.log('🔀 Redirigiendo a:', url);
     
     if (typeof window.navigateTo === 'function') {
-        window.navigateTo(`/sysadmin/host-details?id=${hostId}`);
+        window.navigateTo(url);
     } else {
-        window.location.href = `/sysadmin/host-details?id=${hostId}`;
+        window.location.href = url;
     }
 }
 
@@ -211,7 +227,6 @@ async function deleteHost(hostId) {
                 }
             });
             
-            console.log('🗑️ Eliminando host con ID:', hostId);
             await userRepository.delete(hostId);
             console.log('✅ Host eliminado correctamente');
             

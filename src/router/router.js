@@ -7,7 +7,6 @@ import { userService } from '../services/userService.js';
 let isNavigating = false;
 
 export function initRouter() {
-    // 🔥 Escuchar eventos de navegación
     document.addEventListener('click', async (e) => {
         const link = e.target.closest('[data-link]');
         if (link && !isNavigating) {
@@ -23,13 +22,12 @@ export function initRouter() {
     window.addEventListener('popstate', async () => {
         if (!isNavigating) {
             const path = window.location.pathname;
-            await handleRoute(path, true); // true = es navegación por popstate
+            await handleRoute(path, true);
         }
     });
 
     window.navigateTo = navigateTo;
     
-    // 🔥 Inicializar con la ruta actual
     const currentPath = window.location.pathname;
     handleRoute(currentPath);
 }
@@ -49,11 +47,12 @@ async function navigateTo(path) {
 }
 
 async function handleRoute(path, isPopState = false) {
-    console.log(`📍 Navegando a: ${path}`);
+    // 🔥 ELIMINAR PARÁMETROS DE CONSULTA PARA LA BÚSQUEDA DE RUTA
+    const pathWithoutParams = path.split('?')[0];
+    console.log(`📍 Navegando a: ${path} (ruta base: ${pathWithoutParams})`);
 
-    // 🔥 1. VERIFICAR AUTENTICACIÓN Y PERMISOS
-    const canAccess = await authGuard(path, (redirectPath) => {
-        // Si no tiene permisos, redirigir
+    // 🔥 1. VERIFICAR AUTENTICACIÓN Y PERMISOS (usando la ruta sin parámetros)
+    const canAccess = await authGuard(pathWithoutParams, (redirectPath) => {
         if (!isPopState) {
             window.history.pushState({}, '', redirectPath);
             handleRoute(redirectPath);
@@ -62,26 +61,37 @@ async function handleRoute(path, isPopState = false) {
         }
     });
 
-    // Si no puede acceder, no continuar (ya se redirigió)
     if (!canAccess) {
         return;
     }
 
-    // 🔥 2. ACTUALIZAR NAVBAR SEGÚN ROL
+    // 🔥 2. ACTUALIZAR NAVBAR
     updateNavbar();
 
-    // 🔥 3. CARGAR LA VISTA
-    document.dispatchEvent(new CustomEvent('route:changing', { detail: { path } }));
-
-    let route = routes[path];
+    // 🔥 3. BUSCAR RUTA SIN PARÁMETROS
+    let route = routes[pathWithoutParams];
+    
     if (!route) {
-        console.warn(`⚠️ Ruta no encontrada: ${path}, redirigiendo a 404`);
+        // Buscar con comodines
+        for (const [routePath, routeConfig] of Object.entries(routes)) {
+            if (routePath.includes('*') && pathWithoutParams.startsWith(routePath.replace('*', ''))) {
+                route = routeConfig;
+                break;
+            }
+        }
+    }
+    
+    if (!route) {
+        console.warn(`⚠️ Ruta no encontrada: ${pathWithoutParams}, redirigiendo a 404`);
         route = routes['/404'];
-        if (path !== '/404') {
+        if (pathWithoutParams !== '/404') {
             window.history.pushState({}, '', '/404');
             path = '/404';
         }
     }
+
+    // 🔥 4. CARGAR LA VISTA
+    document.dispatchEvent(new CustomEvent('route:changing', { detail: { path } }));
 
     try {
         if (route.view) {
@@ -118,14 +128,10 @@ async function handleRoute(path, isPopState = false) {
     document.dispatchEvent(new CustomEvent('route:changed', { detail: { path } }));
 }
 
-// ============================================
-// 🔄 ACTUALIZAR NAVBAR SEGÚN ROL
-// ============================================
 function updateNavbar() {
     const user = userService.getCurrentUser();
     const role = user ? user.role : null;
     
-    // Disparar evento para que los controladores de navbar actualicen
     document.dispatchEvent(new CustomEvent('auth:changed', { 
         detail: { 
             user: user,
@@ -135,8 +141,5 @@ function updateNavbar() {
     }));
 }
 
-// ============================================
-// 🔥 EXPONER FUNCIONES GLOBALES
-// ============================================
 window.navigateTo = navigateTo;
 window.updateNavbar = updateNavbar;

@@ -28,12 +28,23 @@ export async function hostDetailsController() {
         return;
     }
 
-    // Obtener ID del host desde la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const hostId = urlParams.get('id');
+    // 🔥 OBTENER ID DESDE LOCALSTORAGE O URL
+    let hostId = localStorage.getItem('hostDetailId');
+    console.log('🔍 ID del host desde localStorage:', hostId);
     
-    console.log('🔍 ID del host desde URL:', hostId);
+    // Si no hay ID en localStorage, intentar desde la URL
+    if (!hostId) {
+        const urlParams = new URLSearchParams(window.location.search);
+        hostId = urlParams.get('id');
+        console.log('🔍 ID del host desde URL:', hostId);
+        
+        // Si lo encontramos en la URL, guardarlo en localStorage
+        if (hostId) {
+            localStorage.setItem('hostDetailId', hostId);
+        }
+    }
     
+    // Si aún no hay ID, mostrar error
     if (!hostId) {
         Swal.fire({
             title: 'Error',
@@ -41,6 +52,8 @@ export async function hostDetailsController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
+            // Limpiar localStorage antes de redirigir
+            localStorage.removeItem('hostDetailId');
             window.location.href = '/sysadmin/hosts';
         });
         return;
@@ -212,6 +225,8 @@ function setupEventListeners() {
     const btnVolver = document.getElementById('btnVolver');
     if (btnVolver) {
         btnVolver.addEventListener('click', () => {
+            // Limpiar localStorage al volver
+            localStorage.removeItem('hostDetailId');
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/hosts');
             } else {

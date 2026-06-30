@@ -23,9 +23,9 @@ import { adminFormController } from '../modules/sysadmin/adminForm/adminFormCont
 import { adminEditController } from '../modules/sysadmin/adminEdit/adminEditController.js';
 import { profileAdminController } from '../modules/sysadmin/profileAdmin/profileAdminController.js';
 import { profileEditController as profileAdminEditController } from '../modules/sysadmin/profileEdit/profileEditController.js';
-// 🔥 IMPORT PARA HOST DETAILS
 import { hostDetailsController } from '../modules/sysadmin/hostDetails/hostDetailsController.js';
 
+// ✅ EXPORTACIÓN CORRECTA
 export const routes = {
     // ============================================
     // 🏠 RUTAS PÚBLICAS
@@ -110,7 +110,6 @@ export const routes = {
         view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
         controller: hostEditController,
     },
-    // 🔥 RUTA PARA DETALLES DE HOST (CON ID EN LA URL)
     "/sysadmin/host-details": {
         view: "/public/modules/sysadmin/hostDetails/hostDetails.html",
         controller: hostDetailsController,
