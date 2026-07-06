@@ -1,4 +1,5 @@
 // src/core/permissions.js
+// 🔥 CORREGIR LA IMPORTACIÓN
 import { userService } from '../services/userService.js';
 
 // 🔐 Configuración de permisos por ruta
@@ -31,46 +32,48 @@ export const routePermissions = {
     '/host/profile/edit': { roles: ['host', 'sysadmin'], auth: true },
 
     // ============================================
-    // RUTAS DE ADMIN (SYSADMIN)
+    // 👑 RUTAS DE ADMIN (SYSADMIN)
     // ============================================
     '/sysadmin/home': { roles: ['sysadmin'], auth: true },
     '/sysadmin/hosts': { roles: ['sysadmin'], auth: true },
     '/sysadmin/hosts/create': { roles: ['sysadmin'], auth: true },
     '/sysadmin/hosts/edit': { roles: ['sysadmin'], auth: true },
+    '/sysadmin/host-details': { roles: ['sysadmin'], auth: true },
     '/sysadmin/admins': { roles: ['sysadmin'], auth: true },
     '/sysadmin/admins/create': { roles: ['sysadmin'], auth: true },
     '/sysadmin/admins/edit': { roles: ['sysadmin'], auth: true },
+    '/sysadmin/admin-details': { roles: ['sysadmin'], auth: true },
     '/sysadmin/profile': { roles: ['sysadmin'], auth: true },
     '/sysadmin/profile/edit': { roles: ['sysadmin'], auth: true },
 
     // ============================================
-    // ERROR
+    // 🔴 ERROR
     // ============================================
     '/404': { roles: ['user', 'host', 'sysadmin'], auth: false },
 };
+
+// ============================================
+// 🔧 FUNCIONES AUXILIARES
+// ============================================
 
 /**
  * Verifica si el usuario tiene permisos para acceder a una ruta
  */
 export function hasPermission(role, path) {
-    // Si no hay configuración para la ruta, permitir
     if (!routePermissions[path]) {
         return true;
     }
 
     const permission = routePermissions[path];
     
-    // Si la ruta es pública y no requiere autenticación
     if (!permission.auth) {
         return true;
     }
 
-    // Si requiere autenticación y no hay usuario
     if (!role) {
         return false;
     }
 
-    // Verificar si el rol está en la lista de permitidos
     return permission.roles.includes(role);
 }
 
@@ -98,6 +101,7 @@ export function getRedirectPathByRole(role) {
         'host': '/host',
         'user': '/'
     };
+    console.log(`🔀 getRedirectPathByRole: rol=${role}, ruta=${routes[role] || '/'}`);
     return routes[role] || '/';
 }
 
@@ -115,4 +119,15 @@ export function isPublicRoute(path) {
 export function isGuestRoute(path) {
     const permission = routePermissions[path];
     return permission ? permission.guest || false : false;
+}
+
+/**
+ * Verifica si la ruta coincide con un patrón (para rutas con comodín)
+ */
+export function matchesRoute(path, pattern) {
+    if (pattern.endsWith('/*')) {
+        const base = pattern.slice(0, -2);
+        return path === base || path.startsWith(base + '/');
+    }
+    return path === pattern;
 }

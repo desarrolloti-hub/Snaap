@@ -3,10 +3,46 @@ import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { eventoRepository } from '../../../repositories/eventRepository.js';
 
+// ✅ EXPORTACIÓN CORRECTA
+export async function eventCrudController() {
+    console.log('🔥 Event CRUD Controller iniciado');
+
+    if (!userService.isAuthenticated()) {
+        console.warn('⚠️ Usuario no autenticado');
+        window.location.href = '/login';
+        return;
+    }
+
+    // 🔥 Establecer el usuario actual en el servicio
+    const user = userService.getCurrentUser();
+    eventService.setUsuarioActual(user);
+
+    loadStyles();
+    await loadAndRenderEvents();
+    setupEventListeners();
+}
+
+let allEventos = [];
+
+function loadStyles() {
+    const styles = [
+        { href: '/src/css/components/eventCrud.css', id: 'event-crud-style' }
+    ];
+    
+    styles.forEach(style => {
+        if (!document.querySelector(`link[href="${style.href}"]`)) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = style.href;
+            document.head.appendChild(link);
+        }
+    });
+}
+
 // ============================================
 // 📥 CARGAR EVENTOS DESDE FIRESTORE
 // ============================================
-const loadEventosFromFirestore = async () => {
+async function loadEventosFromFirestore() {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
@@ -15,31 +51,33 @@ const loadEventosFromFirestore = async () => {
         }
 
         console.log('👤 Usuario actual:', user);
-        console.log('🔍 Buscando eventos para UID:', user.uid);
+        console.log('🎯 Rol del usuario:', user.role);
 
-        const eventos = await eventoRepository.getByCreador(user.uid);
-        
-        console.log('📊 Eventos encontrados en Firestore:', eventos.length);
+        // 🔥 OBTENER EVENTOS SEGÚN EL ROL
+        const result = await eventService.obtenerEventosPorRol(user.uid, user.role);
 
-        if (eventos && eventos.length > 0) {
+        if (result.success) {
+            const eventos = result.eventos;
+            console.log(`📊 ${eventos.length} eventos encontrados para el rol ${user.role}`);
+
             // Guardar en localStorage para compatibilidad
             localStorage.setItem('eventos', JSON.stringify(eventos));
             localStorage.setItem('snaap_events', JSON.stringify(eventos));
             return eventos;
         } else {
-            console.log('ℹ️ No se encontraron eventos para este usuario');
-            return [];
+            console.error('Error al cargar eventos:', result.error);
+            return loadEventosFromLocalStorage();
         }
     } catch (error) {
         console.error('❌ Error al cargar eventos:', error);
         return loadEventosFromLocalStorage();
     }
-};
+}
 
 // ============================================
 // 📥 FALLBACK: CARGAR EVENTOS DE LOCALSTORAGE
 // ============================================
-const loadEventosFromLocalStorage = () => {
+function loadEventosFromLocalStorage() {
     const stored = localStorage.getItem('snaap_events');
     if (stored) {
         try {
@@ -53,39 +91,19 @@ const loadEventosFromLocalStorage = () => {
         }
     }
     return [];
-};
+}
 
 // ============================================
-// 🗑️ ELIMINAR EVENTO DE FIRESTORE
+// 🖼️ RENDERIZAR LISTA DE EVENTOS
 // ============================================
-const deleteEventoFromFirestore = async (id) => {
-    try {
-        await eventoRepository.delete(id);
-        console.log(`🗑️ Evento ${id} eliminado de Firestore`);
-        
-        const eventos = JSON.parse(localStorage.getItem('eventos') || '[]');
-        const filtered = eventos.filter(e => e.id !== id);
-        localStorage.setItem('eventos', JSON.stringify(filtered));
-        localStorage.setItem('snaap_events', JSON.stringify(filtered));
-        
-        return true;
-    } catch (error) {
-        console.error('Error al eliminar evento:', error);
-        return false;
-    }
-};
-
-// ============================================
-// 📋 RENDERIZAR LISTA DE EVENTOS
-// ============================================
-const renderEventosList = (eventos, filter = '') => {
+function renderEventosList(eventos, filter = '') {
     const container = document.getElementById('eventosList');
     if (!container) return;
     
     console.log('🖼️ Renderizando eventos:', eventos.length);
     
     const filteredEventos = eventos.filter(evento => {
-        const nombre = evento.nombre || '';
+        const nombre = evento.nombre || evento.title || '';
         return nombre.toLowerCase().includes(filter.toLowerCase());
     });
     
@@ -101,9 +119,8 @@ const renderEventosList = (eventos, filter = '') => {
     }
     
     container.innerHTML = filteredEventos.map(evento => {
-        // 🔥 USAR CAMPOS DE FIRESTORE
-        const imgUrl = evento.imagenUrl || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop';
-        const nombre = evento.nombre || 'Evento sin nombre';
+        const imgUrl = evento.imagenUrl || evento.img || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=600&auto=format&fit=crop';
+        const nombre = evento.nombre || evento.title || 'Evento sin nombre';
         
         let fecha = 'Fecha no definida';
         if (evento.fechaEvento) {
@@ -112,11 +129,16 @@ const renderEventosList = (eventos, filter = '') => {
                 month: 'long',
                 year: 'numeric'
             });
+        } else if (evento.date) {
+            fecha = evento.date;
         }
         
         const attendees = evento.attendees || evento.invitados?.length || 0;
         const photos = evento.uploadedPhotos || 0;
         const estado = evento.estado || 'pending';
+        const estadoText = estado === 'active' ? '✅ Activo' : 
+                          estado === 'completed' ? '📌 Completado' : 
+                          estado === 'cancelled' ? '❌ Cancelado' : '⏳ Pendiente';
         
         return `
             <div class="evento-card" data-id="${evento.id}">
@@ -126,7 +148,7 @@ const renderEventosList = (eventos, filter = '') => {
                     <p><i class="fas fa-calendar-day"></i> ${fecha}</p>
                     <p><i class="fas fa-users"></i> ${attendees} asistentes</p>
                     <p><i class="fas fa-camera"></i> ${photos} fotos</p>
-                    <p><i class="fas fa-tag"></i> ${estado === 'active' ? '✅ Activo' : '⏳ Pendiente'}</p>
+                    <p><i class="fas fa-tag"></i> ${estadoText}</p>
                 </div>
                 <div class="evento-actions">
                     <button class="btn-view" data-id="${evento.id}" title="Ver detalles del evento">
@@ -143,25 +165,38 @@ const renderEventosList = (eventos, filter = '') => {
         `;
     }).join('');
     
-    document.querySelectorAll('.btn-view').forEach(btn => {
+    // Agregar event listeners usando delegación
+    setupButtonListeners(container);
+}
+
+// ============================================
+// 🔧 CONFIGURAR EVENT LISTENERS DE LOS BOTONES
+// ============================================
+function setupButtonListeners(container) {
+    // Ver detalles
+    container.querySelectorAll('.btn-view').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const id = btn.getAttribute('data-id');
+            console.log('🔍 Ver detalles del evento:', id);
             redirectToViewDetails(id);
         });
     });
     
-    document.querySelectorAll('.btn-edit').forEach(btn => {
+    // Editar
+    container.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const id = btn.getAttribute('data-id');
+            console.log('✏️ Editar evento:', id);
             redirectToEditForm(id);
         });
     });
     
-    document.querySelectorAll('.btn-delete').forEach(btn => {
+    // Eliminar
+    container.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -170,12 +205,12 @@ const renderEventosList = (eventos, filter = '') => {
             showDeleteModal({ id, nombre: title });
         });
     });
-};
+}
 
 // ============================================
 // 🗑️ MOSTRAR MODAL DE ELIMINACIÓN
 // ============================================
-const showDeleteModal = (evento) => {
+function showDeleteModal(evento) {
     Swal.fire({
         title: '¿Eliminar Evento?',
         html: `¿Estás seguro de eliminar el evento <strong>${evento.nombre}</strong>?<br>Esta acción no se puede deshacer.`,
@@ -196,10 +231,10 @@ const showDeleteModal = (evento) => {
                 }
             });
             
-            const success = await deleteEventoFromFirestore(evento.id);
-            Swal.close();
-            
-            if (success) {
+            try {
+                await deleteEventoFromFirestore(evento.id);
+                Swal.close();
+                
                 await Swal.fire({
                     title: '¡Evento Eliminado!',
                     text: 'El evento ha sido eliminado correctamente',
@@ -207,79 +242,110 @@ const showDeleteModal = (evento) => {
                     confirmButtonText: 'OK'
                 });
                 await loadAndRenderEvents();
-            } else {
+            } catch (error) {
+                Swal.close();
                 Swal.fire({
                     title: 'Error',
-                    text: 'No se pudo eliminar el evento',
+                    text: error.message || 'No se pudo eliminar el evento',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
             }
         }
     });
-};
+}
+
+// ============================================
+// 🗑️ ELIMINAR EVENTO DE FIRESTORE
+// ============================================
+async function deleteEventoFromFirestore(id) {
+    try {
+        const user = userService.getCurrentUser();
+        if (!user) {
+            throw new Error('No hay usuario autenticado');
+        }
+
+        const evento = await eventoRepository.getById(id);
+        if (!evento) {
+            throw new Error('Evento no encontrado');
+        }
+
+        // Solo el creador o el admin pueden eliminar
+        if (user.role !== 'sysadmin' && evento.creadoPor !== user.uid) {
+            throw new Error('No tienes permiso para eliminar este evento');
+        }
+
+        await eventoRepository.delete(id);
+        console.log(`🗑️ Evento ${id} eliminado de Firestore`);
+
+        // Actualizar localStorage
+        const eventos = JSON.parse(localStorage.getItem('eventos') || '[]');
+        const filtered = eventos.filter(e => e.id !== id);
+        localStorage.setItem('eventos', JSON.stringify(filtered));
+        localStorage.setItem('snaap_events', JSON.stringify(filtered));
+
+        return true;
+    } catch (error) {
+        console.error('Error al eliminar evento:', error);
+        throw error;
+    }
+}
 
 // ============================================
 // 🔀 REDIRECCIONES
 // ============================================
-const redirectToEditForm = (eventoId) => {
+function redirectToEditForm(eventoId) {
     localStorage.setItem('eventoParaEditar', eventoId);
-    if (typeof navigateTo === 'function') {
-        navigateTo(`/host/event-edit?id=${eventoId}`);
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(`/host/event-edit?id=${eventoId}`);
     } else {
         window.location.href = `/host/event-edit?id=${eventoId}`;
     }
-};
+}
 
-const redirectToViewDetails = (eventoId) => {
-    if (typeof navigateTo === 'function') {
-        navigateTo(`/host/event-details?id=${eventoId}`);
+function redirectToViewDetails(eventoId) {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(`/host/event-details?id=${eventoId}`);
     } else {
         window.location.href = `/host/event-details?id=${eventoId}`;
     }
-};
+}
 
-const redirectToCreateForm = () => {
+function redirectToCreateForm() {
     localStorage.removeItem('eventoParaEditar');
-    if (typeof navigateTo === 'function') {
-        navigateTo('/host/create-event');
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo('/host/create-event');
     } else {
         window.location.href = '/host/create-event';
     }
-};
+}
 
 // ============================================
 // 📥 CARGAR Y RENDERIZAR EVENTOS
 // ============================================
-let allEventos = [];
-
-const loadAndRenderEvents = async () => {
+async function loadAndRenderEvents() {
+    // Verificar autenticación
     if (!userService.isAuthenticated()) {
         console.warn('⚠️ Usuario no autenticado');
         window.location.href = '/login';
         return;
     }
     
+    // Cargar eventos desde Firestore
     allEventos = await loadEventosFromFirestore();
     
+    // Renderizar lista
     const searchTerm = document.getElementById('searchInput')?.value || '';
     renderEventosList(allEventos, searchTerm);
-};
+}
 
 // ============================================
-// 🚀 CONTROLADOR PRINCIPAL
+// 🔧 CONFIGURAR EVENTOS DEL CRUD
 // ============================================
-export async function eventCrudController() {
-    console.log('🔥 Controlador eventCrudController iniciado');
-
-    if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
-        window.location.href = '/login';
-        return;
-    }
-
-    await loadAndRenderEvents();
+function setupEventListeners() {
+    console.log('🔧 Configurando event listeners...');
     
+    // Búsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -287,6 +353,7 @@ export async function eventCrudController() {
         });
     }
     
+    // Botón crear nuevo evento
     const btnCrearEvento = document.getElementById('btnCrearEvento');
     if (btnCrearEvento) {
         btnCrearEvento.addEventListener('click', (e) => {
@@ -295,7 +362,8 @@ export async function eventCrudController() {
         });
     }
     
-    console.log('✅ EventCRUD Controller finalizado');
+    console.log('✅ Event CRUD Controller finalizado');
 }
 
+// ✅ EXPORTACIÓN POR DEFECTO (para compatibilidad)
 export default eventCrudController;

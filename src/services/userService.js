@@ -109,7 +109,6 @@ class UserService {
         throw new Error('Ya existe un usuario con este email');
       }
 
-      // Crear en Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, userData.email, userData.password);
       const firebaseUser = userCredential.user;
 
@@ -175,7 +174,6 @@ class UserService {
         await userRepository.create(user);
       }
 
-      // 🔥 VERIFICAR SI LA CUENTA ESTÁ INHABILITADA
       if (user.status === 'inactive') {
         console.warn('⚠️ Cuenta inhabilitada:', user.username);
         await signOut(auth);
@@ -424,7 +422,6 @@ class UserService {
         throw new Error('Usuario no encontrado en Firestore');
       }
 
-      // Actualizar campos permitidos
       if (userData.username !== undefined) userDoc.username = userData.username;
       if (userData.phone !== undefined) userDoc.phone = userData.phone;
       if (userData.bio !== undefined) userDoc.bio = userData.bio;
@@ -458,4 +455,5 @@ class UserService {
   }
 }
 
+// ✅ EXPORTACIÓN CORRECTA - Asegúrate de que esto esté al final
 export const userService = new UserService();

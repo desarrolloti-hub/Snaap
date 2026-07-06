@@ -5,9 +5,10 @@ import { getRedirectPathByRole } from '../../../core/permissions.js';
 export async function registerController() {
     console.log('🔥 Register Controller iniciado');
 
-    // Si ya está autenticado, redirigir a /host directamente
     if (userService.isAuthenticated()) {
-        redirectTo('/host');
+        const user = userService.getCurrentUser();
+        const redirectPath = getRedirectPathByRole(user.role);
+        redirectTo(redirectPath);
         return;
     }
 
@@ -128,7 +129,6 @@ async function handleRegister(e) {
         Swal.close();
 
         if (result.success) {
-            // 🔥 Disparar evento de autenticación
             document.dispatchEvent(new CustomEvent('auth:changed', {
                 detail: {
                     user: result.user,
@@ -137,15 +137,18 @@ async function handleRegister(e) {
                 }
             }));
 
+            // 🔥 MENSAJE CON VERIFICACIÓN DE EMAIL
             await Swal.fire({
                 title: '¡Registro exitoso!',
-                html: `${result.message}<br><br><small>Revisa tu correo para verificar tu cuenta.</small>`,
+                html: `${result.message}<br><br>
+                       <strong>📧 Revisa tu correo electrónico</strong><br>
+                       <small>Hemos enviado un enlace de verificación a ${email}.<br>
+                       Debes verificarlo antes de iniciar sesión.</small>`,
                 icon: 'success',
-                confirmButtonText: 'Continuar'
+                confirmButtonText: 'Entendido'
             });
 
-            // 🔥 REDIRIGIR DIRECTAMENTE A /host
-            redirectTo('/host');
+            redirectTo('/login');
         } else {
             Swal.fire({
                 title: 'Error',
@@ -199,8 +202,8 @@ async function handleGoogleRegister() {
                 confirmButtonText: 'Continuar'
             });
 
-            // 🔥 REDIRIGIR DIRECTAMENTE A /host
-            redirectTo('/host');
+            const redirectPath = getRedirectPathByRole(result.role);
+            redirectTo(redirectPath);
         } else {
             Swal.fire({
                 title: 'Error',

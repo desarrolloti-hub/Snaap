@@ -11,7 +11,9 @@ class EventoService {
     this.usuarioActual = usuario;
   }
 
+  // ============================================
   // 🔥 CREAR EVENTO
+  // ============================================
   async crearEvento(eventoData) {
     try {
       if (!eventoData.nombre || eventoData.nombre.trim().length === 0) {
@@ -33,7 +35,6 @@ class EventoService {
 
       const paqueteDetalles = this.getPaqueteDetalles(eventoData.paquete);
 
-      // 🔥 Usar el usuario actual o el proporcionado
       const usuario = this.usuarioActual || { uid: 'usuario-anonimo', email: '', username: 'Anónimo' };
 
       const evento = new Evento({
@@ -55,7 +56,6 @@ class EventoService {
 
       const eventoGuardado = await eventoRepository.create(evento);
 
-      // 🔥 Incrementar contador de eventos del usuario
       if (usuario.uid && usuario.uid !== 'usuario-anonimo') {
         await this.incrementarEventosUsuario(usuario.uid);
       }
@@ -75,35 +75,41 @@ class EventoService {
     }
   }
 
-  // 🔥 INCREMENTAR CONTADOR DE EVENTOS DEL USUARIO
-  async incrementarEventosUsuario(uid) {
+  // ============================================
+  // 🔥 OBTENER EVENTOS SEGÚN ROL (NUEVO MÉTODO)
+  // ============================================
+  async obtenerEventosPorRol(uid, role) {
     try {
-      const { userRepository } = await import('../repositories/userRepository.js');
-      const user = await userRepository.getByUid(uid);
-      if (user) {
-        user.incrementEventsCreated();
-        await userRepository.update(user);
-        console.log(`✅ Eventos del usuario ${user.username} incrementado a ${user.eventsCreated}`);
-      }
-    } catch (error) {
-      console.error('Error al incrementar eventos del usuario:', error);
-    }
-  }
+      console.log('🔍 Buscando eventos para UID:', uid, 'Rol:', role);
 
-  // 🔥 OBTENER EVENTOS DE UN USUARIO
-  async obtenerEventosPorUsuario(uid) {
-    try {
-      if (!uid) {
-        throw new Error('Se requiere el UID del usuario');
+      // 🔥 SYSADMIN: Ve todos los eventos
+      if (role === 'sysadmin') {
+        console.log('👑 Admin: obteniendo todos los eventos');
+        const eventos = await eventoRepository.getAll();
+        return {
+          success: true,
+          eventos: eventos
+        };
       }
 
-      const eventos = await eventoRepository.getByCreador(uid);
+      // 🔥 HOST: Solo ve sus propios eventos
+      if (role === 'host') {
+        console.log('🎤 Host: obteniendo sus eventos');
+        const eventos = await eventoRepository.getByCreador(uid);
+        return {
+          success: true,
+          eventos: eventos
+        };
+      }
+
+      // 🔥 USER: No ve eventos (o solo los compartidos)
+      console.log('👤 Usuario: sin acceso a eventos');
       return {
         success: true,
-        eventos: eventos
+        eventos: []
       };
     } catch (error) {
-      console.error('Error al obtener eventos del usuario:', error);
+      console.error('Error al obtener eventos por rol:', error);
       return {
         success: false,
         error: error.message
@@ -111,7 +117,9 @@ class EventoService {
     }
   }
 
-  // 🔥 OBTENER ESTADÍSTICAS DE EVENTOS PARA EL PERFIL
+  // ============================================
+  // 🔥 OBTENER ESTADÍSTICAS PARA EL PERFIL
+  // ============================================
   async obtenerEstadisticasPerfil(uid) {
     try {
       const result = await this.obtenerEventosPorUsuario(uid);
@@ -149,6 +157,49 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 INCREMENTAR CONTADOR DE EVENTOS
+  // ============================================
+  async incrementarEventosUsuario(uid) {
+    try {
+      const { userRepository } = await import('../repositories/userRepository.js');
+      const user = await userRepository.getByUid(uid);
+      if (user) {
+        user.incrementEventsCreated();
+        await userRepository.update(user);
+        console.log(`✅ Eventos del usuario ${user.username} incrementado a ${user.eventsCreated}`);
+      }
+    } catch (error) {
+      console.error('Error al incrementar eventos del usuario:', error);
+    }
+  }
+
+  // ============================================
+  // 🔥 OBTENER EVENTOS DE UN USUARIO
+  // ============================================
+  async obtenerEventosPorUsuario(uid) {
+    try {
+      if (!uid) {
+        throw new Error('Se requiere el UID del usuario');
+      }
+
+      const eventos = await eventoRepository.getByCreador(uid);
+      return {
+        success: true,
+        eventos: eventos
+      };
+    } catch (error) {
+      console.error('Error al obtener eventos del usuario:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 🔥 OBTENER DETALLES DE UN PAQUETE
+  // ============================================
   getPaqueteDetalles(paquete) {
     const paquetesInfo = {
       basico: {
@@ -203,6 +254,9 @@ class EventoService {
     return paquetesInfo[paquete] || null;
   }
 
+  // ============================================
+  // 🔥 OBTENER EVENTO POR ID (con verificación de permisos)
+  // ============================================
   async getEventoPorId(id) {
     try {
       if (!id) {
@@ -226,6 +280,9 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 OBTENER EVENTOS DEL USUARIO ACTUAL (deprecado)
+  // ============================================
   async getEventosDelUsuario() {
     try {
       if (!this.usuarioActual || !this.usuarioActual.uid) {
@@ -249,6 +306,9 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 ACTUALIZAR EVENTO
+  // ============================================
   async actualizarEvento(id, data) {
     try {
       if (!id) {
@@ -289,6 +349,9 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 CAMBIAR ESTADO DEL EVENTO
+  // ============================================
   async cambiarEstadoEvento(id, nuevoEstado) {
     try {
       if (!id) {
@@ -314,6 +377,9 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 AGREGAR INVITADO
+  // ============================================
   async agregarInvitado(eventoId, invitadoData) {
     try {
       if (!eventoId) {
@@ -344,6 +410,9 @@ class EventoService {
     }
   }
 
+  // ============================================
+  // 🔥 ELIMINAR INVITADO
+  // ============================================
   async eliminarInvitado(eventoId, email) {
     try {
       if (!eventoId || !email) {
@@ -365,36 +434,9 @@ class EventoService {
     }
   }
 
-  async getEstadisticas() {
-    try {
-      if (!this.usuarioActual || !this.usuarioActual.uid) {
-        const eventos = await eventoRepository.getAll();
-        const estadisticas = {
-          total: eventos.length,
-          activos: eventos.filter(e => e.estado === 'active').length,
-          completados: eventos.filter(e => e.estado === 'completed').length,
-          cancelados: eventos.filter(e => e.estado === 'cancelled').length,
-          pendientes: eventos.filter(e => e.estado === 'pending').length
-        };
-        return {
-          success: true,
-          estadisticas: estadisticas
-        };
-      }
-
-      const estadisticas = await eventoRepository.getEstadisticas(this.usuarioActual.uid);
-      return {
-        success: true,
-        estadisticas: estadisticas
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
+  // ============================================
+  // 🔥 BUSCAR POR CÓDIGO DE ACCESO
+  // ============================================
   async buscarPorCodigo(codigo) {
     try {
       if (!codigo) {

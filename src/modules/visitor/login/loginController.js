@@ -153,16 +153,44 @@ async function handleLogin(e) {
             console.log('🔀 Redirigiendo a:', redirectPath);
             redirectTo(redirectPath);
         } else {
-            // 🔥 DETECTAR CUENTA INHABILITADA
             const errorMsg = result.error || 'Error al iniciar sesión';
-            const isDisabled = errorMsg.includes('inhabilitada') || errorMsg.includes('suspendida');
             
-            Swal.fire({
-                title: isDisabled ? '⛔ Acceso Denegado' : 'Error',
-                text: errorMsg,
-                icon: isDisabled ? 'error' : 'error',
-                confirmButtonText: 'OK'
-            });
+            // 🔥 DETECTAR SI ES ERROR DE VERIFICACIÓN DE EMAIL
+            const isVerificationError = errorMsg.includes('verificado') || errorMsg.includes('verificación');
+            
+            if (isVerificationError) {
+                Swal.fire({
+                    title: '⛔ Email no verificado',
+                    html: `${errorMsg}<br><br>
+                           <small>Revisa tu bandeja de entrada y carpeta de spam.<br>
+                           <button id="resendVerificationBtn" class="swal2-confirm" style="margin-top:10px; padding:8px 20px; border-radius:50px; background:transparent; border:2px solid #4db8ff; color:#fff; cursor:pointer;">
+                               Reenviar verificación
+                           </button></small>`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    didRender: () => {
+                        const resendBtn = document.getElementById('resendVerificationBtn');
+                        if (resendBtn) {
+                            resendBtn.addEventListener('click', async () => {
+                                const result = await userService.reenviarVerificacionEmail();
+                                Swal.fire({
+                                    title: result.success ? '📧 Enviado!' : 'Error',
+                                    text: result.success ? result.message : result.error,
+                                    icon: result.success ? 'success' : 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            });
+                        }
+                    }
+                });
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: errorMsg,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         }
     } catch (error) {
         Swal.close();
@@ -225,12 +253,11 @@ async function handleGoogleLogin() {
             redirectTo(redirectPath);
         } else {
             const errorMsg = result.error || 'Error al iniciar sesión con Google';
-            const isDisabled = errorMsg.includes('inhabilitada') || errorMsg.includes('suspendida');
             
             Swal.fire({
-                title: isDisabled ? '⛔ Acceso Denegado' : 'Error',
+                title: 'Error',
                 text: errorMsg,
-                icon: isDisabled ? 'error' : 'error',
+                icon: 'error',
                 confirmButtonText: 'OK'
             });
         }

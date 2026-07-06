@@ -1,4 +1,4 @@
-// src/repositories/EventoRepository.js
+// src/repositories/eventRepository.js
 import { db } from '../config/firebaseConfig.js';
 import { 
   collection, 
@@ -11,6 +11,7 @@ import {
   query, 
   where, 
   orderBy,
+  limit,
   Timestamp,
   addDoc
 } from 'firebase/firestore';
@@ -22,25 +23,21 @@ class EventoRepository {
     this.collectionRef = collection(db, this.collectionName);
   }
 
-  /**
-   * Crear un nuevo evento en Firestore
-   */
+  // ➕ CREAR evento
   async create(evento) {
     try {
       if (!evento.isValid()) {
         throw new Error('El evento no es válido. Verifica los campos requeridos.');
       }
 
-      // Preparar datos para Firestore
       const data = {
         ...evento.toFirestore(),
-        fechaEvento: Timestamp.fromDate(evento.fechaEvento),
+        fechaEvento: Timestamp.fromDate(evento.fechaEvento || new Date()),
         createdAt: Timestamp.fromDate(evento.createdAt || new Date()),
         updatedAt: Timestamp.fromDate(new Date()),
         fechaLimite: Timestamp.fromDate(evento.fechaLimite || evento.calcularFechaLimite(evento.paquete))
       };
 
-      // Si tiene ID, usar setDoc, si no, usar addDoc
       let docRef;
       if (evento.id) {
         docRef = doc(this.collectionRef, evento.id);
@@ -49,22 +46,14 @@ class EventoRepository {
         docRef = await addDoc(this.collectionRef, data);
       }
 
-      // Crear una nueva instancia con el ID generado
-      const eventoCreado = new Evento({
-        ...evento,
-        id: docRef.id
-      });
-
-      return eventoCreado;
+      return new Evento({ ...evento, id: docRef.id });
     } catch (error) {
       console.error('Error al crear evento en Firestore:', error);
       throw new Error(`Error al guardar evento: ${error.message}`);
     }
   }
 
-  /**
-   * Obtener un evento por su ID
-   */
+  // 🔍 OBTENER evento por ID
   async getById(id) {
     try {
       if (!id) {
@@ -85,19 +74,17 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Obtener eventos por usuario creador
-   */
+  // 🔍 OBTENER eventos por creador (SIN orderBy para evitar índice)
   async getByCreador(uid) {
     try {
       if (!uid) {
         throw new Error('Se requiere el UID del creador para buscar eventos');
       }
 
+      // 🔥 ELIMINAR orderBy para evitar el índice
       const q = query(
         this.collectionRef, 
-        where('creadoPor', '==', uid),
-        orderBy('createdAt', 'desc')
+        where('creadoPor', '==', uid)
       );
       
       const querySnapshot = await getDocs(q);
@@ -107,22 +94,24 @@ class EventoRepository {
         eventos.push(Evento.fromFirestore(doc));
       });
 
-      return eventos;
+      // 🔥 ORDENAR EN MEMORIA
+      return eventos.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
+      });
     } catch (error) {
       console.error('Error al obtener eventos por creador:', error);
       throw new Error(`Error al obtener eventos: ${error.message}`);
     }
   }
 
-  /**
-   * Obtener eventos por estado
-   */
-  async getByEstado(estado) {
+  // 📋 OBTENER TODOS los eventos (SIN orderBy para evitar índice)
+  async getAll(limitCount = 100) {
     try {
+      // 🔥 Eliminar orderBy para evitar el índice
       const q = query(
-        this.collectionRef, 
-        where('estado', '==', estado),
-        orderBy('createdAt', 'desc')
+        this.collectionRef
       );
       
       const querySnapshot = await getDocs(q);
@@ -132,48 +121,52 @@ class EventoRepository {
         eventos.push(Evento.fromFirestore(doc));
       });
 
-      return eventos;
-    } catch (error) {
-      console.error('Error al obtener eventos por estado:', error);
-      throw new Error(`Error al obtener eventos: ${error.message}`);
-    }
-  }
-
-  /**
-   * Obtener eventos activos (estado = 'active')
-   */
-  async getEventosActivos() {
-    return this.getByEstado('active');
-  }
-
-  /**
-   * Obtener todos los eventos (con límite)
-   */
-  async getAll(limit = 50) {
-    try {
-      const q = query(
-        this.collectionRef,
-        orderBy('createdAt', 'desc'),
-        limit(limit)
-      );
-      
-      const querySnapshot = await getDocs(q);
-      const eventos = [];
-
-      querySnapshot.forEach((doc) => {
-        eventos.push(Evento.fromFirestore(doc));
+      // 🔥 ORDENAR EN MEMORIA
+      const sorted = eventos.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
       });
 
-      return eventos;
+      return sorted.slice(0, limitCount);
     } catch (error) {
       console.error('Error al obtener todos los eventos:', error);
       throw new Error(`Error al obtener eventos: ${error.message}`);
     }
   }
 
-  /**
-   * Actualizar un evento existente
-   */
+  // 🔍 OBTENER eventos por estado
+  async getByEstado(estado) {
+    try {
+      const q = query(
+        this.collectionRef, 
+        where('estado', '==', estado)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const eventos = [];
+
+      querySnapshot.forEach((doc) => {
+        eventos.push(Evento.fromFirestore(doc));
+      });
+
+      return eventos.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
+      });
+    } catch (error) {
+      console.error('Error al obtener eventos por estado:', error);
+      throw new Error(`Error al obtener eventos: ${error.message}`);
+    }
+  }
+
+  // 📋 OBTENER eventos activos
+  async getEventosActivos() {
+    return this.getByEstado('active');
+  }
+
+  // ✏️ ACTUALIZAR evento
   async update(evento) {
     try {
       if (!evento.id) {
@@ -190,7 +183,6 @@ class EventoRepository {
         updatedAt: Timestamp.fromDate(new Date())
       };
 
-      // Asegurar que las fechas sean Timestamps
       if (data.fechaEvento) {
         data.fechaEvento = Timestamp.fromDate(data.fechaEvento);
       }
@@ -206,9 +198,7 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Actualizar el estado de un evento
-   */
+  // 📋 ACTUALIZAR ESTADO del evento
   async updateEstado(id, nuevoEstado) {
     try {
       if (!id) {
@@ -232,9 +222,7 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Agregar un invitado al evento
-   */
+  // ➕ AGREGAR INVITADO
   async agregarInvitado(eventoId, invitado) {
     try {
       if (!eventoId) {
@@ -246,13 +234,11 @@ class EventoRepository {
         throw new Error('Evento no encontrado');
       }
 
-      // Verificar si el invitado ya existe (por email)
       const existe = evento.invitados.some(i => i.email === invitado.email);
       if (existe) {
         throw new Error('El invitado ya está registrado en este evento');
       }
 
-      // Agregar nuevo invitado con estado pendiente
       const nuevoInvitado = {
         ...invitado,
         estado: 'pendiente',
@@ -269,9 +255,7 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Eliminar un invitado del evento
-   */
+  // ❌ ELIMINAR INVITADO
   async eliminarInvitado(eventoId, emailInvitado) {
     try {
       if (!eventoId || !emailInvitado) {
@@ -293,9 +277,7 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Eliminar un evento
-   */
+  // ❌ ELIMINAR evento
   async delete(id) {
     try {
       if (!id) {
@@ -311,41 +293,7 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Buscar eventos por nombre
-   */
-  async searchByNombre(nombre) {
-    try {
-      if (!nombre || nombre.length < 2) {
-        return [];
-      }
-
-      // Firestore no soporta búsqueda parcial directamente
-      // Esta es una implementación básica que busca coincidencias exactas de prefijo
-      const q = query(
-        this.collectionRef,
-        where('nombre', '>=', nombre),
-        where('nombre', '<=', nombre + '\uf8ff'),
-        orderBy('nombre')
-      );
-
-      const querySnapshot = await getDocs(q);
-      const eventos = [];
-
-      querySnapshot.forEach((doc) => {
-        eventos.push(Evento.fromFirestore(doc));
-      });
-
-      return eventos;
-    } catch (error) {
-      console.error('Error al buscar eventos:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Verificar si existe un evento por código de acceso
-   */
+  // 🔍 BUSCAR por código de acceso
   async getByCodigoAcceso(codigo) {
     try {
       if (!codigo) {
@@ -367,14 +315,12 @@ class EventoRepository {
     }
   }
 
-  /**
-   * Obtener estadísticas de eventos para un usuario
-   */
+  // 📊 OBTENER ESTADÍSTICAS
   async getEstadisticas(uid) {
     try {
       const eventos = await this.getByCreador(uid);
       
-      const estadisticas = {
+      return {
         total: eventos.length,
         activos: eventos.filter(e => e.estado === 'active').length,
         completados: eventos.filter(e => e.estado === 'completed').length,
@@ -383,8 +329,6 @@ class EventoRepository {
         totalInvitados: eventos.reduce((total, e) => total + e.invitados.length, 0),
         confirmados: eventos.reduce((total, e) => total + e.getTotalInvitadosConfirmados(), 0)
       };
-
-      return estadisticas;
     } catch (error) {
       console.error('Error al obtener estadísticas:', error);
       return null;
@@ -392,5 +336,4 @@ class EventoRepository {
   }
 }
 
-// Exportar una instancia única del repositorio
 export const eventoRepository = new EventoRepository();
