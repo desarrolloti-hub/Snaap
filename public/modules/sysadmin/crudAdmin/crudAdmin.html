@@ -17,18 +17,16 @@
                 <p>Administra los usuarios con acceso total al sistema</p>
             </div>
 
-            <!-- 🔥 BOTÓN Y BUSCADOR JUNTOS -->
+            <!-- 🔥 BOTÓN Y BUSCADOR EN LA MISMA LÍNEA -->
             <div class="crud-actions">
-                <div class="actions-left">
-                    <button type="button" id="createAdminBtn" class="btn-create">
-                        <i class="fas fa-user-shield"></i> Nuevo Administrador
-                    </button>
-                </div>
-                
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchAdmin" placeholder="Buscar administrador por nombre o email...">
                 </div>
+                <!-- 🔥 USAR ENLACE EN LUGAR DE BOTÓN -->
+                <a href="/sysadmin/admins/create" class="btn-create" id="createAdminBtn" data-link>
+                    <i class="fas fa-user-shield"></i> Nuevo Administrador
+                </a>
             </div>
 
             <div class="table-container">

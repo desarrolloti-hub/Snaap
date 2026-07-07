@@ -8,7 +8,6 @@ let isInitialized = false;
 export async function crudAdminController() {
     console.log('🔥 CRUD Admin Controller iniciado');
 
-    // ✅ Evitar ejecuciones múltiples
     if (isInitialized) {
         console.log('⏭️ Controlador ya inicializado');
         return;
@@ -37,7 +36,7 @@ export async function crudAdminController() {
     isInitialized = true;
     loadStyles();
     await loadAdmins();
-    setupEventListeners();
+    setupDelegation();
 }
 
 let currentAdmins = [];
@@ -57,6 +56,9 @@ function loadStyles() {
     });
 }
 
+// ============================================
+// 📥 CARGAR ADMINS DESDE FIRESTORE
+// ============================================
 async function loadAdmins() {
     const tbody = document.getElementById('adminsTableBody');
     if (tbody) {
@@ -75,6 +77,9 @@ async function loadAdmins() {
     }
 }
 
+// ============================================
+// 🖼️ RENDERIZAR TABLA DE ADMINS
+// ============================================
 function renderAdminsTable() {
     const searchTerm = document.getElementById('searchAdmin')?.value.toLowerCase() || '';
     const tbody = document.getElementById('adminsTableBody');
@@ -118,30 +123,17 @@ function renderAdminsTable() {
             </td>
         </tr>
     `}).join('');
-    
-    // ✅ NO AGREGAR EVENT LISTENERS DIRECTOS AQUÍ
-    // Los eventos se manejan por delegación en setupEventListeners
 }
 
 // ============================================
-// 🔧 CONFIGURAR EVENTOS CON DELEGACIÓN
+// 🔥 DELEGACIÓN DE EVENTOS PARA BOTONES DE ACCIÓN
 // ============================================
-function setupEventListeners() {
-    console.log('🔧 Configurando event listeners con delegación...');
+function setupDelegation() {
+    console.log('🔧 Configurando delegación de eventos...');
     
-    // 🔥 BOTÓN CREAR ADMINISTRADOR - Evento directo
-    const createAdminBtn = document.getElementById('createAdminBtn');
-    if (createAdminBtn) {
-        // Clonar para eliminar listeners anteriores
-        const newBtn = createAdminBtn.cloneNode(true);
-        createAdminBtn.parentNode.replaceChild(newBtn, createAdminBtn);
-        
-        newBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('🖱️ Click en Nuevo Administrador');
-            window.location.href = '/sysadmin/admins/create';
-        });
-    }
+    // Remover listener anterior
+    document.removeEventListener('click', handleDocumentClick);
+    document.addEventListener('click', handleDocumentClick);
     
     // 🔥 BUSCADOR
     const searchAdmin = document.getElementById('searchAdmin');
@@ -149,49 +141,51 @@ function setupEventListeners() {
         const newSearch = searchAdmin.cloneNode(true);
         searchAdmin.parentNode.replaceChild(newSearch, searchAdmin);
         newSearch.addEventListener('input', () => renderAdminsTable());
+        console.log('✅ Event listener agregado al buscador');
     }
     
-    // 🔥 DELEGACIÓN DE EVENTOS PARA LOS BOTONES DE ACCIÓN
-    // El event listener se pone en el tbody, que siempre existe
-    const tbody = document.getElementById('adminsTableBody');
-    if (tbody) {
-        // Clonar para eliminar listeners anteriores
-        const newTbody = tbody.cloneNode(true);
-        tbody.parentNode.replaceChild(newTbody, tbody);
-        
-        newTbody.addEventListener('click', function(e) {
-            // Ver detalles
-            const viewBtn = e.target.closest('.view-admin');
-            if (viewBtn) {
-                e.preventDefault();
-                const id = viewBtn.dataset.id;
-                console.log('👁️ Ver admin:', id);
-                viewAdmin(id);
-                return;
-            }
-            
-            // Editar
-            const editBtn = e.target.closest('.edit-admin');
-            if (editBtn) {
-                e.preventDefault();
-                const id = editBtn.dataset.id;
-                console.log('✏️ Editar admin:', id);
-                editAdmin(id);
-                return;
-            }
-            
-            // Habilitar/Inhabilitar
-            const toggleBtn = e.target.closest('.toggle-status');
-            if (toggleBtn) {
-                e.preventDefault();
-                const id = toggleBtn.dataset.id;
-                const status = toggleBtn.dataset.status;
-                console.log('🔄 Toggle admin:', id, status);
-                toggleAdminStatus(id, status);
-                return;
-            }
-        });
-        console.log('✅ Delegación de eventos configurada');
+    console.log('✅ Delegación de eventos configurada');
+}
+
+// ============================================
+// 🖱️ MANEJADOR DE CLICKS POR DELEGACIÓN
+// ============================================
+function handleDocumentClick(e) {
+    // 🔥 EL BOTÓN DE CREAR AHORA ES UN ENLACE, LO MANEJA EL ROUTER
+    // No necesitamos hacer nada para el enlace, el router lo maneja con data-link
+    
+    // 🔍 Ver detalles
+    const viewBtn = e.target.closest('.view-admin');
+    if (viewBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = viewBtn.dataset.id;
+        console.log('👁️ Ver admin:', id);
+        viewAdmin(id);
+        return;
+    }
+    
+    // ✏️ Editar
+    const editBtn = e.target.closest('.edit-admin');
+    if (editBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = editBtn.dataset.id;
+        console.log('✏️ Editar admin:', id);
+        editAdmin(id);
+        return;
+    }
+    
+    // 🔄 Habilitar/Inhabilitar
+    const toggleBtn = e.target.closest('.toggle-status');
+    if (toggleBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = toggleBtn.dataset.id;
+        const status = toggleBtn.dataset.status;
+        console.log('🔄 Toggle admin:', id, status);
+        toggleAdminStatus(id, status);
+        return;
     }
 }
 
@@ -306,6 +300,18 @@ async function toggleAdminStatus(adminId, currentStatus) {
             confirmButtonText: 'OK'
         });
     }
+}
+
+// ============================================
+// 🔧 UTILIDADES
+// ============================================
+function getStatusText(status) {
+    const statuses = {
+        active: 'Activo',
+        inactive: 'Inactivo',
+        suspended: 'Suspendido'
+    };
+    return statuses[status] || status;
 }
 
 function escapeHtml(str) {
