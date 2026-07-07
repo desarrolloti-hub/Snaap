@@ -28,114 +28,114 @@ import { profileEditController as profileAdminEditController } from '../modules/
 
 export const routes = {
     // ============================================
-    // 🏠 RUTAS PÚBLICAS
+    // RUTAS PÚBLICAS
     // ============================================
     "/": {
-        view: "/public/modules/visitor/home/home.html",
+        view: "/modules/visitor/home/home.html",  
         controller: homeController,
     },
     "/nosotros": {
-        view: "/public/modules/visitor/aboutUs/aboutUs.html",
+        view: "/modules/visitor/aboutUs/aboutUs.html",  
         controller: aboutUsController,
     },
     "/login": {
-        view: "/public/modules/visitor/login/login.html",
+        view: "/modules/visitor/login/login.html",  
         controller: loginController,
     },
     "/register": {
-        view: "/public/modules/visitor/register/register.html",
+        view: "/modules/visitor/register/register.html",  
         controller: registerController,
     },
     "/paquetes": {
-        view: "/public/modules/visitor/packages/packages.html",
+        view: "/modules/visitor/packages/packages.html",  
         controller: packagesController,
     },
     "/terms": {
-        view: "/public/modules/visitor/terms/terms.html",
+        view: "/modules/visitor/terms/terms.html",  
         controller: termsController,
     },
 
     // ============================================
-    // 🎤 RUTAS DE HOST
+    //  RUTAS DE HOST
     // ============================================
     "/host": {
-        view: "/public/modules/host/homeHost/homeHost.html",
+        view: "/modules/host/homeHost/homeHost.html",  
         controller: homeHostController,
     },
     "/host/create-event": {
-        view: "/public/modules/host/createEvent/createEvent.html",
+        view: "/modules/host/createEvent/createEvent.html",  
         controller: initCreateEvent,
     },
     "/host/events": {
-        view: "/public/modules/host/carroucelEvents/carroucelEvents.html",
+        view: "/modules/host/carroucelEvents/carroucelEvents.html",  
         controller: carroucelEventsController,
     },
     "/host/event-crud": {
-        view: "/public/modules/host/eventCrud/eventCrud.html",
+        view: "/modules/host/eventCrud/eventCrud.html",  
         controller: eventCrudController,
     },
     "/host/event-edit": {
-        view: "/public/modules/host/eventEditForm/eventEditForm.html",
+        view: "/modules/host/eventEditForm/eventEditForm.html",  
         controller: eventEditFormController,
     },
     "/host/event-details": {
-        view: "/public/modules/host/eventDetails/eventDetails.html",
+        view: "/modules/host/eventDetails/eventDetails.html",  
         controller: eventDetailsController,
     },
     "/host/profile": {
-        view: "/public/modules/host/profile/profile.html",
+        view: "/modules/host/profile/profile.html",  
         controller: profileController,
     },
     "/host/profile/edit": {
-        view: "/public/modules/host/profileEdit/profileEdit.html",
+        view: "/modules/host/profileEdit/profileEdit.html",  
         controller: profileEditController,
     },
 
     // ============================================
-    // 👑 RUTAS DE SYSADMIN
+    // RUTAS DE SYSADMIN
     // ============================================
     "/sysadmin/home": {
-        view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
+        view: "/modules/sysadmin/homeSysadmin/homeSysadmin.html",  
         controller: homeSysadminController,
     },
     "/sysadmin/hosts": {
-        view: "/public/modules/sysadmin/crudHost/crudHost.html",
+        view: "/modules/sysadmin/crudHost/crudHost.html",  
         controller: crudHostController,
     },
     "/sysadmin/hosts/create": {
-        view: "/public/modules/sysadmin/hostForm/hostForm.html",
+        view: "/modules/sysadmin/hostForm/hostForm.html",  
         controller: hostFormController,
     },
     "/sysadmin/hosts/edit": {
-        view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
+        view: "/modules/sysadmin/hostEdit/hostEdit.html", 
         controller: hostEditController,
     },
     "/sysadmin/host-details": {
-        view: "/public/modules/sysadmin/hostDetails/hostDetails.html",
+        view: "/modules/sysadmin/hostDetails/hostDetails.html",  
         controller: hostDetailsController,
     },
     "/sysadmin/admins": {
-        view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
+        view: "/modules/sysadmin/crudAdmin/crudAdmin.html",  
         controller: crudAdminController,
     },
     "/sysadmin/admins/create": {
-        view: "/public/modules/sysadmin/adminForm/adminForm.html",
+        view: "/modules/sysadmin/adminForm/adminForm.html", 
         controller: adminFormController,
     },
     "/sysadmin/admins/edit": {
-        view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
+        view: "/modules/sysadmin/adminEdit/adminEdit.html", 
         controller: adminEditController,
     },
     "/sysadmin/admin-details": {
-        view: "/public/modules/sysadmin/adminDetails/adminDetails.html",
+        view: "/modules/sysadmin/adminDetails/adminDetails.html",  
         controller: adminDetailsController,
     },
     "/sysadmin/profile": {
-        view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
+        view: "/modules/sysadmin/profileAdmin/profileAdmin.html",  
         controller: profileAdminController,
     },
     "/sysadmin/profile/edit": {
-        view: "/public/modules/sysadmin/profileEdit/profileEdit.html",
+        view: "/modules/sysadmin/profileEdit/profileEdit.html",  
         controller: profileAdminEditController,
     },
 
@@ -143,7 +143,7 @@ export const routes = {
     // 🔴 ERROR
     // ============================================
     "/404": {
-        view: "/public/modules/shared/errors/404.html",
+        view: "/modules/shared/errors/404.html",  
         controller: init404Controller,
     },
 };

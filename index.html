@@ -36,10 +36,54 @@
     <!-- CONTENIDO PRINCIPAL -->
     <main id="app"></main>
     
-    <!-- FOOTER -->
-    <div id="footer"></div>
+    <!-- 🔥 FOOTER - DIRECTAMENTE EN EL HTML -->
+    <footer class="snaap-footer">
+        <div class="footer-container">
+            <div class="footer-logo-section">
+                <a href="/" class="footer-logo" data-link>
+                    Sn<span class="neon-aa">aa</span>p
+                </a>
+            </div>
+            <div class="footer-info-section">
+                <p>
+                    Nuestros
+                    <a href="/terms" data-link class="terms-link">términos y condiciones</a>.
+                </p>
+                <div class="social-title">Nuestras Redes Sociales</div>
+                <div class="social-icons">
+                    <a href="#" class="social-link" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <img src="/assets/imagenes/logorsi.jpeg" alt="RSI Logo" width="40" height="40">
+                <a href="https://rsienterprise.com/" target="_blank" rel="noopener noreferrer" class="rsi-link">
+                    Desarrollado por RSI Enterprise México © <span id="current-year"></span>
+                </a>
+            </div>
+        </div>
+    </footer>
     
     <!-- Script principal -->
     <script type="module" src="/src/main.js"></script>
+    
+    <!-- Script para el año y verificar footer -->
+    <script>
+        // Actualizar el año automáticamente
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Verificar que el footer esté visible
+        console.log('✅ Footer cargado correctamente');
+        console.log('📅 Año:', document.getElementById('current-year').textContent);
+    </script>
 </body>
 </html>

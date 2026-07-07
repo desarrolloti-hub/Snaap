@@ -1,0 +1,47 @@
+/* src/css/layout/sections.css */
+/* Layout de secciones */
+
+.section {
+    padding: 4rem 0;
+    position: relative;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #888;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-dark {
+    background: rgba(10, 10, 20, 0.8);
+}
+
+.section-light {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 122, 0.3), transparent);
+    margin: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .section {
+        padding: 2rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
