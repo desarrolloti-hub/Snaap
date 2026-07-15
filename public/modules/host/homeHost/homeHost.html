@@ -5,18 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Host - SNAAP</title>
     <link rel="stylesheet" href="/src/css/pages/homeHost.css">
+    <link rel="stylesheet" href="/src/css/components/carroucelEvents.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
+        <!-- 🔥 NAVBAR UNIFICADO -->
+        <div id="navbar-container"></div>
+
         <div class="host-dashboard">
             <!-- Hero Section -->
             <div class="dashboard-hero">
                 <h1>
                     <i class="fas fa-chalkboard-user"></i>
-                    Bienvenido
+                    Bienvenido, <span id="hostName">Host</span>
                 </h1>
+                <p>Gestiona tus eventos y crea experiencias inolvidables 🚀</p>
             </div>
+
+            <!-- 🔥 CARRUSEL DE EVENTOS -->
+            <section class="snaap-carousel-section">
+                <div class="carousel-title">
+                    <h2><i class="fas fa-calendar-alt"></i> Eventos Realizados</h2>
+                    <p>Descubre los eventos más memorables que hemos snapeado.</p>
+                </div>
+                <div class="carousel-track" id="snaap-carousel-track">
+                    <!-- Las cards se generan dinámicamente -->
+                </div>
+                <button class="nav-button btn-prev" id="snaap-prev-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="nav-button btn-next" id="snaap-next-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </section>
 
             <!-- Stats Cards -->
             <div class="stats-grid">
@@ -109,6 +131,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="module" src="/src/modules/host/homeHost/homeHostController.js"></script>
 </body>
 </html>

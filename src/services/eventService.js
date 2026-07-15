@@ -12,7 +12,7 @@ class EventoService {
   }
 
   // ============================================
-  // 🔥 CREAR EVENTO
+  // 🔥 CREAR EVENTO (YA ESTÁ CORRECTO)
   // ============================================
   async crearEvento(eventoData) {
     try {
@@ -76,13 +76,39 @@ class EventoService {
   }
 
   // ============================================
-  // 🔥 OBTENER EVENTOS SEGÚN ROL (NUEVO MÉTODO)
+  // 🔥 OBTENER EVENTO POR ID (NUEVO MÉTODO)
+  // ============================================
+  async obtenerEventoPorId(id) {
+    try {
+      if (!id) {
+        throw new Error('Se requiere el ID del evento');
+      }
+
+      const evento = await eventoRepository.getById(id);
+      if (!evento) {
+        throw new Error('Evento no encontrado');
+      }
+
+      return {
+        success: true,
+        evento: evento
+      };
+    } catch (error) {
+      console.error('Error al obtener evento por ID:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 🔥 OBTENER EVENTOS SEGÚN ROL
   // ============================================
   async obtenerEventosPorRol(uid, role) {
     try {
       console.log('🔍 Buscando eventos para UID:', uid, 'Rol:', role);
 
-      // 🔥 SYSADMIN: Ve todos los eventos
       if (role === 'sysadmin') {
         console.log('👑 Admin: obteniendo todos los eventos');
         const eventos = await eventoRepository.getAll();
@@ -92,7 +118,6 @@ class EventoService {
         };
       }
 
-      // 🔥 HOST: Solo ve sus propios eventos
       if (role === 'host') {
         console.log('🎤 Host: obteniendo sus eventos');
         const eventos = await eventoRepository.getByCreador(uid);
@@ -102,7 +127,6 @@ class EventoService {
         };
       }
 
-      // 🔥 USER: No ve eventos (o solo los compartidos)
       console.log('👤 Usuario: sin acceso a eventos');
       return {
         success: true,
@@ -252,58 +276,6 @@ class EventoService {
     };
 
     return paquetesInfo[paquete] || null;
-  }
-
-  // ============================================
-  // 🔥 OBTENER EVENTO POR ID (con verificación de permisos)
-  // ============================================
-  async getEventoPorId(id) {
-    try {
-      if (!id) {
-        throw new Error('Se requiere el ID del evento');
-      }
-
-      const evento = await eventoRepository.getById(id);
-      if (!evento) {
-        throw new Error('Evento no encontrado');
-      }
-
-      return {
-        success: true,
-        evento: evento
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
-      };
-    }
-  }
-
-  // ============================================
-  // 🔥 OBTENER EVENTOS DEL USUARIO ACTUAL (deprecado)
-  // ============================================
-  async getEventosDelUsuario() {
-    try {
-      if (!this.usuarioActual || !this.usuarioActual.uid) {
-        const eventos = await eventoRepository.getAll();
-        return {
-          success: true,
-          eventos: eventos
-        };
-      }
-
-      const eventos = await eventoRepository.getByCreador(this.usuarioActual.uid);
-      return {
-        success: true,
-        eventos: eventos
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message
-      };
-    }
   }
 
   // ============================================

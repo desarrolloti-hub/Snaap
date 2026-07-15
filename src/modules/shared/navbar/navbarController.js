@@ -17,8 +17,7 @@ export async function initNavbar() {
     }
 
     try {
-        // 🔥 RUTA CORREGIDA - Eliminado /public/
-        const response = await fetch('/modules/shared/navbar/navbar.html');
+        const response = await fetch('/public/modules/shared/navbar/navbar.html');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const html = await response.text();
         navbarContainer.innerHTML = html;
@@ -44,41 +43,33 @@ export async function initNavbar() {
     }
 }
 
-// ============================================
-// 🔧 CONFIGURAR EVENTOS
-// ============================================
 function setupNavbarEvents() {
-    // Logout
+    // 🔥 LOGOUT
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
 
-    // 🔥 PERFIL - Redirigir a la ruta correcta según el rol
+    // 🔥 PERFIL
     const profileLink = document.getElementById('profile-link');
     if (profileLink) {
         profileLink.addEventListener('click', (e) => {
             e.preventDefault();
             const user = userService.getCurrentUser();
             if (user) {
-                const role = user.role;
-                let profilePath = '/host/profile'; // Por defecto
-                
-                if (role === 'sysadmin') {
-                    profilePath = '/sysadmin/profile';
-                } else if (role === 'host') {
-                    profilePath = '/host/profile';
-                } else if (role === 'user') {
-                    profilePath = '/profile';
-                }
-                
-                console.log(`🔀 Redirigiendo a perfil: ${profilePath} (rol: ${role})`);
-                navigateTo(profilePath);
+                const path = getRedirectPathByRole(user.role);
+                navigateTo(path);
             }
         });
     }
 
-    // Cerrar menú al hacer clic en enlaces
+    // 🔥 NOTIFICACIONES - BOTÓN
+    const notificationBtn = document.getElementById('notificationToggleBtn');
+    if (notificationBtn) {
+        notificationBtn.addEventListener('click', handleNotificationToggle);
+    }
+
+    // 🔥 CERRAR MENÚ AL HACER CLIC EN UN BOTÓN
     document.querySelectorAll('.snaap-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const menu = document.getElementById('snaap-nav-list');
@@ -98,7 +89,63 @@ function setupNavbarEvents() {
 }
 
 // ============================================
-// 🔄 ACTUALIZAR VISIBILIDAD
+// 🔔 MANEJAR CLIC EN BOTÓN DE NOTIFICACIONES
+// ============================================
+async function handleNotificationToggle() {
+    const user = userService.getCurrentUser();
+    if (!user) {
+        Swal.fire({
+            title: 'Inicia sesión',
+            text: 'Debes iniciar sesión para activar las notificaciones',
+            icon: 'warning',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+
+    const btn = document.getElementById('notificationToggleBtn');
+    const statusText = document.getElementById('notificationStatus');
+    
+    // 🔥 Deshabilitar botón mientras se procesa
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+
+    try {
+        // 🔥 Importar y ejecutar toggleSubscription
+        const { toggleSubscription } = await import('../../../modules/shared/notification/notificationController.js');
+        await toggleSubscription();
+        
+        // 🔥 Actualizar estado del botón
+        const { notificationService } = await import('../../../services/notificationService.js');
+        
+        if (notificationService.isSubscribed) {
+            if (statusText) statusText.textContent = '✅ Activadas';
+            btn.style.borderColor = '#00ff88';
+            btn.style.color = '#00ff88';
+            btn.classList.add('active');
+        } else {
+            if (statusText) statusText.textContent = '🔔 Activar';
+            btn.style.borderColor = '#4db8ff';
+            btn.style.color = '#ffffff';
+            btn.classList.remove('active');
+        }
+    } catch (error) {
+        console.error('❌ Error en notificaciones:', error);
+        Swal.fire({
+            title: 'Error',
+            text: error.message || 'Ocurrió un error al activar las notificaciones',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    // 🔥 Restaurar botón
+    btn.disabled = false;
+    btn.style.opacity = '1';
+}
+
+// ============================================
+// 👤 ACTUALIZAR VISIBILIDAD DEL NAVBAR
 // ============================================
 function updateNavbarVisibility() {
     const user = userService.getCurrentUser();
@@ -107,17 +154,16 @@ function updateNavbarVisibility() {
 
     console.log(`🔄 Actualizando navbar - Auth: ${isAuthenticated}, Rol: ${role}`);
 
+    // 🔥 MOSTRAR/OCULTAR ELEMENTOS SEGÚN ROL
     const items = document.querySelectorAll('[data-role]');
     items.forEach(item => {
         const roles = item.getAttribute('data-role').split(',');
         
-        // Si es invitado (guest)
         if (roles.includes('guest')) {
             item.style.display = isAuthenticated ? 'none' : '';
             return;
         }
 
-        // Si es autenticado y tiene el rol
         if (isAuthenticated && roles.includes(role)) {
             item.style.display = '';
         } else {
@@ -125,7 +171,7 @@ function updateNavbarVisibility() {
         }
     });
 
-    // Actualizar nombre de perfil
+    // 🔥 ACTUALIZAR NOMBRE DE PERFIL
     const profileName = document.getElementById('profile-name');
     if (profileName && user) {
         profileName.textContent = user.username || user.email?.split('@')[0] || 'Perfil';
@@ -133,26 +179,30 @@ function updateNavbarVisibility() {
         profileName.textContent = 'Perfil';
     }
 
-    // Actualizar enlace de perfil (atributo href)
+    // 🔥 ACTUALIZAR ENLACE DE PERFIL
     const profileLink = document.getElementById('profile-link');
     if (profileLink && user) {
-        const role = user.role;
-        let profilePath = '/host/profile';
-        if (role === 'sysadmin') {
-            profilePath = '/sysadmin/profile';
-        } else if (role === 'host') {
-            profilePath = '/host/profile';
-        } else if (role === 'user') {
-            profilePath = '/profile';
-        }
-        profileLink.setAttribute('href', profilePath);
+        const path = getRedirectPathByRole(role);
+        profileLink.setAttribute('href', path);
     }
 
+    // 🔥 ACTUALIZAR ENLACE ACTIVO
     updateActiveLink();
+
+    // 🔥 ACTUALIZAR NOTIFICACIONES SI EL USUARIO ESTÁ AUTENTICADO
+    if (user) {
+        import('../../../modules/shared/notification/notificationController.js')
+            .then(module => {
+                if (module.updateNotificationUI) {
+                    module.updateNotificationUI();
+                }
+            })
+            .catch(() => {});
+    }
 }
 
 // ============================================
-// 🚪 CERRAR SESIÓN
+// 🚪 MANEJAR CIERRE DE SESIÓN
 // ============================================
 async function handleLogout() {
     const result = await Swal.fire({
@@ -170,9 +220,7 @@ async function handleLogout() {
         title: 'Cerrando sesión...',
         text: 'Por favor espera',
         allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        didOpen: () => Swal.showLoading()
     });
 
     try {
@@ -181,11 +229,7 @@ async function handleLogout() {
 
         if (logoutResult.success) {
             document.dispatchEvent(new CustomEvent('auth:changed', {
-                detail: {
-                    user: null,
-                    role: null,
-                    isAuthenticated: false
-                }
+                detail: { user: null, role: null, isAuthenticated: false }
             }));
 
             await Swal.fire({
@@ -217,7 +261,7 @@ async function handleLogout() {
 }
 
 // ============================================
-// 📱 TOGGLE MÓVIL
+// 📱 MENÚ MÓVIL (HAMBURGUESA)
 // ============================================
 function setupMobileToggle() {
     const burgerBtn = document.getElementById('snaap-burger-btn');
@@ -240,6 +284,7 @@ function setupMobileToggle() {
         }
     });
 
+    // 🔥 CERRAR MENÚ AL HACER CLIC FUERA
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.snaap-navbar-unified')) {
             navList.classList.remove('active');
@@ -253,7 +298,7 @@ function setupMobileToggle() {
 }
 
 // ============================================
-// 🔗 ENLACE ACTIVO
+// 🔗 ACTUALIZAR ENLACE ACTIVO
 // ============================================
 function updateActiveLink() {
     const currentPath = window.location.pathname;
@@ -269,15 +314,13 @@ function updateActiveLink() {
 }
 
 // ============================================
-// 🆘 NAVBAR DE FALLBACK
+// ⚠️ NAVBAR DE RESPALDO (FALLBACK)
 // ============================================
 function getFallbackNavbar() {
     return `
         <nav class="snaap-navbar-unified">
             <div class="navbar-container">
-                <a href="/" class="snaap-logo" data-link>
-                    Sn<span class="neon-aa">aa</span>p
-                </a>
+                <a href="/" class="snaap-logo" data-link>Sn<span class="neon-aa">aa</span>p</a>
                 <div class="snaap-burger" id="snaap-burger-btn">
                     <i class="fas fa-bars"></i>
                 </div>
@@ -290,6 +333,9 @@ function getFallbackNavbar() {
     `;
 }
 
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
 function navigateTo(path) {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(path);
@@ -298,7 +344,9 @@ function navigateTo(path) {
     }
 }
 
-// Inicializar automáticamente
+// ============================================
+// 🚀 INICIALIZACIÓN AUTOMÁTICA
+// ============================================
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
 } else {

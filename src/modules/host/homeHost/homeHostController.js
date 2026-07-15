@@ -2,11 +2,13 @@
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
+import { carroucelEventsController } from '../carroucelEvents/carroucelEventsController.js';
+
+let carouselLoaded = false;
 
 export async function homeHostController() {
     console.log('🔥 Home Host Controller cargado');
 
-    // Verificar autenticación
     if (!userService.isAuthenticated()) {
         console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
         window.location.href = '/login';
@@ -19,41 +21,34 @@ export async function homeHostController() {
         return;
     }
 
-    // 🔥 Actualizar salud con el nombre del usuario
     updateWelcomeMessage(user);
 
-    // 🔥 Cargar estadísticas desde Firestore
+    if (!carouselLoaded) {
+        await carroucelEventsController();
+        carouselLoaded = true;
+        console.log('✅ Carrusel cargado correctamente');
+    }
+
     await loadStats(user.uid);
-
-    // 🔥 Cargar eventos recientes desde Firestore
     await loadRecentEvents(user.uid);
-
-    // Configurar acciones rápidas
     setupQuickActions();
 
     console.log('✅ Home Host Controller finalizado');
 }
 
-// ============================================
-// 👋 ACTUALIZAR MENSAJE DE BIENVENIDA
-// ============================================
 const updateWelcomeMessage = (user) => {
     const heroTitle = document.querySelector('.dashboard-hero h1');
     if (heroTitle) {
         const name = user.username || user.email?.split('@')[0] || 'Host';
         heroTitle.innerHTML = `
             <i class="fas fa-chalkboard-user"></i>
-            Bienvenido, ${name}
+            Bienvenido, <span id="hostName">${name}</span>
         `;
     }
 };
 
-// ============================================
-// 📊 CARGAR ESTADÍSTICAS DESDE FIRESTORE
-// ============================================
 const loadStats = async (uid) => {
     try {
-        // 🔥 Obtener estadísticas del perfil
         const result = await eventService.obtenerEstadisticasPerfil(uid);
 
         if (result.success) {
@@ -61,27 +56,22 @@ const loadStats = async (uid) => {
 
             console.log('📊 Estadísticas recibidas:', estadisticas);
 
-            // 🔥 ACTUALIZAR ELEMENTOS DEL DOM
-            // Total Eventos - mostrar la cantidad de eventos creados
             const totalEventsEl = document.getElementById('totalEvents');
             if (totalEventsEl) {
                 totalEventsEl.textContent = estadisticas.totalEventos || 0;
                 console.log(`📊 Total eventos: ${estadisticas.totalEventos}`);
             }
 
-            // Total Fotos
             const totalPhotosEl = document.getElementById('totalPhotos');
             if (totalPhotosEl) {
                 totalPhotosEl.textContent = estadisticas.totalFotos || 0;
             }
 
-            // Eventos Activos
             const activeEventsEl = document.getElementById('activeEvents');
             if (activeEventsEl) {
                 activeEventsEl.textContent = estadisticas.eventosActivos || 0;
             }
 
-            // ✅ También actualizar el contador de eventos completados en el perfil
             const user = userService.getCurrentUser();
             if (user) {
                 const userData = await userRepository.getByUid(user.uid);
@@ -95,7 +85,6 @@ const loadStats = async (uid) => {
 
         } else {
             console.error('Error al cargar estadísticas:', result.error);
-            // Fallback a localStorage
             loadStatsFromLocalStorage();
         }
     } catch (error) {
@@ -104,9 +93,6 @@ const loadStats = async (uid) => {
     }
 };
 
-// ============================================
-// 📊 FALLBACK: CARGAR ESTADÍSTICAS DE LOCALSTORAGE
-// ============================================
 const loadStatsFromLocalStorage = () => {
     const stored = localStorage.getItem('snaap_events');
     let totalEvents = 0;
@@ -131,28 +117,22 @@ const loadStatsFromLocalStorage = () => {
     console.log(`📊 Fallback - Total eventos: ${totalEvents}`);
 };
 
-// ============================================
-// 📋 CARGAR EVENTOS RECIENTES DESDE FIRESTORE
-// ============================================
 const loadRecentEvents = async (uid) => {
     const container = document.getElementById('recentEventsList');
     if (!container) return;
 
     try {
-        // 🔥 Obtener eventos del usuario
         const result = await eventService.obtenerEventosPorUsuario(uid);
 
         if (result.success) {
             const eventos = result.eventos;
 
-            // Ordenar por fecha de creación (más recientes primero)
             const sortedEvents = eventos.sort((a, b) => {
                 const dateA = new Date(a.createdAt);
                 const dateB = new Date(b.createdAt);
                 return dateB - dateA;
             });
 
-            // Tomar los 5 más recientes
             const recentEvents = sortedEvents.slice(0, 5);
 
             if (recentEvents.length === 0) {
@@ -166,7 +146,6 @@ const loadRecentEvents = async (uid) => {
                 return;
             }
 
-            // Renderizar eventos
             container.innerHTML = recentEvents.map(event => {
                 const statusText = event.estado === 'active' ? 'Activo' : 
                                   event.estado === 'completed' ? 'Completado' : 
@@ -205,7 +184,6 @@ const loadRecentEvents = async (uid) => {
                 `;
             }).join('');
 
-            // Agregar event listeners a los botones de ver evento
             document.querySelectorAll('.btn-view-event').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -229,9 +207,6 @@ const loadRecentEvents = async (uid) => {
     }
 };
 
-// ============================================
-// 📋 FALLBACK: CARGAR EVENTOS DE LOCALSTORAGE
-// ============================================
 const loadRecentEventsFromLocalStorage = () => {
     const container = document.getElementById('recentEventsList');
     if (!container) return;
@@ -287,9 +262,6 @@ const loadRecentEventsFromLocalStorage = () => {
     });
 };
 
-// ============================================
-// ⚡ ACCIONES RÁPIDAS
-// ============================================
 const setupQuickActions = () => {
     const createEventBtn = document.getElementById('createEventBtn');
     const viewEventsBtn = document.getElementById('viewEventsBtn');

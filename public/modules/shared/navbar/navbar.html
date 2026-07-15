@@ -1,4 +1,4 @@
-<!-- modules/shared/navbar/navbar.html -->
+<!-- public/modules/shared/navbar/navbar.html -->
 <nav class="snaap-navbar-unified" id="snaapNavbar">
     <div class="navbar-container">
         <a href="/" class="snaap-logo" data-link>
@@ -10,7 +10,7 @@
         </div>
 
         <ul class="snaap-menu" id="snaap-nav-list">
-            <!-- 🔹 PÚBLICO (todos ven) -->
+            <!-- PÚBLICO -->
             <li data-role="guest,user,host,sysadmin">
                 <a href="/" class="snaap-btn" data-link><i class="fas fa-house"></i> Inicio</a>
             </li>
@@ -21,17 +21,32 @@
                 <a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Paquetes</a>
             </li>
 
-            <!-- 🔹 SOLO INVITADOS (no autenticados) -->
+            <!-- INVITADOS -->
             <li data-role="guest">
                 <a href="/login" class="snaap-btn" data-link><i class="fas fa-user"></i> Inicio de sesión</a>
             </li>
 
-            <!-- 🔹 SOLO AUTENTICADOS -->
+            <!-- AUTENTICADOS -->
             <li data-role="user,host,sysadmin">
-                <a href="#" class="snaap-btn" id="profile-link" data-link><i class="fas fa-user-circle"></i> <span id="profile-name">Perfil</span></a>
+                <a href="#" class="snaap-btn" id="profile-link" data-link>
+                    <i class="fas fa-user-circle"></i> 
+                    <span id="profile-name">Perfil</span>
+                </a>
             </li>
 
-            <!-- 🔹 SOLO HOST (CREAR EVENTO Y MIS EVENTOS SOLO PARA HOST) -->
+            <!-- 🔥 NOTIFICACIONES - BOTÓN PARA TODOS LOS AUTENTICADOS -->
+            <li data-role="user,host,sysadmin">
+                <button class="snaap-btn notification-btn" id="notificationToggleBtn">
+                    <i class="fas fa-bell"></i> 
+                    <span id="notificationStatus">Activar notificaciones</span>
+                    <span id="notificationBadge" class="badge" style="display: none;">0</span>
+                </button>
+            </li>
+
+            <!-- HOST -->
+            <li data-role="host">
+                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i> Mi Espacio</a>
+            </li>
             <li data-role="host">
                 <a href="/host/create-event" class="snaap-btn" data-link><i class="fas fa-plus-circle"></i> Crear evento</a>
             </li>
@@ -39,12 +54,7 @@
                 <a href="/host/event-crud" class="snaap-btn" data-link><i class="fas fa-calendar-alt"></i> Mis Eventos</a>
             </li>
 
-            <!-- 🔹 SOLO HOST - Mi Espacio (SOLO PARA HOST, NO PARA SYSADMIN) -->
-            <li data-role="host">
-                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i> Mi Espacio</a>
-            </li>
-
-            <!-- 🔹 SOLO SYSADMIN -->
+            <!-- SYSADMIN -->
             <li data-role="sysadmin">
                 <a href="/sysadmin/home" class="snaap-btn" data-link><i class="fas fa-tachometer-alt"></i> Panel Admin</a>
             </li>
@@ -54,13 +64,15 @@
             <li data-role="sysadmin">
                 <a href="/sysadmin/admins" class="snaap-btn" data-link><i class="fas fa-shield-alt"></i> Admins</a>
             </li>
+            <li data-role="sysadmin">
+                <a href="/sysadmin/carousel" class="snaap-btn" data-link><i class="fas fa-images"></i> Carrusel</a>
+            </li>
 
-            <!-- 🔹 CERRAR SESIÓN (solo autenticados) -->
+            <!-- CERRAR SESIÓN -->
             <li data-role="user,host,sysadmin">
                 <button class="snaap-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
             </li>
 
-            <!-- Footer -->
             <li class="snaap-footer-item">
                 <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link">
                     desarrollada por rsi enterprise mexico

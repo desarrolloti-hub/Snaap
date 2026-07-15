@@ -1,0 +1,86 @@
+<!-- public/modules/sysadmin/carouselAdmin/carouselAdmin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Carrusel - SNAAP Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/css/components/carouselAdmin.css">
+    <link rel="stylesheet" href="/src/css/components/sweetalert.css">
+</head>
+<body>
+    <div id="app">
+        <div id="navbar-container"></div>
+
+        <div class="carousel-admin-container">
+            <!-- ✅ SOLO UN TÍTULO -->
+            <div class="admin-header">
+                <h1><i class="fas fa-images"></i> Gestionar Carrusel</h1>
+                <p>Administra las imágenes que se muestran en el carrusel</p>
+            </div>
+
+            <div class="admin-actions">
+                <button class="btn-migrate" id="migrateImagesBtn">
+                    <i class="fas fa-cloud-upload-alt"></i> Migrar a Storage
+                </button>
+                <button class="btn-add" id="addImageBtn">
+                    <i class="fas fa-plus"></i> Agregar imagen
+                </button>
+            </div>
+
+            <div class="items-grid" id="carouselItemsContainer">
+                <div class="loading-text">Cargando imágenes...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="addImageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalIcon"><i class="fas fa-plus-circle"></i> <span id="modalTitle">Agregar imagen al carrusel</span></h3>
+                <span class="modal-close" id="closeModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="imageForm">
+                    <div class="form-group" id="urlField">
+                        <label><i class="fas fa-link"></i> URL de la imagen</label>
+                        <input type="text" id="imageUrlInput" placeholder="https://images.unsplash.com/photo-...">
+                        <small class="form-hint">Pega una URL de imagen (ej: de Unsplash, Imgur, etc.)</small>
+                    </div>
+
+                    <div class="form-group" id="fileField">
+                        <label><i class="fas fa-image"></i> O sube un archivo <span id="imageRequired">*</span></label>
+                        <input type="file" id="imageFile" accept="image/*">
+                        <small class="form-hint" id="imageHint">Formatos: JPG, PNG, WEBP, GIF. Máximo 5MB</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Título *</label>
+                        <input type="text" id="imageTitle" placeholder="Ej: Los XV de Rusi" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-info-circle"></i> Subtítulo</label>
+                        <input type="text" id="imageSubtitle" placeholder="Ej: Fiesta de 15 años">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-link"></i> Enlace (redirección)</label>
+                        <input type="text" id="imageLink" placeholder="/host/event-crud">
+                        <small class="form-hint">Deja en blanco para usar el enlace por defecto</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancelModal">Cancelar</button>
+                <button class="btn-save" id="saveImageBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module" src="/src/modules/sysadmin/carouselAdmin/carouselAdminController.js"></script>
+</body>
+</html>

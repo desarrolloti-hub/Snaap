@@ -1,0 +1,20 @@
+{
+  "name": "SNAAP",
+  "short_name": "SNAAP",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a14",
+  "theme_color": "#0a0a14",
+  "icons": [
+    {
+      "src": "/assets/images/Snaap.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/Snaap.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -25,3 +25,4 @@ dist-ssr
 /config
 node_modules/
 .firebase
+.yo-bug/

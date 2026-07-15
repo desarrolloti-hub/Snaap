@@ -1,6 +1,7 @@
 // src/modules/host/createEvent/createEventController.js
 import { eventService } from '../../../services/eventService.js';
 import { userService } from '../../../services/userService.js';
+import { qrService } from '../../../services/qrService.js';
 
 const packagesDetails = {
     basico: {
@@ -72,6 +73,13 @@ export function initCreateEvent() {
             window.location.href = '/login';
         });
         return;
+    }
+
+    // 🔥 Obtener usuario actual y configurar servicios
+    const user = userService.getCurrentUser();
+    if (user) {
+        qrService.setUsuarioActual(user);
+        eventService.setUsuarioActual(user);
     }
 
     // Mostrar eventos existentes en localStorage (solo para compatibilidad)
@@ -170,6 +178,7 @@ export function initCreateEvent() {
         try {
             // 🔥 Establecer el usuario actual en el servicio
             eventService.setUsuarioActual(user);
+            qrService.setUsuarioActual(user);
 
             // 🔥 Crear evento con datos del host
             const result = await eventService.crearEvento({
@@ -188,27 +197,50 @@ export function initCreateEvent() {
             Swal.close();
 
             if (result.success) {
-                // Guardar también en localStorage para compatibilidad
-                guardarEventoLocal(result.evento);
+                const evento = result.evento;
+                const eventoId = evento.id;
 
-                await Swal.fire({
-                    title: '¡Éxito!',
-                    html: `¡Evento "${result.evento.nombre}" creado exitosamente!<br><br>
-                           <strong>Código de acceso:</strong> ${result.codigoAcceso}<br>
-                           <small>Comparte este código con tus invitados</small>`,
+                console.log(`✅ Evento creado con ID: ${eventoId}`);
+
+                // 🔥 2. GENERAR QR AUTOMÁTICAMENTE
+                await generarQrAutomatico(eventoId, evento, user);
+
+                // Guardar también en localStorage para compatibilidad
+                guardarEventoLocal(evento);
+
+                // 🔥 MOSTRAR ÉXITO CON OPCIÓN A VER QR
+                Swal.fire({
+                    title: '¡Evento creado!',
+                    html: `
+                        El evento <strong>${evento.nombre}</strong> ha sido creado exitosamente.<br><br>
+                        <i class="fas fa-qrcode" style="color: #4db8ff; font-size: 2rem;"></i><br>
+                        <small>Se ha generado automáticamente el código QR para este evento.</small>
+                    `,
                     icon: 'success',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Ver QR',
+                    cancelButtonText: 'Ir a Mis Eventos',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4db8ff',
+                    cancelButtonColor: '#ff007a'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo(`/host/qr-generator?id=${eventoId}`);
+                        } else {
+                            window.location.href = `/host/qr-generator?id=${eventoId}`;
+                        }
+                    } else {
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo('/host/event-crud');
+                        } else {
+                            window.location.href = '/host/event-crud';
+                        }
+                    }
                 });
 
                 form.reset();
                 packageDetailsDiv.classList.add('hidden');
 
-                // 🔥 Redirigir al listado de eventos del host
-                if (typeof window.navigateTo === 'function') {
-                    window.navigateTo('/host/event-crud');
-                } else {
-                    window.location.href = '/host/event-crud';
-                }
             } else {
                 Swal.fire({
                     title: 'Error',
@@ -245,6 +277,37 @@ export function initCreateEvent() {
                 }
             });
         });
+    }
+}
+
+// ============================================
+// 📤 GENERAR QR AUTOMÁTICAMENTE
+// ============================================
+async function generarQrAutomatico(eventoId, evento, user) {
+    try {
+        console.log(`📤 Generando QR automático para evento: ${eventoId}`);
+
+        const qrData = {
+            eventName: evento.nombre || 'Evento',
+            eventDate: evento.fechaEvento || new Date().toISOString(),
+            hostName: user.displayName || user.email || 'Host',
+            package: evento.paquete || 'basico'
+        };
+
+        const result = await qrService.generarQr(eventoId, qrData);
+
+        if (result.success) {
+            console.log(`✅ QR generado automáticamente para: ${evento.nombre}`);
+            console.log(`   📊 Token: ${result.qrCode?.token || 'N/A'}`);
+        } else {
+            console.error(`❌ Error al generar QR automático:`, result.error);
+        }
+
+        return result;
+
+    } catch (error) {
+        console.error('❌ Error en generarQrAutomatico:', error);
+        return { success: false, error: error.message };
     }
 }
 

@@ -25,132 +25,136 @@ import { adminEditController } from '../modules/sysadmin/adminEdit/adminEditCont
 import { adminDetailsController } from '../modules/sysadmin/adminDetails/adminDetailsController.js';
 import { profileAdminController } from '../modules/sysadmin/profileAdmin/profileAdminController.js';
 import { profileEditController as profileAdminEditController } from '../modules/sysadmin/profileEdit/profileEditController.js';
+import { carouselAdminController } from '../modules/sysadmin/carouselAdmin/carouselAdminController.js';
+// ❌ ELIMINADO: Import de qrGeneratorController (ya no se usa)
 
 export const routes = {
     // ============================================
-    // RUTAS PÚBLICAS
+    // 🏠 RUTAS PÚBLICAS
     // ============================================
     "/": {
-        view: "/modules/visitor/home/home.html",  
+        view: "/public/modules/visitor/home/home.html",
         controller: homeController,
     },
     "/nosotros": {
-        view: "/modules/visitor/aboutUs/aboutUs.html",  
+        view: "/public/modules/visitor/aboutUs/aboutUs.html",
         controller: aboutUsController,
     },
     "/login": {
-        view: "/modules/visitor/login/login.html",  
+        view: "/public/modules/visitor/login/login.html",
         controller: loginController,
     },
     "/register": {
-        view: "/modules/visitor/register/register.html",  
+        view: "/public/modules/visitor/register/register.html",
         controller: registerController,
     },
     "/paquetes": {
-        view: "/modules/visitor/packages/packages.html",  
+        view: "/public/modules/visitor/packages/packages.html",
         controller: packagesController,
     },
     "/terms": {
-        view: "/modules/visitor/terms/terms.html",  
+        view: "/public/modules/visitor/terms/terms.html",
         controller: termsController,
     },
 
     // ============================================
-    //  RUTAS DE HOST
+    // 🎤 RUTAS DE HOST
     // ============================================
     "/host": {
-        view: "/modules/host/homeHost/homeHost.html",  
+        view: "/public/modules/host/homeHost/homeHost.html",
         controller: homeHostController,
     },
     "/host/create-event": {
-        view: "/modules/host/createEvent/createEvent.html",  
+        view: "/public/modules/host/createEvent/createEvent.html",
         controller: initCreateEvent,
     },
     "/host/events": {
-        view: "/modules/host/carroucelEvents/carroucelEvents.html",  
+        view: "/public/modules/host/carroucelEvents/carroucelEvents.html",
         controller: carroucelEventsController,
     },
     "/host/event-crud": {
-        view: "/modules/host/eventCrud/eventCrud.html",  
+        view: "/public/modules/host/eventCrud/eventCrud.html",
         controller: eventCrudController,
     },
     "/host/event-edit": {
-        view: "/modules/host/eventEditForm/eventEditForm.html",  
+        view: "/public/modules/host/eventEditForm/eventEditForm.html",
         controller: eventEditFormController,
     },
     "/host/event-details": {
-        view: "/modules/host/eventDetails/eventDetails.html",  
+        view: "/public/modules/host/eventDetails/eventDetails.html",
         controller: eventDetailsController,
     },
     "/host/profile": {
-        view: "/modules/host/profile/profile.html",  
+        view: "/public/modules/host/profile/profile.html",
         controller: profileController,
     },
     "/host/profile/edit": {
-        view: "/modules/host/profileEdit/profileEdit.html",  
+        view: "/public/modules/host/profileEdit/profileEdit.html",
         controller: profileEditController,
     },
+    // ❌ ELIMINADO: Ruta de QR Generator (ya se genera automáticamente)
 
     // ============================================
-    // RUTAS DE SYSADMIN
+    // 👑 RUTAS DE SYSADMIN
     // ============================================
     "/sysadmin/home": {
-        view: "/modules/sysadmin/homeSysadmin/homeSysadmin.html",  
+        view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
         controller: homeSysadminController,
     },
     "/sysadmin/hosts": {
-        view: "/modules/sysadmin/crudHost/crudHost.html",  
+        view: "/public/modules/sysadmin/crudHost/crudHost.html",
         controller: crudHostController,
     },
     "/sysadmin/hosts/create": {
-        view: "/modules/sysadmin/hostForm/hostForm.html",  
+        view: "/public/modules/sysadmin/hostForm/hostForm.html",
         controller: hostFormController,
     },
     "/sysadmin/hosts/edit": {
-        view: "/modules/sysadmin/hostEdit/hostEdit.html", 
+        view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
         controller: hostEditController,
     },
     "/sysadmin/host-details": {
-        view: "/modules/sysadmin/hostDetails/hostDetails.html",  
+        view: "/public/modules/sysadmin/hostDetails/hostDetails.html",
         controller: hostDetailsController,
     },
     "/sysadmin/admins": {
-        view: "/modules/sysadmin/crudAdmin/crudAdmin.html",  
+        view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
         controller: crudAdminController,
     },
     "/sysadmin/admins/create": {
-        view: "/modules/sysadmin/adminForm/adminForm.html", 
+        view: "/public/modules/sysadmin/adminForm/adminForm.html",
         controller: adminFormController,
     },
     "/sysadmin/admins/edit": {
-        view: "/modules/sysadmin/adminEdit/adminEdit.html", 
+        view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
         controller: adminEditController,
     },
     "/sysadmin/admin-details": {
-        view: "/modules/sysadmin/adminDetails/adminDetails.html",  
+        view: "/public/modules/sysadmin/adminDetails/adminDetails.html",
         controller: adminDetailsController,
     },
     "/sysadmin/profile": {
-        view: "/modules/sysadmin/profileAdmin/profileAdmin.html",  
+        view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
         controller: profileAdminController,
     },
     "/sysadmin/profile/edit": {
-        view: "/modules/sysadmin/profileEdit/profileEdit.html",  
+        view: "/public/modules/sysadmin/profileEdit/profileEdit.html",
         controller: profileAdminEditController,
+    },
+    "/sysadmin/carousel": {
+        view: "/public/modules/sysadmin/carouselAdmin/carouselAdmin.html",
+        controller: carouselAdminController,
     },
 
     // ============================================
     // 🔴 ERROR
     // ============================================
     "/404": {
-        view: "/modules/shared/errors/404.html",  
+        view: "/public/modules/shared/errors/404.html",
         controller: init404Controller,
     },
 };
 
-// ============================================
-// 🔧 FUNCIÓN AUXILIAR PARA OBTENER RUTAS POR ROL
-// ============================================
 export function getRoutesByRole(role) {
     const allRoutes = Object.keys(routes);
     const routePermissions = {
