@@ -7,12 +7,11 @@
     <title>Evento - Snaap</title>
     <link rel="stylesheet" href="/src/css/main.css">
     <link rel="stylesheet" href="/src/css/components/homeUser.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div id="app">
-        <!-- Navbar se inyecta aquí (pero se oculta con CSS/JS) -->
+        <!-- Navbar se inyecta aquí -->
         <nav id="navbar"></nav>
 
         <main class="user-home-container" id="userHomeContainer">
@@ -21,7 +20,7 @@
             <!-- ========================================== -->
             <section class="user-home-header">
                 <h1><i class="fas fa-calendar-alt"></i> Cargando evento...</h1>
-                <p><i class="fas fa-camera"></i> Captura momentos, comparte dibujos y guarda recuerdos</p>
+                <p><i class="fas fa-camera"></i> Captura momentos, comparte dibujos y guarda recuerdos de este evento</p>
                 <div class="event-info">
                     <span class="event-badge"><i class="fas fa-ticket-alt"></i> Cargando...</span>
                 </div>
@@ -43,17 +42,19 @@
                 <div class="action-card" id="uploadDrawingBtn">
                     <div class="action-icon"><i class="fas fa-paint-brush"></i></div>
                     <h3>Subir Dibujo</h3>
-                    <p>Sube un dibujo desde tu dispositivo</p>
-                    <button class="btn-action"><i class="fas fa-upload"></i> Seleccionar archivo</button>
-                    <input type="file" id="drawingInput" accept="image/*" style="display:none">
+                    <p>Crea un dibujo y compártelo</p>
+                    <button class="btn-action"><i class="fas fa-paint-brush"></i> Abrir dibujo</button>
                 </div>
 
-                <!-- Botón 3: Ver Mis Fotos -->
+                <!-- Botón 3: Mis Fotos (Galería del teléfono) -->
                 <div class="action-card" id="viewPhotosBtn">
                     <div class="action-icon"><i class="fas fa-images"></i></div>
                     <h3>Mis Fotos</h3>
-                    <p>Ver todas tus fotos y dibujos guardados</p>
-                    <button class="btn-action"><i class="fas fa-eye"></i> Ver galería</button>
+                    <p>Selecciona fotos de tu galería</p>
+                    <button class="btn-action" id="openGalleryBtn">
+                        <i class="fas fa-images"></i> Abrir galería
+                    </button>
+                    <input type="file" id="galleryFileInput" accept="image/*" multiple style="display:none">
                 </div>
             </section>
 
@@ -70,6 +71,66 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🔥 MODAL DE DIBUJO -->
+    <!-- ========================================== -->
+    <div class="drawing-modal-overlay" id="drawingModal" style="display:none;">
+        <div class="drawing-modal-content">
+            <!-- Header del modal -->
+            <div class="drawing-modal-header">
+                <h2><i class="fas fa-paint-brush"></i> Dibujar</h2>
+                <button class="drawing-modal-close" id="drawingModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Barra de herramientas -->
+            <div class="drawing-toolbar">
+                <div class="tool-group">
+                    <button class="tool-btn active" data-tool="pen" title="Lápiz">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button class="tool-btn" data-tool="eraser" title="Borrador">
+                        <i class="fas fa-eraser"></i>
+                    </button>
+                    <button class="tool-btn" data-tool="clear" title="Limpiar todo">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+
+                <div class="tool-group">
+                    <label class="color-label">
+                        <span>Color:</span>
+                        <input type="color" id="drawingColor" value="#4db8ff">
+                    </label>
+                </div>
+
+                <div class="tool-group">
+                    <label class="size-label">
+                        <span>Tamaño:</span>
+                        <input type="range" id="drawingSize" min="2" max="30" value="5">
+                        <span id="sizeValue">5</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Canvas para dibujar -->
+            <div class="drawing-canvas-wrapper">
+                <canvas id="drawingCanvas"></canvas>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="drawing-actions">
+                <button class="btn-snaap" id="saveDrawingBtn">
+                    <i class="fas fa-save"></i> Guardar Dibujo
+                </button>
+                <button class="btn-snaap-secondary" id="cancelDrawingBtn">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- ========================================== -->

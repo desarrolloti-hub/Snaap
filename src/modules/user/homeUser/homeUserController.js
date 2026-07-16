@@ -1,7 +1,7 @@
 // src/modules/user/homeUser/homeUserController.js
 import { userService } from '../../../services/userService.js';
-import { storageService } from '../../../services/storageService.js';
 import { eventService } from '../../../services/eventService.js';
+import { userImageService } from '../../../services/userImageService.js';
 
 // ============================================
 // 🎮 CONTROLLER PRINCIPAL
@@ -13,6 +13,17 @@ class HomeUserController {
         this.eventoId = null;
         this.eventoData = null;
         this.images = [];
+        
+        // 🔥 DIBUJO
+        this.isDrawing = false;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.currentTool = 'pen';
+        this.drawColor = '#4db8ff';
+        this.drawSize = 5;
+        this.canvas = null;
+        this.ctx = null;
+        
         this.initialize();
     }
 
@@ -27,7 +38,6 @@ class HomeUserController {
                 return;
             }
 
-            // 🔥 OBTENER EVENTO ID DE LA URL
             const urlParams = new URLSearchParams(window.location.search);
             this.eventoId = urlParams.get('eventId');
 
@@ -38,31 +48,15 @@ class HomeUserController {
                 return;
             }
 
-            // 🔥 CARGAR DATOS DEL EVENTO
             await this.loadEventData();
             await this.loadUserData();
             this.setupEventListeners();
             await this.loadUserImages();
-            
-            // 🔥 MOSTRAR NOMBRE DEL EVENTO
             this.updateEventHeader();
-
-            // 🔥 OCULTAR NAVBAR
-            this.hideNavbar();
 
         } catch (error) {
             console.error('Error initializing user home:', error);
             this.showError('Error al cargar la página');
-        }
-    }
-
-    // ============================================
-    // 👁️ OCULTAR NAVBAR
-    // ============================================
-    hideNavbar() {
-        const navbar = document.getElementById('navbar');
-        if (navbar) {
-            navbar.style.display = 'none';
         }
     }
 
@@ -76,7 +70,7 @@ class HomeUserController {
                 throw new Error(result.error);
             }
             this.eventoData = result.evento;
-            console.log('📦 Evento cargado:', this.eventoData?.nombre);
+            console.log('✅ Evento cargado:', this.eventoData?.nombre);
         } catch (error) {
             console.error('Error loading event data:', error);
             throw error;
@@ -88,12 +82,28 @@ class HomeUserController {
     // ============================================
     async loadUserData() {
         try {
+            console.log('👤 Cargando datos del usuario...');
+            
             const result = await userService.obtenerUsuarioPorUid(this.currentUser.uid);
-            if (!result.success) throw new Error(result.error);
-            this.userData = result.user;
+            
+            if (result.success) {
+                this.userData = result.user;
+                console.log('✅ Usuario desde Firestore:', this.userData);
+            } else {
+                console.warn('⚠️ No se pudo obtener usuario de Firestore, usando datos de autenticación');
+                this.userData = this.currentUser;
+            }
+            
+            if (!this.userData.images) {
+                this.userData.images = [];
+            }
+            
         } catch (error) {
-            console.error('Error loading user data:', error);
-            throw error;
+            console.error('❌ Error loading user data:', error);
+            this.userData = this.currentUser;
+            if (!this.userData.images) {
+                this.userData.images = [];
+            }
         }
     }
 
@@ -119,55 +129,57 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🎯 CONFIGURAR EVENTOS
+    // 🎯 CONFIGURAR EVENTOS DE LOS BOTONES
     // ============================================
     setupEventListeners() {
+        // 🔥 BOTÓN 1: TOMAR FOTO (CÁMARA)
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         if (takePhotoBtn) {
             takePhotoBtn.addEventListener('click', this.handleTakePhoto.bind(this));
         }
 
+        // 🔥 BOTÓN 2: SUBIR DIBUJO
         const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
-        const drawingInput = document.getElementById('drawingInput');
-        if (uploadDrawingBtn && drawingInput) {
-            uploadDrawingBtn.addEventListener('click', () => drawingInput.click());
-            drawingInput.addEventListener('change', this.handleUploadDrawing.bind(this));
+        if (uploadDrawingBtn) {
+            uploadDrawingBtn.addEventListener('click', this.openDrawingModal.bind(this));
         }
 
-        const viewPhotosBtn = document.getElementById('viewPhotosBtn');
-        if (viewPhotosBtn) {
-            viewPhotosBtn.addEventListener('click', this.toggleGallery.bind(this));
-        }
-
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-        const modalOverlay = document.getElementById('imageModal');
-        if (modalCloseBtn) {
-            modalCloseBtn.addEventListener('click', this.closeModal.bind(this));
-        }
-        if (modalOverlay) {
-            modalOverlay.addEventListener('click', (e) => {
-                if (e.target === modalOverlay) {
-                    this.closeModal();
-                }
+        // 🔥 BOTÓN 3: MIS FOTOS (GALERÍA DEL TELÉFONO) - CORREGIDO
+        const openGalleryBtn = document.getElementById('openGalleryBtn');
+        const galleryInput = document.getElementById('galleryFileInput');
+        
+        if (openGalleryBtn && galleryInput) {
+            openGalleryBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖼️ Abriendo galería...');
+                galleryInput.click();
             });
+            
+            galleryInput.addEventListener('change', this.handleGalleryUpload.bind(this));
         }
 
-        const modalDeleteBtn = document.getElementById('modalDeleteBtn');
-        if (modalDeleteBtn) {
-            modalDeleteBtn.addEventListener('click', this.handleDeleteImage.bind(this));
-        }
+        // 🔥 MODAL DE DIBUJO
+        this.setupDrawingEvents();
 
+        // 🔥 MODAL DE IMAGEN
+        this.setupImageModalEvents();
+
+        // 🔥 TECLA ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
+                this.closeDrawingModal();
             }
         });
     }
 
     // ============================================
-    // 📸 TOMAR FOTO
+    // 📸 BOTÓN 1: TOMAR FOTO
     // ============================================
     handleTakePhoto() {
+        console.log('📸 Abriendo cámara...');
+        
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -177,6 +189,8 @@ class HomeUserController {
         input.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
+            
+            console.log('📸 Foto tomada:', file.name);
             await this.uploadImage(file, 'photo');
             input.remove();
         });
@@ -186,17 +200,245 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🎨 SUBIR DIBUJO
+    // 🎨 BOTÓN 2: ABRIR MODAL DE DIBUJO
     // ============================================
-    async handleUploadDrawing(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        await this.uploadImage(file, 'drawing');
+    openDrawingModal() {
+        console.log('🎨 Abriendo modal de dibujo...');
+        const modal = document.getElementById('drawingModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                this.initCanvas();
+            }, 100);
+        }
+    }
+
+    // ============================================
+    // 🔧 INICIALIZAR CANVAS DE DIBUJO
+    // ============================================
+    initCanvas() {
+        this.canvas = document.getElementById('drawingCanvas');
+        if (!this.canvas) return;
+
+        const wrapper = this.canvas.parentElement;
+        const rect = wrapper.getBoundingClientRect();
+        const size = Math.min(rect.width, 500);
+        this.canvas.width = size;
+        this.canvas.height = size;
+        this.canvas.style.width = size + 'px';
+        this.canvas.style.height = size + 'px';
+
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+
+        this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+        this.canvas.addEventListener('mousemove', this.draw.bind(this));
+        this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+        this.canvas.addEventListener('mouseleave', this.stopDrawing.bind(this));
+
+        this.canvas.addEventListener('touchstart', this.startDrawingTouch.bind(this));
+        this.canvas.addEventListener('touchmove', this.drawTouch.bind(this));
+        this.canvas.addEventListener('touchend', this.stopDrawing.bind(this));
+
+        console.log('✅ Canvas inicializado');
+    }
+
+    // ============================================
+    // 🖌️ EVENTOS DE DIBUJO (MOUSE)
+    // ============================================
+    startDrawing(e) {
+        this.isDrawing = true;
+        const rect = this.canvas.getBoundingClientRect();
+        this.lastX = e.clientX - rect.left;
+        this.lastY = e.clientY - rect.top;
+    }
+
+    draw(e) {
+        if (!this.isDrawing) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        this.drawLine(this.lastX, this.lastY, x, y);
+        this.lastX = x;
+        this.lastY = y;
+    }
+
+    stopDrawing() {
+        this.isDrawing = false;
+    }
+
+    // ============================================
+    // 🖌️ EVENTOS DE DIBUJO (TOUCH)
+    // ============================================
+    startDrawingTouch(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        this.isDrawing = true;
+        this.lastX = touch.clientX - rect.left;
+        this.lastY = touch.clientY - rect.top;
+    }
+
+    drawTouch(e) {
+        e.preventDefault();
+        if (!this.isDrawing) return;
+        const touch = e.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        this.drawLine(this.lastX, this.lastY, x, y);
+        this.lastX = x;
+        this.lastY = y;
+    }
+
+    // ============================================
+    // 📏 DIBUJAR LÍNEA
+    // ============================================
+    drawLine(x1, y1, x2, y2) {
+        if (!this.ctx) return;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1, y1);
+        this.ctx.lineTo(x2, y2);
+        this.ctx.strokeStyle = this.currentTool === 'eraser' ? '#ffffff' : this.drawColor;
+        this.ctx.lineWidth = this.drawSize;
+        this.ctx.stroke();
+    }
+
+    // ============================================
+    // 🎨 CONFIGURAR EVENTOS DEL MODAL DE DIBUJO
+    // ============================================
+    setupDrawingEvents() {
+        const closeBtn = document.getElementById('drawingModalClose');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', this.closeDrawingModal.bind(this));
+        }
+
+        const cancelBtn = document.getElementById('cancelDrawingBtn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', this.closeDrawingModal.bind(this));
+        }
+
+        const overlay = document.getElementById('drawingModal');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeDrawingModal();
+                }
+            });
+        }
+
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentTool = btn.dataset.tool;
+                
+                if (this.currentTool === 'clear') {
+                    this.clearCanvas();
+                }
+            });
+        });
+
+        const colorInput = document.getElementById('drawingColor');
+        if (colorInput) {
+            colorInput.addEventListener('input', (e) => {
+                this.drawColor = e.target.value;
+            });
+        }
+
+        const sizeInput = document.getElementById('drawingSize');
+        const sizeValue = document.getElementById('sizeValue');
+        if (sizeInput && sizeValue) {
+            sizeInput.addEventListener('input', (e) => {
+                this.drawSize = parseInt(e.target.value);
+                sizeValue.textContent = this.drawSize;
+            });
+        }
+
+        const saveBtn = document.getElementById('saveDrawingBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', this.saveDrawing.bind(this));
+        }
+    }
+
+    // ============================================
+    // 🗑️ LIMPIAR CANVAS
+    // ============================================
+    clearCanvas() {
+        if (!this.ctx || !this.canvas) return;
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    // ============================================
+    // 💾 GUARDAR DIBUJO
+    // ============================================
+    async saveDrawing() {
+        if (!this.canvas) return;
+
+        try {
+            const dataUrl = this.canvas.toDataURL('image/png');
+            const response = await fetch(dataUrl);
+            const blob = await response.blob();
+            const file = new File([blob], `dibujo_${Date.now()}.png`, { type: 'image/png' });
+
+            console.log('🎨 Dibujo guardado, subiendo...');
+            await this.uploadImage(file, 'drawing');
+            this.closeDrawingModal();
+            
+        } catch (error) {
+            console.error('❌ Error al guardar dibujo:', error);
+            this.showError('Error al guardar el dibujo');
+        }
+    }
+
+    // ============================================
+    // 🖼️ CERRAR MODAL DE DIBUJO
+    // ============================================
+    closeDrawingModal() {
+        const modal = document.getElementById('drawingModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    // ============================================
+    // 🖼️ MANEJAR SUBIDA DESDE GALERÍA
+    // ============================================
+    async handleGalleryUpload(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        
+        console.log(`🖼️ ${files.length} imágenes seleccionadas`);
+        
+        let successCount = 0;
+        let errorCount = 0;
+        
+        for (const file of files) {
+            const result = await this.uploadImage(file, 'photo');
+            if (result) {
+                successCount++;
+            } else {
+                errorCount++;
+            }
+        }
+        
+        if (successCount > 0) {
+            this.showSuccess(`✅ ${successCount} imagen(es) subida(s) exitosamente`);
+        }
+        if (errorCount > 0) {
+            this.showError(`❌ ${errorCount} imagen(es) no pudieron subirse`);
+        }
+        
         e.target.value = '';
     }
 
     // ============================================
-    // 📤 SUBIR IMAGEN - ASOCIADA AL EVENTO
+    // 📤 SUBIR IMAGEN
     // ============================================
     async uploadImage(file, type) {
         try {
@@ -204,79 +446,54 @@ class HomeUserController {
 
             const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
-                this.showError('Formato no soportado. Usa JPG, PNG, GIF o WebP');
+                this.showError('❌ Formato no soportado. Usa JPG, PNG, GIF o WebP');
                 this.hideLoading();
-                return;
+                return false;
             }
 
             if (file.size > 5 * 1024 * 1024) {
-                this.showError('La imagen debe ser menor a 5MB');
+                this.showError('❌ La imagen debe ser menor a 5MB');
                 this.hideLoading();
-                return;
+                return false;
             }
 
-            // 🔥 SUBIR A STORAGE CON RUTA DEL EVENTO
-            const path = `events/${this.eventoId}/images/${type}/${Date.now()}_${file.name}`;
-            const result = await storageService.subirImagen(file, path);
+            const result = await userImageService.uploadImage(file, type, this.eventoId);
 
             if (!result.success) {
                 throw new Error(result.error);
             }
-
-            // 🔥 GUARDAR REFERENCIA ASOCIADA AL EVENTO
-            await this.saveImageReference(result.url, type, file.name);
 
             await this.loadUserImages();
 
             this.showSuccess(`✅ ${type === 'photo' ? 'Foto' : 'Dibujo'} subido exitosamente`);
             this.hideLoading();
+            return true;
+
         } catch (error) {
-            console.error('Error uploading image:', error);
+            console.error('❌ Error uploading image:', error);
             this.showError(error.message || 'Error al subir la imagen');
             this.hideLoading();
+            return false;
         }
     }
 
     // ============================================
-    // 💾 GUARDAR REFERENCIA DE IMAGEN EN EL USUARIO
-    // ============================================
-    async saveImageReference(url, type, fileName) {
-        try {
-            // 🔥 GUARDAR IMAGEN ASOCIADA AL EVENTO
-            const images = this.userData.images || [];
-            images.push({
-                url: url,
-                type: type,
-                fileName: fileName,
-                eventoId: this.eventoId,
-                date: new Date().toISOString()
-            });
-
-            const result = await userService.actualizarPerfil({
-                images: images
-            });
-
-            if (!result.success) {
-                throw new Error(result.error);
-            }
-
-            this.userData = result.user;
-        } catch (error) {
-            console.error('Error saving image reference:', error);
-            throw error;
-        }
-    }
-
-    // ============================================
-    // 📋 CARGAR IMÁGENES DEL EVENTO
+    // 📋 CARGAR IMÁGENES DEL USUARIO
     // ============================================
     async loadUserImages() {
         const galleryGrid = document.getElementById('galleryGrid');
         if (!galleryGrid) return;
 
         try {
-            // 🔥 FILTRAR IMÁGENES POR EVENTO
-            const allImages = this.userData.images || [];
+            const result = await userImageService.getUserImages();
+            
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+
+            const allImages = result.images;
+            console.log(`📋 Cargando ${allImages.length} imágenes del usuario`);
+
             const eventImages = allImages.filter(img => img.eventoId === this.eventoId);
 
             if (eventImages.length === 0) {
@@ -299,6 +516,11 @@ class HomeUserController {
         const galleryGrid = document.getElementById('galleryGrid');
         if (!galleryGrid) return;
 
+        if (!images || images.length === 0) {
+            galleryGrid.innerHTML = this.getEmptyStateHTML();
+            return;
+        }
+
         galleryGrid.innerHTML = images.map((image, index) => `
             <div class="gallery-item" data-index="${index}">
                 <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
@@ -317,8 +539,29 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🖼️ MODAL
+    // 🖼️ MODAL DE IMAGEN
     // ============================================
+    setupImageModalEvents() {
+        const closeBtn = document.getElementById('modalCloseBtn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', this.closeModal.bind(this));
+        }
+
+        const overlay = document.getElementById('imageModal');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.closeModal();
+                }
+            });
+        }
+
+        const deleteBtn = document.getElementById('modalDeleteBtn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', this.handleDeleteImage.bind(this));
+        }
+    }
+
     openModal(index) {
         const image = this.images[index];
         if (!image) return;
@@ -329,7 +572,24 @@ class HomeUserController {
         const modalDeleteBtn = document.getElementById('modalDeleteBtn');
 
         if (modalImage) modalImage.src = image.url;
-        if (modalDate) modalDate.innerHTML = `<i class="fas fa-calendar-day"></i> ${new Date(image.date).toLocaleDateString('es-ES')} - ${image.type === 'photo' ? '<i class="fas fa-camera"></i> Foto' : '<i class="fas fa-paint-brush"></i> Dibujo'}`;
+        
+        let dateText = '';
+        if (image.date) {
+            dateText = new Date(image.date).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        const typeText = image.type === 'photo' ? '📸 Foto' : '🎨 Dibujo';
+        
+        if (modalDate) {
+            modalDate.innerHTML = `<i class="fas fa-calendar-day"></i> ${dateText} - ${typeText}`;
+        }
+        
         if (modalDeleteBtn) modalDeleteBtn.dataset.index = index;
         if (modal) modal.style.display = 'flex';
     }
@@ -352,26 +612,12 @@ class HomeUserController {
         try {
             this.showLoading();
 
-            const images = this.userData.images || [];
-            // 🔥 ELIMINAR SOLO LA IMAGEN DEL EVENTO ACTUAL
-            const eventImages = images.filter(img => img.eventoId === this.eventoId);
-            const deletedImage = eventImages[index];
+            const result = await userImageService.deleteImage(index);
             
-            // Encontrar y eliminar del array principal
-            const globalIndex = images.findIndex(img => img.url === deletedImage.url && img.eventoId === this.eventoId);
-            if (globalIndex !== -1) {
-                images.splice(globalIndex, 1);
-            }
-
-            const result = await userService.actualizarPerfil({
-                images: images
-            });
-
             if (!result.success) {
                 throw new Error(result.error);
             }
 
-            this.userData = result.user;
             this.closeModal();
             await this.loadUserImages();
 
@@ -381,21 +627,6 @@ class HomeUserController {
             console.error('Error deleting image:', error);
             this.showError(error.message || 'Error al eliminar la imagen');
             this.hideLoading();
-        }
-    }
-
-    // ============================================
-    // 🔄 TOGGLE GALERÍA
-    // ============================================
-    toggleGallery() {
-        const gallerySection = document.getElementById('gallerySection');
-        if (!gallerySection) return;
-
-        if (gallerySection.style.display === 'none') {
-            gallerySection.style.display = 'block';
-            gallerySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            gallerySection.style.display = 'none';
         }
     }
 
