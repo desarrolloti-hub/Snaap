@@ -4,6 +4,45 @@ import { getRedirectPathByRole } from '../../../core/permissions.js';
 
 let navbarInitialized = false;
 
+// ============================================
+// 🔥 RUTAS DONDE NO SE MUESTRA EL NAVBAR
+// ============================================
+const HIDDEN_NAVBAR_ROUTES = [
+    '/user/home',
+    '/user/scan',
+    '/event'
+];
+
+// ============================================
+// 🔍 VERIFICAR SI EL NAVBAR DEBE OCULTARSE
+// ============================================
+function shouldHideNavbar() {
+    const currentPath = window.location.pathname;
+    
+    // Verificar rutas exactas
+    if (HIDDEN_NAVBAR_ROUTES.includes(currentPath)) {
+        return true;
+    }
+    
+    // Verificar rutas con parámetros (ej: /event/:id)
+    for (const route of HIDDEN_NAVBAR_ROUTES) {
+        if (route.includes(':')) {
+            // Convertir /event/:id a regex: /^\/event\/[^/]+$/
+            const pattern = route.replace(/:\w+/g, '[^/]+');
+            const regex = new RegExp(`^${pattern}$`);
+            if (regex.test(currentPath)) {
+                return true;
+            }
+        }
+        // Verificar si la ruta actual comienza con la ruta base
+        if (currentPath.startsWith(route) && route !== '/') {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 export async function initNavbar() {
     if (navbarInitialized) return;
     navbarInitialized = true;
@@ -106,16 +145,13 @@ async function handleNotificationToggle() {
     const btn = document.getElementById('notificationToggleBtn');
     const statusText = document.getElementById('notificationStatus');
     
-    // 🔥 Deshabilitar botón mientras se procesa
     btn.disabled = true;
     btn.style.opacity = '0.6';
 
     try {
-        // 🔥 Importar y ejecutar toggleSubscription
         const { toggleSubscription } = await import('../../../modules/shared/notification/notificationController.js');
         await toggleSubscription();
         
-        // 🔥 Actualizar estado del botón
         const { notificationService } = await import('../../../services/notificationService.js');
         
         if (notificationService.isSubscribed) {
@@ -139,7 +175,6 @@ async function handleNotificationToggle() {
         });
     }
 
-    // 🔥 Restaurar botón
     btn.disabled = false;
     btn.style.opacity = '1';
 }
@@ -148,6 +183,30 @@ async function handleNotificationToggle() {
 // 👤 ACTUALIZAR VISIBILIDAD DEL NAVBAR
 // ============================================
 function updateNavbarVisibility() {
+    // 🔥 VERIFICAR SI DEBE OCULTARSE
+    if (shouldHideNavbar()) {
+        const navbar = document.getElementById('snaapNavbar');
+        if (navbar) {
+            navbar.style.display = 'none';
+            console.log('✅ Navbar oculto en vista de usuario');
+        }
+        const navbarContainer = document.getElementById('navbar-container');
+        if (navbarContainer) {
+            navbarContainer.style.display = 'none';
+        }
+        return;
+    }
+
+    // Si no debe ocultarse, mostrarlo
+    const navbar = document.getElementById('snaapNavbar');
+    if (navbar) {
+        navbar.style.display = '';
+    }
+    const navbarContainer = document.getElementById('navbar-container');
+    if (navbarContainer) {
+        navbarContainer.style.display = '';
+    }
+
     const user = userService.getCurrentUser();
     const isAuthenticated = !!user;
     const role = user ? user.role : null;
@@ -284,7 +343,6 @@ function setupMobileToggle() {
         }
     });
 
-    // 🔥 CERRAR MENÚ AL HACER CLIC FUERA
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.snaap-navbar-unified')) {
             navList.classList.remove('active');
