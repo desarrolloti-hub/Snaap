@@ -17,11 +17,16 @@ export class User {
     eventsAttended = 0,
     eventsCreated = 0,
     bio = '',
-    // 🔥 NUEVOS CAMPOS PARA PERFIL
+    // 🔥 CAMPOS PARA PERFIL
     company = '',
     website = '',
     specialty = '',
-    experience = 0
+    experience = 0,
+    // 🔥 NUEVOS CAMPOS PARA USUARIO
+    location = '',
+    savedEvents = [],
+    events = [],
+    images = []
   } = {}) {
     this.id = id;
     this.uid = uid || id;
@@ -39,11 +44,16 @@ export class User {
     this.eventsAttended = eventsAttended || 0;
     this.eventsCreated = eventsCreated || 0;
     this.bio = bio || '';
-    // 🔥 NUEVOS CAMPOS
+    // 🔥 CAMPOS DE PERFIL
     this.company = company || '';
     this.website = website || '';
     this.specialty = specialty || '';
     this.experience = experience || 0;
+    // 🔥 NUEVOS CAMPOS
+    this.location = location || '';
+    this.savedEvents = savedEvents || [];
+    this.events = events || [];
+    this.images = images || [];
   }
 
   toFirestore() {
@@ -62,11 +72,16 @@ export class User {
       eventsAttended: this.eventsAttended,
       eventsCreated: this.eventsCreated,
       bio: this.bio,
-      // 🔥 NUEVOS CAMPOS
+      // 🔥 CAMPOS DE PERFIL
       company: this.company,
       website: this.website,
       specialty: this.specialty,
-      experience: this.experience
+      experience: this.experience,
+      // 🔥 NUEVOS CAMPOS
+      location: this.location,
+      savedEvents: this.savedEvents,
+      events: this.events,
+      images: this.images
     };
   }
 
@@ -77,7 +92,10 @@ export class User {
       ...data,
       createdAt: data.createdAt?.toDate?.() || data.createdAt,
       updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
-      lastLogin: data.lastLogin?.toDate?.() || data.lastLogin
+      lastLogin: data.lastLogin?.toDate?.() || data.lastLogin,
+      savedEvents: data.savedEvents || [],
+      events: data.events || [],
+      images: data.images || []
     });
   }
 
@@ -127,5 +145,57 @@ export class User {
   updateLastLogin() {
     this.lastLogin = new Date();
     this.updatedAt = new Date();
+  }
+
+  // 🔥 NUEVOS MÉTODOS
+  addSavedEvent(eventId) {
+    if (!this.savedEvents.includes(eventId)) {
+      this.savedEvents.push(eventId);
+      this.updatedAt = new Date();
+    }
+  }
+
+  removeSavedEvent(eventId) {
+    this.savedEvents = this.savedEvents.filter(id => id !== eventId);
+    this.updatedAt = new Date();
+  }
+
+  isEventSaved(eventId) {
+    return this.savedEvents.includes(eventId);
+  }
+
+  addEvent(eventId) {
+    if (!this.events.includes(eventId)) {
+      this.events.push(eventId);
+      this.updatedAt = new Date();
+    }
+  }
+
+  removeEvent(eventId) {
+    this.events = this.events.filter(id => id !== eventId);
+    this.updatedAt = new Date();
+  }
+
+  hasEvent(eventId) {
+    return this.events.includes(eventId);
+  }
+
+  // 🔥 MÉTODOS PARA IMÁGENES
+  addImage(imageData) {
+    this.images.push(imageData);
+    this.updatedAt = new Date();
+  }
+
+  removeImage(index) {
+    this.images.splice(index, 1);
+    this.updatedAt = new Date();
+  }
+
+  getImages() {
+    return this.images || [];
+  }
+
+  getImagesByType(type) {
+    return this.images.filter(img => img.type === type);
   }
 }

@@ -1,0 +1,86 @@
+<!-- public/modules/user/homeUser/homeUser.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Snaap</title>
+    <link rel="stylesheet" href="/src/css/main.css">
+    <link rel="stylesheet" href="/src/css/modules/homeUser.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navbar se inyecta aquí -->
+        <nav id="navbar"></nav>
+
+        <main class="user-home-container" id="userHomeContainer">
+            <!-- ========================================== -->
+            <!-- HEADER -->
+            <!-- ========================================== -->
+            <section class="user-home-header">
+                <h1>📱 Snaap</h1>
+                <p>Captura momentos, comparte dibujos y guarda recuerdos</p>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- BOTONES DE ACCIÓN -->
+            <!-- ========================================== -->
+            <section class="user-home-actions">
+                <!-- Botón 1: Tomar Foto -->
+                <div class="action-card" id="takePhotoBtn">
+                    <div class="action-icon">📸</div>
+                    <h3>Tomar Foto</h3>
+                    <p>Captura una foto desde tu cámara</p>
+                    <button class="btn-action">Abrir cámara</button>
+                </div>
+
+                <!-- Botón 2: Subir Dibujo -->
+                <div class="action-card" id="uploadDrawingBtn">
+                    <div class="action-icon">🎨</div>
+                    <h3>Subir Dibujo</h3>
+                    <p>Sube un dibujo desde tu dispositivo</p>
+                    <button class="btn-action">Seleccionar archivo</button>
+                    <input type="file" id="drawingInput" accept="image/*" style="display:none">
+                </div>
+
+                <!-- Botón 3: Ver Mis Fotos -->
+                <div class="action-card" id="viewPhotosBtn">
+                    <div class="action-icon">🖼️</div>
+                    <h3>Mis Fotos</h3>
+                    <p>Ver todas tus fotos y dibujos guardados</p>
+                    <button class="btn-action">Ver galería</button>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- GALERÍA DE FOTOS -->
+            <!-- ========================================== -->
+            <section class="user-home-gallery" id="gallerySection" style="display:none;">
+                <h2>🖼️ Mi Galería</h2>
+                <div class="gallery-grid" id="galleryGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Cargando imágenes...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PARA VER IMAGEN -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="imageModal" style="display:none;">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn">✕</button>
+            <img id="modalImage" src="" alt="Imagen">
+            <div class="modal-info">
+                <p id="modalDate"></p>
+                <button class="btn-danger-small" id="modalDeleteBtn">🗑️ Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/user/homeUser/homeUserController.js"></script>
+</body>
+</html>
