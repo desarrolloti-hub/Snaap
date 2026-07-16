@@ -3,73 +3,47 @@ export class Evento {
   constructor({
     id = null,
     nombre = '',
-    paquete = '',
+    paquete = 'basico',
     paqueteDetalles = null,
-    creadoPor = null,
-    creadoPorEmail = null,
-    creadoPorNombre = null,  // 🔥 NUEVO
+    creadoPor = '',
+    creadoPorEmail = '',
+    creadoPorNombre = '',
     fechaEvento = null,
-    estado = 'pending',
-    invitados = [],
-    createdAt = null,
-    updatedAt = null,
-    codigoAcceso = null,
     descripcion = '',
     ubicacion = '',
-    fechaLimite = null,
-    // 🔥 NUEVOS CAMPOS
+    invitados = [],
+    estado = 'pending',
     attendees = 0,
     uploadedPhotos = 0,
-    tipo = '',
-    imagenUrl = ''
+    tipo = 'evento',
+    createdAt = null,
+    updatedAt = null,
+    fechaLimite = null,
+    codigoAcceso = '',
+    // 🔥 NUEVO CAMPO PARA IMÁGENES DEL EVENTO
+    eventImages = []
   } = {}) {
     this.id = id;
     this.nombre = nombre;
     this.paquete = paquete;
-    this.paqueteDetalles = paqueteDetalles;
+    this.paqueteDetalles = paqueteDetalles || this.getPaqueteDetalles(paquete);
     this.creadoPor = creadoPor;
     this.creadoPorEmail = creadoPorEmail;
     this.creadoPorNombre = creadoPorNombre;
     this.fechaEvento = fechaEvento || new Date();
-    this.estado = estado;
-    this.invitados = invitados || [];
-    this.createdAt = createdAt || new Date();
-    this.updatedAt = updatedAt || new Date();
-    this.codigoAcceso = codigoAcceso || this.generarCodigoAcceso();
     this.descripcion = descripcion;
     this.ubicacion = ubicacion;
-    this.fechaLimite = fechaLimite || this.calcularFechaLimite(paquete);
-    // 🔥 NUEVOS CAMPOS
+    this.invitados = invitados || [];
+    this.estado = estado;
     this.attendees = attendees || 0;
     this.uploadedPhotos = uploadedPhotos || 0;
-    this.tipo = tipo || '';
-    this.imagenUrl = imagenUrl || '';
-  }
-
-  generarCodigoAcceso() {
-    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let codigo = '';
-    for (let i = 0; i < 8; i++) {
-      codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-    }
-    return codigo;
-  }
-
-  calcularFechaLimite(paquete) {
-    const ahora = new Date();
-    let dias = 1;
-    
-    switch(paquete) {
-      case 'basico': dias = 1; break;
-      case 'estandar': dias = 2; break;
-      case 'premium': dias = 3; break;
-      case 'empresarial': dias = 7; break;
-      default: dias = 1;
-    }
-    
-    const fechaLimite = new Date(ahora);
-    fechaLimite.setDate(fechaLimite.getDate() + dias);
-    return fechaLimite;
+    this.tipo = tipo;
+    this.createdAt = createdAt || new Date();
+    this.updatedAt = updatedAt || new Date();
+    this.fechaLimite = fechaLimite || this.calcularFechaLimite(paquete);
+    this.codigoAcceso = codigoAcceso || this.generarCodigoAcceso();
+    // 🔥 NUEVO CAMPO
+    this.eventImages = eventImages || [];
   }
 
   toFirestore() {
@@ -81,19 +55,19 @@ export class Evento {
       creadoPorEmail: this.creadoPorEmail,
       creadoPorNombre: this.creadoPorNombre,
       fechaEvento: this.fechaEvento,
-      estado: this.estado,
-      invitados: this.invitados,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt,
-      codigoAcceso: this.codigoAcceso,
       descripcion: this.descripcion,
       ubicacion: this.ubicacion,
-      fechaLimite: this.fechaLimite,
-      // 🔥 NUEVOS CAMPOS
+      invitados: this.invitados,
+      estado: this.estado,
       attendees: this.attendees,
       uploadedPhotos: this.uploadedPhotos,
       tipo: this.tipo,
-      imagenUrl: this.imagenUrl
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
+      fechaLimite: this.fechaLimite,
+      codigoAcceso: this.codigoAcceso,
+      // 🔥 NUEVO CAMPO
+      eventImages: this.eventImages
     };
   }
 
@@ -105,22 +79,16 @@ export class Evento {
       fechaEvento: data.fechaEvento?.toDate?.() || data.fechaEvento,
       createdAt: data.createdAt?.toDate?.() || data.createdAt,
       updatedAt: data.updatedAt?.toDate?.() || data.updatedAt,
-      fechaLimite: data.fechaLimite?.toDate?.() || data.fechaLimite
+      fechaLimite: data.fechaLimite?.toDate?.() || data.fechaLimite,
+      eventImages: data.eventImages || []
     });
   }
 
   isValid() {
-    return this.nombre && 
-           this.nombre.length > 0 && 
-           this.paquete && 
-           this.paquete.length > 0;
+    return this.nombre && this.nombre.trim().length >= 3 && this.paquete;
   }
 
-  getPaqueteInfo() {
-    if (this.paqueteDetalles) {
-      return this.paqueteDetalles;
-    }
-    
+  getPaqueteDetalles(paquete) {
     const paquetesInfo = {
       basico: {
         nombre: "Paquete Básico",
@@ -170,24 +138,69 @@ export class Evento {
         ]
       }
     };
-    
-    return paquetesInfo[this.paquete] || null;
+    return paquetesInfo[paquete] || null;
   }
 
-  getInvitadosActivos() {
-    return this.invitados.filter(invitado => invitado.estado !== 'rechazado');
+  calcularFechaLimite(paquete) {
+    const fecha = new Date(this.fechaEvento || new Date());
+    const dias = {
+      basico: 1,
+      estandar: 2,
+      premium: 3,
+      empresarial: 7
+    };
+    const diasAgregar = dias[paquete] || 1;
+    fecha.setDate(fecha.getDate() + diasAgregar);
+    return fecha;
+  }
+
+  generarCodigoAcceso() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let codigo = '';
+    for (let i = 0; i < 8; i++) {
+      codigo += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return codigo;
+  }
+
+  // ============================================
+  // 🔥 MÉTODOS PARA IMÁGENES DEL EVENTO
+  // ============================================
+  addEventImage(imageData) {
+    this.eventImages.push(imageData);
+    this.updatedAt = new Date();
+  }
+
+  removeEventImage(index) {
+    this.eventImages.splice(index, 1);
+    this.updatedAt = new Date();
+  }
+
+  getEventImages() {
+    return this.eventImages || [];
+  }
+
+  getEventImagesByType(type) {
+    return this.eventImages.filter(img => img.type === type);
   }
 
   getTotalInvitadosConfirmados() {
-    return this.invitados.filter(invitado => invitado.estado === 'confirmado').length;
+    return this.invitados.filter(i => i.estado === 'confirmado').length;
   }
 
   isActive() {
     return this.estado === 'active';
   }
 
-  isExpired() {
-    if (!this.fechaLimite) return false;
-    return new Date() > new Date(this.fechaLimite);
+  isCompleted() {
+    return this.estado === 'completed';
+  }
+
+  isPending() {
+    return this.estado === 'pending';
+  }
+
+  isCancelled() {
+    return this.estado === 'cancelled';
   }
 }

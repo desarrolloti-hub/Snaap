@@ -34,8 +34,8 @@ class QrService {
                 hostName: this.usuarioActual.displayName || this.usuarioActual.email,
                 fechaGeneracion: new Date().toISOString(),
                 ...data,
-                // 🔥 URL para acceder al evento
-                url: `${window.location.origin}/event/${eventoId}`,
+                // 🔥 URL PARA ACCEDER AL EVENTO - REDIRIGE A user/home CON eventId
+                url: `${window.location.origin}/user/home?eventId=${eventoId}`,
                 // 🔥 Token único para validación
                 token: this.generateToken()
             };

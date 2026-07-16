@@ -1,6 +1,7 @@
 // src/modules/user/homeUser/homeUserController.js
 import { userService } from '../../../services/userService.js';
 import { storageService } from '../../../services/storageService.js';
+import { eventService } from '../../../services/eventService.js';
 
 // ============================================
 // 🎮 CONTROLLER PRINCIPAL
@@ -9,6 +10,8 @@ class HomeUserController {
     constructor() {
         this.currentUser = null;
         this.userData = null;
+        this.eventoId = null;
+        this.eventoData = null;
         this.images = [];
         this.initialize();
     }
@@ -24,12 +27,59 @@ class HomeUserController {
                 return;
             }
 
+            // 🔥 OBTENER EVENTO ID DE LA URL
+            const urlParams = new URLSearchParams(window.location.search);
+            this.eventoId = urlParams.get('eventId');
+
+            console.log('🔍 Evento ID recibido:', this.eventoId);
+
+            if (!this.eventoId) {
+                this.showError('No se especificó un evento');
+                return;
+            }
+
+            // 🔥 CARGAR DATOS DEL EVENTO
+            await this.loadEventData();
             await this.loadUserData();
             this.setupEventListeners();
             await this.loadUserImages();
+            
+            // 🔥 MOSTRAR NOMBRE DEL EVENTO
+            this.updateEventHeader();
+
+            // 🔥 OCULTAR NAVBAR
+            this.hideNavbar();
+
         } catch (error) {
             console.error('Error initializing user home:', error);
-            alert('❌ Error al cargar la página');
+            this.showError('Error al cargar la página');
+        }
+    }
+
+    // ============================================
+    // 👁️ OCULTAR NAVBAR
+    // ============================================
+    hideNavbar() {
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
+            navbar.style.display = 'none';
+        }
+    }
+
+    // ============================================
+    // 📥 CARGAR DATOS DEL EVENTO
+    // ============================================
+    async loadEventData() {
+        try {
+            const result = await eventService.obtenerEventoPorId(this.eventoId);
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+            this.eventoData = result.evento;
+            console.log('📦 Evento cargado:', this.eventoData?.nombre);
+        } catch (error) {
+            console.error('Error loading event data:', error);
+            throw error;
         }
     }
 
@@ -44,6 +94,27 @@ class HomeUserController {
         } catch (error) {
             console.error('Error loading user data:', error);
             throw error;
+        }
+    }
+
+    // ============================================
+    // 🖼️ ACTUALIZAR HEADER CON NOMBRE DEL EVENTO
+    // ============================================
+    updateEventHeader() {
+        const headerTitle = document.querySelector('.user-home-header h1');
+        const headerSubtitle = document.querySelector('.user-home-header p');
+        const eventBadge = document.querySelector('.event-badge');
+        
+        if (headerTitle && this.eventoData) {
+            headerTitle.innerHTML = `<i class="fas fa-calendar-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
+        }
+        
+        if (headerSubtitle) {
+            headerSubtitle.innerHTML = `<i class="fas fa-camera"></i> Captura momentos, comparte dibujos y guarda recuerdos de este evento`;
+        }
+
+        if (eventBadge && this.eventoData) {
+            eventBadge.innerHTML = `<i class="fas fa-ticket-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
         }
     }
 
@@ -125,7 +196,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📤 SUBIR IMAGEN
+    // 📤 SUBIR IMAGEN - ASOCIADA AL EVENTO
     // ============================================
     async uploadImage(file, type) {
         try {
@@ -144,13 +215,17 @@ class HomeUserController {
                 return;
             }
 
-            const result = await storageService.subirImagen(file, `users/${this.currentUser.uid}/${type}`);
+            // 🔥 SUBIR A STORAGE CON RUTA DEL EVENTO
+            const path = `events/${this.eventoId}/images/${type}/${Date.now()}_${file.name}`;
+            const result = await storageService.subirImagen(file, path);
 
             if (!result.success) {
                 throw new Error(result.error);
             }
 
+            // 🔥 GUARDAR REFERENCIA ASOCIADA AL EVENTO
             await this.saveImageReference(result.url, type, file.name);
+
             await this.loadUserImages();
 
             this.showSuccess(`✅ ${type === 'photo' ? 'Foto' : 'Dibujo'} subido exitosamente`);
@@ -163,15 +238,17 @@ class HomeUserController {
     }
 
     // ============================================
-    // 💾 GUARDAR REFERENCIA
+    // 💾 GUARDAR REFERENCIA DE IMAGEN EN EL USUARIO
     // ============================================
     async saveImageReference(url, type, fileName) {
         try {
+            // 🔥 GUARDAR IMAGEN ASOCIADA AL EVENTO
             const images = this.userData.images || [];
             images.push({
                 url: url,
                 type: type,
                 fileName: fileName,
+                eventoId: this.eventoId,
                 date: new Date().toISOString()
             });
 
@@ -191,22 +268,24 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📋 CARGAR IMÁGENES
+    // 📋 CARGAR IMÁGENES DEL EVENTO
     // ============================================
     async loadUserImages() {
         const galleryGrid = document.getElementById('galleryGrid');
         if (!galleryGrid) return;
 
         try {
-            const images = this.userData.images || [];
+            // 🔥 FILTRAR IMÁGENES POR EVENTO
+            const allImages = this.userData.images || [];
+            const eventImages = allImages.filter(img => img.eventoId === this.eventoId);
 
-            if (images.length === 0) {
+            if (eventImages.length === 0) {
                 galleryGrid.innerHTML = this.getEmptyStateHTML();
                 return;
             }
 
-            this.images = images;
-            this.renderGallery(images);
+            this.images = eventImages;
+            this.renderGallery(eventImages);
         } catch (error) {
             console.error('Error loading images:', error);
             galleryGrid.innerHTML = `<p class="error-message">Error al cargar imágenes: ${error.message}</p>`;
@@ -224,7 +303,7 @@ class HomeUserController {
             <div class="gallery-item" data-index="${index}">
                 <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
                 <span class="gallery-type ${image.type}">
-                    ${image.type === 'photo' ? '📸' : '🎨'}
+                    ${image.type === 'photo' ? '<i class="fas fa-camera"></i>' : '<i class="fas fa-paint-brush"></i>'}
                 </span>
             </div>
         `).join('');
@@ -250,7 +329,7 @@ class HomeUserController {
         const modalDeleteBtn = document.getElementById('modalDeleteBtn');
 
         if (modalImage) modalImage.src = image.url;
-        if (modalDate) modalDate.textContent = `📅 ${new Date(image.date).toLocaleDateString('es-ES')} - ${image.type === 'photo' ? '📸 Foto' : '🎨 Dibujo'}`;
+        if (modalDate) modalDate.innerHTML = `<i class="fas fa-calendar-day"></i> ${new Date(image.date).toLocaleDateString('es-ES')} - ${image.type === 'photo' ? '<i class="fas fa-camera"></i> Foto' : '<i class="fas fa-paint-brush"></i> Dibujo'}`;
         if (modalDeleteBtn) modalDeleteBtn.dataset.index = index;
         if (modal) modal.style.display = 'flex';
     }
@@ -274,7 +353,15 @@ class HomeUserController {
             this.showLoading();
 
             const images = this.userData.images || [];
-            images.splice(index, 1);
+            // 🔥 ELIMINAR SOLO LA IMAGEN DEL EVENTO ACTUAL
+            const eventImages = images.filter(img => img.eventoId === this.eventoId);
+            const deletedImage = eventImages[index];
+            
+            // Encontrar y eliminar del array principal
+            const globalIndex = images.findIndex(img => img.url === deletedImage.url && img.eventoId === this.eventoId);
+            if (globalIndex !== -1) {
+                images.splice(globalIndex, 1);
+            }
 
             const result = await userService.actualizarPerfil({
                 images: images
@@ -323,8 +410,8 @@ class HomeUserController {
                     <circle cx="8.5" cy="8.5" r="1.5"/>
                     <path d="M21 15l-5-5L5 21"/>
                 </svg>
-                <h3>No tienes imágenes</h3>
-                <p>Captura una foto o sube un dibujo para comenzar</p>
+                <h3><i class="fas fa-image"></i> No hay imágenes en este evento</h3>
+                <p><i class="fas fa-camera"></i> Captura una foto o sube un dibujo para comenzar</p>
             </div>
         `;
     }

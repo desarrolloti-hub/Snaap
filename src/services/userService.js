@@ -10,9 +10,13 @@ import {
   updateProfile,
   signOut,
   sendPasswordResetEmail,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig.js';
+import { storageService } from './storageService.js';
 
 class UserService {
   constructor() {
@@ -434,6 +438,10 @@ class UserService {
       if (userData.status !== undefined) userDoc.status = userData.status;
       if (userData.department !== undefined) userDoc.department = userData.department;
       if (userData.notes !== undefined) userDoc.notes = userData.notes;
+      if (userData.location !== undefined) userDoc.location = userData.location;
+      if (userData.images !== undefined) userDoc.images = userData.images;
+      if (userData.savedEvents !== undefined) userDoc.savedEvents = userData.savedEvents;
+      if (userData.events !== undefined) userDoc.events = userData.events;
       userDoc.updatedAt = new Date();
 
       await userRepository.update(userDoc);
@@ -453,7 +461,286 @@ class UserService {
       };
     }
   }
+
+  // ============================================
+  // 🔍 OBTENER USUARIO POR UID 🔥 NUEVO
+  // ============================================
+  async obtenerUsuarioPorUid(uid) {
+    try {
+      console.log('🔍 Buscando usuario por UID:', uid);
+      
+      if (!uid) {
+        throw new Error('Se requiere el UID del usuario');
+      }
+
+      const user = await userRepository.getByUid(uid);
+      
+      if (!user) {
+        console.warn('⚠️ Usuario no encontrado para UID:', uid);
+        return {
+          success: false,
+          error: 'Usuario no encontrado'
+        };
+      }
+
+      console.log('✅ Usuario encontrado:', user.username);
+      
+      return {
+        success: true,
+        user: user
+      };
+    } catch (error) {
+      console.error('❌ Error al obtener usuario por UID:', error);
+      return {
+        success: false,
+        error: error.message || 'Error al obtener el usuario'
+      };
+    }
+  }
+
+  // ============================================
+  // 🖼️ ACTUALIZAR AVATAR 🔥 NUEVO
+  // ============================================
+  async actualizarAvatar(uid, file) {
+    try {
+      const user = await userRepository.getByUid(uid);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      const resultado = await storageService.subirImagen(file, 'avatars');
+      if (!resultado.success) {
+        throw new Error(resultado.error || 'Error al subir la imagen');
+      }
+
+      const updateResult = await this.actualizarPerfil({
+        photoURL: resultado.url
+      });
+
+      if (!updateResult.success) {
+        throw new Error(updateResult.error);
+      }
+
+      return {
+        success: true,
+        photoURL: resultado.url,
+        message: 'Avatar actualizado exitosamente'
+      };
+    } catch (error) {
+      console.error('Error al actualizar avatar:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 🔐 CAMBIAR CONTRASEÑA 🔥 NUEVO
+  // ============================================
+  async cambiarContrasena(currentPassword, newPassword) {
+    try {
+      const firebaseUser = auth.currentUser;
+      if (!firebaseUser) {
+        throw new Error('No hay usuario autenticado');
+      }
+
+      if (!currentPassword || !newPassword) {
+        throw new Error('Todos los campos son obligatorios');
+      }
+
+      if (newPassword.length < 6) {
+        throw new Error('La contraseña debe tener al menos 6 caracteres');
+      }
+
+      const credential = EmailAuthProvider.credential(
+        firebaseUser.email,
+        currentPassword
+      );
+      await reauthenticateWithCredential(firebaseUser, credential);
+
+      await updatePassword(firebaseUser, newPassword);
+
+      return {
+        success: true,
+        message: 'Contraseña actualizada exitosamente'
+      };
+    } catch (error) {
+      console.error('Error al cambiar contraseña:', error);
+      let mensaje = error.message;
+      
+      if (error.code === 'auth/wrong-password') {
+        mensaje = 'La contraseña actual es incorrecta';
+      } else if (error.code === 'auth/too-many-requests') {
+        mensaje = 'Demasiados intentos. Intenta más tarde';
+      } else if (error.code === 'auth/requires-recent-login') {
+        mensaje = 'Por seguridad, inicia sesión nuevamente antes de cambiar tu contraseña';
+      }
+      
+      return {
+        success: false,
+        error: mensaje
+      };
+    }
+  }
+
+  // ============================================
+  // 🗑️ ELIMINAR CUENTA 🔥 NUEVO
+  // ============================================
+  async eliminarCuenta(uid) {
+    try {
+      const user = await userRepository.getByUid(uid);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      if (user.photoURL && user.photoURL.startsWith('data:image')) {
+        console.log('🗑️ Eliminando avatar Base64 (no requiere acción)');
+      }
+
+      await userRepository.delete(uid);
+
+      await signOut(auth);
+      this.setUsuarioActual(null);
+
+      return {
+        success: true,
+        message: 'Cuenta eliminada exitosamente'
+      };
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 💾 GUARDAR EVENTO 🔥 NUEVO
+  // ============================================
+  async guardarEvento(uid, eventId) {
+    try {
+      const user = await userRepository.getByUid(uid);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      const savedEvents = user.savedEvents || [];
+      
+      if (!savedEvents.includes(eventId)) {
+        savedEvents.push(eventId);
+        await userRepository.updateField(uid, 'savedEvents', savedEvents);
+      }
+
+      return {
+        success: true,
+        savedEvents: savedEvents,
+        message: 'Evento guardado'
+      };
+    } catch (error) {
+      console.error('Error al guardar evento:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 💾 QUITAR EVENTO GUARDADO 🔥 NUEVO
+  // ============================================
+  async quitarEventoGuardado(uid, eventId) {
+    try {
+      const user = await userRepository.getByUid(uid);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      const savedEvents = (user.savedEvents || []).filter(id => id !== eventId);
+      await userRepository.updateField(uid, 'savedEvents', savedEvents);
+
+      return {
+        success: true,
+        savedEvents: savedEvents,
+        message: 'Evento eliminado de guardados'
+      };
+    } catch (error) {
+      console.error('Error al quitar evento guardado:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 📋 OBTENER EVENTOS DEL USUARIO 🔥 NUEVO
+  // ============================================
+  async obtenerEventosUsuario(uid) {
+    try {
+      const user = await userRepository.getByUid(uid);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+
+      return {
+        success: true,
+        events: user.events || [],
+        savedEvents: user.savedEvents || [],
+        eventsAttended: user.eventsAttended || 0,
+        eventsCreated: user.eventsCreated || 0
+      };
+    } catch (error) {
+      console.error('Error al obtener eventos del usuario:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 📋 OBTENER TODOS LOS USUARIOS 🔥 NUEVO
+  // ============================================
+  async obtenerTodosLosUsuarios() {
+    try {
+      const users = await userRepository.getAllUsers();
+      return {
+        success: true,
+        users: users
+      };
+    } catch (error) {
+      console.error('Error al obtener todos los usuarios:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
+  // 🔍 OBTENER USUARIO POR ID 🔥 NUEVO
+  // ============================================
+  async obtenerUsuarioPorId(id) {
+    try {
+      const user = await userRepository.getById(id);
+      if (!user) {
+        throw new Error('Usuario no encontrado');
+      }
+      return {
+        success: true,
+        user: user
+      };
+    } catch (error) {
+      console.error('Error al obtener usuario por ID:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
 }
 
-// ✅ EXPORTACIÓN CORRECTA - Asegúrate de que esto esté al final
+// ✅ EXPORTACIÓN CORRECTA
 export const userService = new UserService();

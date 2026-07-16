@@ -198,4 +198,8 @@ export class User {
   getImagesByType(type) {
     return this.images.filter(img => img.type === type);
   }
+
+  getImagesByEvent(eventId) {
+    return this.images.filter(img => img.eventoId === eventId);
+  }
 }

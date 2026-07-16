@@ -81,6 +81,16 @@ export const routes = {
     },
 
     // ============================================
+    // 🔥 RUTA DEL EVENTO (para el QR)
+    // ============================================
+    "/event/:id": {
+        view: "/public/modules/user/homeUser/homeUser.html",
+        controller: initHomeUserController,
+        title: 'Evento - Snaap',
+        roles: ['user', 'host', 'sysadmin']
+    },
+
+    // ============================================
     // 🎤 RUTAS DE HOST
     // ============================================
     "/host": {

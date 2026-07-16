@@ -5,7 +5,8 @@ import {
   getDownloadURL, 
   deleteObject,
   listAll,
-  getMetadata
+  getMetadata,
+  uploadBytes  // 🔥 AGREGAR ESTO
 } from 'firebase/storage';
 
 class StorageService {
@@ -152,6 +153,55 @@ class StorageService {
   }
 
   // ============================================
+  // 🗑️ ELIMINAR IMAGEN POR URL
+  // ============================================
+  async eliminarImagenPorUrl(url) {
+    try {
+      if (!url) {
+        console.warn('⚠️ No se proporcionó URL para eliminar');
+        return {
+          success: true,
+          message: 'No hay imagen para eliminar'
+        };
+      }
+
+      // Si es Base64, solo lo ignoramos
+      if (url.startsWith('data:image')) {
+        console.log(`✅ Imagen Base64 eliminada (virtual): ${url.substring(0, 50)}...`);
+        return {
+          success: true,
+          message: 'Imagen eliminada correctamente'
+        };
+      }
+
+      // Si es URL de Storage, extraer path
+      if (url.includes('firebasestorage.googleapis.com')) {
+        try {
+          const decodedUrl = decodeURIComponent(url);
+          const match = decodedUrl.match(/\/o\/(.+?)\?/);
+          if (match && match[1]) {
+            const path = match[1];
+            return await this.eliminarImagen(path);
+          }
+        } catch (error) {
+          console.error('Error al extraer path de URL:', error);
+        }
+      }
+
+      return {
+        success: true,
+        message: 'No se pudo eliminar la imagen, pero continuamos'
+      };
+    } catch (error) {
+      console.error('Error al eliminar imagen por URL:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  // ============================================
   // 📋 LISTAR IMÁGENES
   // ============================================
   async listarImagenes(carpeta) {
@@ -193,7 +243,6 @@ class StorageService {
   // 🔄 MIGRAR IMAGEN DE URL A STORAGE (DESACTIVADO)
   // ============================================
   async migrarImagenDesdeUrl(urlImagen, carpeta = 'general', nombrePersonalizado = null) {
-    // 🔥 DESACTIVADO - Usamos Base64
     console.warn('⚠️ Migración desactivada. Usando Base64.');
     return {
       success: false,

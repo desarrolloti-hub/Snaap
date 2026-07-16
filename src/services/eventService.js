@@ -12,7 +12,7 @@ class EventoService {
   }
 
   // ============================================
-  // 🔥 CREAR EVENTO (YA ESTÁ CORRECTO)
+  // 🔥 CREAR EVENTO
   // ============================================
   async crearEvento(eventoData) {
     try {
@@ -76,7 +76,7 @@ class EventoService {
   }
 
   // ============================================
-  // 🔥 OBTENER EVENTO POR ID (NUEVO MÉTODO)
+  // 🔥 OBTENER EVENTO POR ID
   // ============================================
   async obtenerEventoPorId(id) {
     try {
