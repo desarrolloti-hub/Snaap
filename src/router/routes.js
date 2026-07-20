@@ -34,6 +34,11 @@ import { initHomeUserController } from '../modules/user/homeUser/homeUserControl
 import { initGalleryUserController } from '../modules/user/galleryUser/galleryUserController.js';
 
 // ============================================
+// 🔥 IMPORTS DE EVENTO EN VIVO
+// ============================================
+import { initLiveEventController } from '../modules/host/liveEvent/liveEventController.js';
+
+// ============================================
 // 🗺️ CONFIGURACIÓN DE RUTAS
 // ============================================
 export const routes = {
@@ -124,6 +129,13 @@ export const routes = {
         view: "/public/modules/host/eventDetails/eventDetails.html",
         controller: eventDetailsController,
         title: 'Detalles del Evento - Snaap Host',
+        roles: ['host', 'sysadmin']
+    },
+    // 🔥 NUEVA RUTA: EVENTO EN VIVO
+    "/host/live-event": {
+        view: "/public/modules/host/liveEvent/liveEvent.html",
+        controller: initLiveEventController,
+        title: 'Evento en Vivo - Snaap',
         roles: ['host', 'sysadmin']
     },
     "/host/profile": {

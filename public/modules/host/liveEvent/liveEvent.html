@@ -1,0 +1,100 @@
+<!-- public/modules/host/liveEvent/liveEvent.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evento en Vivo - Snaap</title>
+    <link rel="stylesheet" href="/src/css/main.css">
+    <link rel="stylesheet" href="/src/css/components/liveEvent.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <nav id="navbar"></nav>
+
+        <main class="live-event-container">
+            <!-- ========================================== -->
+            <!-- HEADER -->
+            <!-- ========================================== -->
+            <section class="live-event-header">
+                <div class="header-top">
+                    <button class="btn-back" id="btnBack">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <h1><i class="fas fa-broadcast-tower"></i> Evento en Vivo</h1>
+                    <div class="live-status">
+                        <span class="live-dot"></span>
+                        <span class="live-text">EN VIVO</span>
+                    </div>
+                </div>
+                <h2 id="eventTitle">Cargando evento...</h2>
+                <div class="event-stats">
+                    <span id="photoCount"><i class="fas fa-images"></i> 0 fotos</span>
+                    <span id="userCount"><i class="fas fa-users"></i> 0 usuarios</span>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- CONTROLES -->
+            <!-- ========================================== -->
+            <section class="live-controls">
+                <button class="btn-snaap" id="refreshBtn">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+                <button class="btn-snaap-secondary" id="autoRefreshBtn">
+                    <i class="fas fa-play"></i> Auto-refresh
+                </button>
+                <span class="refresh-info" id="refreshInfo">Actualización automática activada</span>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- GALERÍA DE FOTOS EN VIVO -->
+            <!-- ========================================== -->
+            <section class="live-gallery">
+                <div class="gallery-grid" id="galleryGrid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p><i class="fas fa-spinner fa-spin"></i> Cargando fotos del evento...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- EMPTY STATE -->
+            <!-- ========================================== -->
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <i class="fas fa-camera"></i>
+                <h3>No hay fotos aún</h3>
+                <p>Comparte el código QR con tus invitados para que empiecen a subir fotos</p>
+                <button class="btn-snaap" id="shareQrBtn">
+                    <i class="fas fa-share-alt"></i> Compartir QR
+                </button>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- FOOTER -->
+            <!-- ========================================== -->
+            <div class="live-footer">
+                <p><i class="fas fa-info-circle"></i> Las fotos se actualizan automáticamente</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PARA VER IMAGEN -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="imageModal" style="display:none;">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+            <img id="modalImage" src="" alt="Imagen">
+            <div class="modal-info">
+                <p id="modalDate"><i class="fas fa-calendar-day"></i> Fecha</p>
+                <span id="modalUser"><i class="fas fa-user"></i> Usuario</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/host/liveEvent/liveEventController.js"></script>
+</body>
+</html>

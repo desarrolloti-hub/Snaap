@@ -3,7 +3,6 @@ import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
-
 // ============================================
 // 🎮 CONTROLLER PRINCIPAL
 // ============================================
@@ -163,7 +162,6 @@ class HomeUserController {
     // 📸 TOMAR FOTO
     // ============================================
     async handleTakePhoto() {
-        // 🔥 SOLICITAR PERMISO DE CÁMARA
         const result = await Swal.fire({
             title: '📸 ¿Usar la cámara?',
             text: 'Snaap necesita acceder a tu cámara para tomar fotos',
@@ -201,7 +199,6 @@ class HomeUserController {
     // 🖼️ ABRIR GALERÍA DEL DISPOSITIVO
     // ============================================
     async handleOpenGallery() {
-        // 🔥 SOLICITAR PERMISO DE GALERÍA
         const result = await Swal.fire({
             title: '🖼️ ¿Abrir galería?',
             text: 'Snaap necesita acceder a tu galería para seleccionar fotos',
@@ -300,7 +297,7 @@ class HomeUserController {
             const eventImages = allImages.filter(img => img.eventoId === this.eventoId);
 
             this.images = eventImages;
-            this.previewImages = eventImages.slice(0, 12); // Máximo 12 en vista previa
+            this.previewImages = eventImages.slice(0, 12);
             
             this.renderPreview();
             
@@ -346,7 +343,6 @@ class HomeUserController {
             </div>
         `).join('');
 
-        // Click en preview abre la galería completa
         previewGrid.querySelectorAll('.preview-item').forEach(item => {
             item.addEventListener('click', () => {
                 this.showFullGallery();
@@ -355,7 +351,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🖼️ ABRIR GALERÍA COMPLETA
+    // 🖼️ ABRIR GALERÍA COMPLETA EN MODAL
     // ============================================
     async showFullGallery() {
         const result = await Swal.fire({
@@ -367,14 +363,12 @@ class HomeUserController {
             showCancelButton: true,
             cancelButtonText: 'Ver todas en galería',
             preConfirm: () => {
-                // Navegar a la galería completa
                 window.location.href = `/user/gallery?eventId=${this.eventoId}`;
+                return false;
             }
         });
 
-        if (result.isConfirmed) {
-            // Cerrar modal
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
+        if (result.dismiss === Swal.DismissReason.cancel) {
             window.location.href = `/user/gallery?eventId=${this.eventoId}`;
         }
     }
@@ -441,7 +435,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🎨 DIBUJO (modal)
+    // 🎨 DIBUJO
     // ============================================
     openDrawingModal() {
         const modal = document.getElementById('drawingModal');

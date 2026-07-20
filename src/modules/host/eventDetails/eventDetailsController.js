@@ -290,6 +290,15 @@ const goToEdit = () => {
 };
 
 // ============================================
+// 📺 IR A EVENTO EN VIVO (NUEVO)
+// ============================================
+const goToLiveEvent = () => {
+    if (currentEvent) {
+        window.location.href = `/host/live-event?id=${currentEvent.id}`;
+    }
+};
+
+// ============================================
 // 🚀 CONTROLADOR PRINCIPAL
 // ============================================
 export async function eventDetailsController() {
@@ -363,6 +372,12 @@ export async function eventDetailsController() {
         const btnEditar = document.getElementById('btnEditar');
         if (btnEditar) {
             btnEditar.addEventListener('click', goToEdit);
+        }
+
+        // 🔥 NUEVO: CONFIGURAR BOTÓN DE EVENTO EN VIVO
+        const btnLiveEvent = document.getElementById('btnLiveEvent');
+        if (btnLiveEvent) {
+            btnLiveEvent.addEventListener('click', goToLiveEvent);
         }
         
         console.log('✅ EventDetails Controller finalizado');

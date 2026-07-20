@@ -145,6 +145,7 @@
     margin-top: 10px;
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .btn-edit {
@@ -180,7 +181,42 @@
 }
 
 /* ========================================== */
-/* 🔥 SECCIÓN QR - NUEVA */
+/* 🔥 BOTÓN "VER EN VIVO" - NUEVO */
+/* ========================================== */
+.btn-live {
+    background: transparent;
+    border: 2px solid #ff007a;
+    border-radius: 50px;
+    padding: 12px 28px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(255, 0, 122, 0.5);
+}
+
+.btn-live i {
+    color: #ff007a;
+    transition: all 0.3s ease;
+}
+
+.btn-live:hover {
+    background: rgba(255, 0, 122, 0.15);
+    border-color: #ff007a;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.6);
+}
+
+.btn-live:hover i {
+    color: #ff007a;
+}
+
+/* ========================================== */
+/* SECCIÓN QR */
 /* ========================================== */
 .qr-section {
     background: rgba(10, 10, 20, 0.6);
@@ -339,7 +375,9 @@
     to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+/* ========================================== */
+/* RESPONSIVE */
+/* ========================================== */
 @media (max-width: 768px) {
     .event-details-container {
         padding: 100px 20px 20px 20px;
@@ -396,5 +434,16 @@
 
     .qr-actions .btn-snaap-small {
         width: 100%;
+    }
+
+    .details-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .details-actions .btn-edit,
+    .details-actions .btn-live {
+        width: 100%;
+        justify-content: center;
     }
 }
