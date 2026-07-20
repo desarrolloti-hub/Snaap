@@ -28,9 +28,10 @@ import { profileEditController as profileAdminEditController } from '../modules/
 import { carouselAdminController } from '../modules/sysadmin/carouselAdmin/carouselAdminController.js';
 
 // ============================================
-// 🔥 IMPORT DE USUARIO
+// 🔥 IMPORTS DE USUARIO
 // ============================================
 import { initHomeUserController } from '../modules/user/homeUser/homeUserController.js';
+import { initGalleryUserController } from '../modules/user/galleryUser/galleryUserController.js';
 
 // ============================================
 // 🗺️ CONFIGURACIÓN DE RUTAS
@@ -71,22 +72,18 @@ export const routes = {
     },
 
     // ============================================
-    // 👤 RUTAS DE USUARIO
+    // 👤 RUTAS DE USUARIO (INVITADO)
     // ============================================
     "/user/home": {
         view: "/public/modules/user/homeUser/homeUser.html",
         controller: initHomeUserController,
-        title: 'Inicio - Snaap',
+        title: 'Evento - Snaap',
         roles: ['user', 'host', 'sysadmin']
     },
-
-    // ============================================
-    // 🔥 RUTA DEL EVENTO (para el QR)
-    // ============================================
-    "/event/:id": {
-        view: "/public/modules/user/homeUser/homeUser.html",
-        controller: initHomeUserController,
-        title: 'Evento - Snaap',
+    "/user/gallery": {
+        view: "/public/modules/user/galleryUser/galleryUser.html",
+        controller: initGalleryUserController,
+        title: 'Mi Galería - Snaap',
         roles: ['user', 'host', 'sysadmin']
     },
 
@@ -234,9 +231,9 @@ export const routes = {
 export function getRoutesByRole(role) {
     const allRoutes = Object.keys(routes);
     const routePermissions = {
-        'user': ['/', '/nosotros', '/paquetes', '/terms', '/user/home'],
-        'host': ['/', '/nosotros', '/paquetes', '/terms', '/host', '/host/*', '/user/home'],
-        'sysadmin': ['/', '/nosotros', '/paquetes', '/terms', '/sysadmin/*', '/host/*', '/user/home'],
+        'user': ['/', '/nosotros', '/paquetes', '/terms', '/user/home', '/user/gallery'],
+        'host': ['/', '/nosotros', '/paquetes', '/terms', '/host', '/host/*', '/user/home', '/user/gallery'],
+        'sysadmin': ['/', '/nosotros', '/paquetes', '/terms', '/sysadmin/*', '/host/*', '/user/home', '/user/gallery'],
     };
     
     const allowed = routePermissions[role] || [];

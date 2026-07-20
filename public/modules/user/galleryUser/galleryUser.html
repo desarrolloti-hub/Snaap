@@ -1,0 +1,82 @@
+<!-- public/modules/user/galleryUser/galleryUser.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Galería - Snaap</title>
+    <link rel="stylesheet" href="/src/css/main.css">
+    <link rel="stylesheet" href="/src/css/components/galleryUser.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <nav id="navbar"></nav>
+
+        <main class="gallery-user-container">
+            <!-- ========================================== -->
+            <!-- HEADER -->
+            <!-- ========================================== -->
+            <section class="gallery-header">
+                <div class="gallery-header-top">
+                    <button class="btn-back" id="btnBack">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                    <h1><i class="fas fa-images"></i> Mi Galería</h1>
+                </div>
+                <p class="gallery-subtitle">Todas tus fotos y dibujos guardados</p>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- FILTROS -->
+            <!-- ========================================== -->
+            <section class="gallery-filters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th"></i> Todas
+                </button>
+                <button class="filter-btn" data-filter="photo">
+                    <i class="fas fa-camera"></i> Fotos
+                </button>
+                <button class="filter-btn" data-filter="drawing">
+                    <i class="fas fa-paint-brush"></i> Dibujos
+                </button>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- GALERÍA -->
+            <!-- ========================================== -->
+            <section class="gallery-grid-container">
+                <div id="galleryGrid" class="gallery-grid">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p><i class="fas fa-spinner fa-spin"></i> Cargando imágenes...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================== -->
+            <!-- CONTADOR -->
+            <!-- ========================================== -->
+            <div class="gallery-footer">
+                <p id="imageCounter">0 imágenes</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL PARA VER IMAGEN -->
+    <!-- ========================================== -->
+    <div class="modal-overlay" id="imageModal" style="display:none;">
+        <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
+            <img id="modalImage" src="" alt="Imagen">
+            <div class="modal-info">
+                <p id="modalDate"><i class="fas fa-calendar-day"></i> Fecha</p>
+                <button class="btn-danger-small" id="modalDeleteBtn"><i class="fas fa-trash-alt"></i> Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/user/galleryUser/galleryUserController.js"></script>
+</body>
+</html>

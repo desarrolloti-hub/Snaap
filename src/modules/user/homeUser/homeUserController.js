@@ -144,19 +144,10 @@ class HomeUserController {
             uploadDrawingBtn.addEventListener('click', this.openDrawingModal.bind(this));
         }
 
-        // 🔥 BOTÓN 3: MIS FOTOS (GALERÍA DEL TELÉFONO) - CORREGIDO
-        const openGalleryBtn = document.getElementById('openGalleryBtn');
-        const galleryInput = document.getElementById('galleryFileInput');
-        
-        if (openGalleryBtn && galleryInput) {
-            openGalleryBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🖼️ Abriendo galería...');
-                galleryInput.click();
-            });
-            
-            galleryInput.addEventListener('change', this.handleGalleryUpload.bind(this));
+        // 🔥 BOTÓN 3: MIS FOTOS (IR A GALERÍA DEL USUARIO)
+        const viewPhotosBtn = document.getElementById('viewPhotosBtn');
+        if (viewPhotosBtn) {
+            viewPhotosBtn.addEventListener('click', this.handleOpenGallery.bind(this));
         }
 
         // 🔥 MODAL DE DIBUJO
@@ -211,6 +202,14 @@ class HomeUserController {
                 this.initCanvas();
             }, 100);
         }
+    }
+
+    // ============================================
+    // 🖼️ BOTÓN 3: MIS FOTOS (REDIRIGIR A GALERÍA)
+    // ============================================
+    handleOpenGallery() {
+        console.log('🖼️ Abriendo galería del usuario...');
+        window.location.href = '/user/gallery';
     }
 
     // ============================================
@@ -404,37 +403,6 @@ class HomeUserController {
         if (modal) {
             modal.style.display = 'none';
         }
-    }
-
-    // ============================================
-    // 🖼️ MANEJAR SUBIDA DESDE GALERÍA
-    // ============================================
-    async handleGalleryUpload(e) {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-        
-        console.log(`🖼️ ${files.length} imágenes seleccionadas`);
-        
-        let successCount = 0;
-        let errorCount = 0;
-        
-        for (const file of files) {
-            const result = await this.uploadImage(file, 'photo');
-            if (result) {
-                successCount++;
-            } else {
-                errorCount++;
-            }
-        }
-        
-        if (successCount > 0) {
-            this.showSuccess(`✅ ${successCount} imagen(es) subida(s) exitosamente`);
-        }
-        if (errorCount > 0) {
-            this.showError(`❌ ${errorCount} imagen(es) no pudieron subirse`);
-        }
-        
-        e.target.value = '';
     }
 
     // ============================================
