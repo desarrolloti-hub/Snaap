@@ -9,6 +9,7 @@ let navbarInitialized = false;
 // ============================================
 const HIDDEN_NAVBAR_ROUTES = [
     '/user/home',
+    '/user/gallery',
     '/user/scan',
     '/event'
 ];
@@ -18,28 +19,32 @@ const HIDDEN_NAVBAR_ROUTES = [
 // ============================================
 function shouldHideNavbar() {
     const currentPath = window.location.pathname;
+    console.log('🔍 Verificando navbar para ruta:', currentPath);
     
     // Verificar rutas exactas
     if (HIDDEN_NAVBAR_ROUTES.includes(currentPath)) {
+        console.log('✅ Navbar oculto (ruta exacta)');
         return true;
     }
     
     // Verificar rutas con parámetros (ej: /event/:id)
     for (const route of HIDDEN_NAVBAR_ROUTES) {
         if (route.includes(':')) {
-            // Convertir /event/:id a regex: /^\/event\/[^/]+$/
             const pattern = route.replace(/:\w+/g, '[^/]+');
             const regex = new RegExp(`^${pattern}$`);
             if (regex.test(currentPath)) {
+                console.log('✅ Navbar oculto (ruta con parámetro)');
                 return true;
             }
         }
         // Verificar si la ruta actual comienza con la ruta base
         if (currentPath.startsWith(route) && route !== '/') {
+            console.log('✅ Navbar oculto (ruta base)');
             return true;
         }
     }
     
+    console.log('❌ Navbar visible');
     return false;
 }
 
@@ -188,7 +193,7 @@ function updateNavbarVisibility() {
         const navbar = document.getElementById('snaapNavbar');
         if (navbar) {
             navbar.style.display = 'none';
-            console.log('✅ Navbar oculto en vista de usuario');
+            console.log('✅ Navbar oculto');
         }
         const navbarContainer = document.getElementById('navbar-container');
         if (navbarContainer) {
