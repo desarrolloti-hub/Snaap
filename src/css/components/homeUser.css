@@ -712,3 +712,128 @@
         height: auto !important;
     }
 }
+/* src/css/modules/homeUser.css */
+
+/* ============================================ */
+/* 🔥 VISTA PREVIA DE FOTOS */
+/* ============================================ */
+.user-home-preview {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(10, 10, 20, 0.4);
+    border-radius: 16px;
+    border: 1px solid rgba(77, 184, 255, 0.1);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.preview-header h3 {
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.preview-header h3 i {
+    color: #4db8ff;
+    margin-right: 8px;
+}
+
+.preview-header span {
+    background: rgba(77, 184, 255, 0.2);
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    color: #4db8ff;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.preview-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(77, 184, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.preview-item:hover {
+    transform: scale(1.05);
+    border-color: rgba(77, 184, 255, 0.3);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-type {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 0.6rem;
+}
+
+.preview-more {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.empty-preview {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.empty-preview i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.empty-preview p {
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ============================================ */
+/* RESPONSIVE - VISTA PREVIA */
+/* ============================================ */
+@media (max-width: 768px) {
+    .preview-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .preview-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

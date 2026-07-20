@@ -11,7 +11,6 @@
 </head>
 <body>
     <div id="app">
-        <!-- Navbar se inyecta aquí -->
         <nav id="navbar"></nav>
 
         <main class="user-home-container" id="userHomeContainer">
@@ -20,7 +19,7 @@
             <!-- ========================================== -->
             <section class="user-home-header">
                 <h1><i class="fas fa-calendar-alt"></i> Cargando evento...</h1>
-                <p><i class="fas fa-camera"></i> Captura momentos, comparte dibujos y guarda recuerdos de este evento</p>
+                <p><i class="fas fa-camera"></i> Captura momentos, comparte dibujos y guarda recuerdos</p>
                 <div class="event-info">
                     <span class="event-badge"><i class="fas fa-ticket-alt"></i> Cargando...</span>
                 </div>
@@ -46,7 +45,7 @@
                     <button class="btn-action"><i class="fas fa-paint-brush"></i> Abrir dibujo</button>
                 </div>
 
-                <!-- Botón 3: Mis Fotos (Galería del teléfono) -->
+                <!-- Botón 3: Mis Fotos (Galería del dispositivo) -->
                 <div class="action-card" id="viewPhotosBtn">
                     <div class="action-icon"><i class="fas fa-images"></i></div>
                     <h3>Mis Fotos</h3>
@@ -59,14 +58,18 @@
             </section>
 
             <!-- ========================================== -->
-            <!-- GALERÍA DE FOTOS -->
+            <!-- 🔥 VISTA PREVIA DE FOTOS SUBIDAS -->
             <!-- ========================================== -->
-            <section class="user-home-gallery" id="gallerySection" style="display:none;">
-                <h2><i class="fas fa-images"></i> Mi Galería</h2>
-                <div class="gallery-grid" id="galleryGrid">
-                    <div class="loading-spinner">
-                        <div class="spinner"></div>
-                        <p><i class="fas fa-spinner fa-spin"></i> Cargando imágenes...</p>
+            <section class="user-home-preview" id="previewSection">
+                <div class="preview-header">
+                    <h3><i class="fas fa-images"></i> Tus fotos</h3>
+                    <span id="photoCount">0</span>
+                </div>
+                <div class="preview-grid" id="previewGrid">
+                    <!-- Las imágenes se renderizan desde JavaScript -->
+                    <div class="empty-preview">
+                        <i class="fas fa-camera"></i>
+                        <p>No has subido fotos aún</p>
                     </div>
                 </div>
             </section>
@@ -78,7 +81,6 @@
     <!-- ========================================== -->
     <div class="drawing-modal-overlay" id="drawingModal" style="display:none;">
         <div class="drawing-modal-content">
-            <!-- Header del modal -->
             <div class="drawing-modal-header">
                 <h2><i class="fas fa-paint-brush"></i> Dibujar</h2>
                 <button class="drawing-modal-close" id="drawingModalClose">
@@ -86,7 +88,6 @@
                 </button>
             </div>
 
-            <!-- Barra de herramientas -->
             <div class="drawing-toolbar">
                 <div class="tool-group">
                     <button class="tool-btn active" data-tool="pen" title="Lápiz">
@@ -99,14 +100,12 @@
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
-
                 <div class="tool-group">
                     <label class="color-label">
                         <span>Color:</span>
                         <input type="color" id="drawingColor" value="#4db8ff">
                     </label>
                 </div>
-
                 <div class="tool-group">
                     <label class="size-label">
                         <span>Tamaño:</span>
@@ -116,12 +115,10 @@
                 </div>
             </div>
 
-            <!-- Canvas para dibujar -->
             <div class="drawing-canvas-wrapper">
                 <canvas id="drawingCanvas"></canvas>
             </div>
 
-            <!-- Botones de acción -->
             <div class="drawing-actions">
                 <button class="btn-snaap" id="saveDrawingBtn">
                     <i class="fas fa-save"></i> Guardar Dibujo
@@ -129,20 +126,6 @@
                 <button class="btn-snaap-secondary" id="cancelDrawingBtn">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODAL PARA VER IMAGEN -->
-    <!-- ========================================== -->
-    <div class="modal-overlay" id="imageModal" style="display:none;">
-        <div class="modal-content">
-            <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
-            <img id="modalImage" src="" alt="Imagen">
-            <div class="modal-info">
-                <p id="modalDate"><i class="fas fa-calendar-day"></i> Fecha</p>
-                <button class="btn-danger-small" id="modalDeleteBtn"><i class="fas fa-trash-alt"></i> Eliminar</button>
             </div>
         </div>
     </div>
