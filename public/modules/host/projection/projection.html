@@ -1,0 +1,43 @@
+<!-- public/modules/host/projection/projection.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyección - Snaap</title>
+    <link rel="stylesheet" href="/src/css/main.css">
+    <link rel="stylesheet" href="/src/css/components/projection.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav id="navbar" style="display:none !important;"></nav>
+
+    <main class="projection-container" id="projectionContainer">
+        <!-- ========================================== -->
+        <!-- CONTENEDOR DE IMAGEN -->
+        <!-- ========================================== -->
+        <div class="projection-slide" id="slideContainer">
+            <img id="slideImage" src="" alt="Foto del evento">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- EMPTY STATE -->
+        <!-- ========================================== -->
+        <div class="projection-empty" id="emptyState">
+            <i class="fas fa-camera"></i>
+            <h2>Esperando fotos...</h2>
+            <p>Las fotos aparecerán automáticamente cuando los invitados las suban</p>
+            <div class="spinner"></div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- BOTÓN SALIR -->
+        <!-- ========================================== -->
+        <button class="btn-exit" id="exitBtn">
+            <i class="fas fa-times"></i> Salir
+        </button>
+    </main>
+
+    <script type="module" src="/src/modules/host/projection/projectionController.js"></script>
+</body>
+</html>

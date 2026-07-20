@@ -3,7 +3,6 @@ import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
-
 // ============================================
 // 🎮 CONTROLADOR DE EVENTO EN VIVO
 // ============================================
@@ -15,7 +14,7 @@ class LiveEventController {
         this.images = [];
         this.autoRefresh = true;
         this.refreshInterval = null;
-        this.intervalTime = 5000; // 5 segundos
+        this.intervalTime = 5000;
         this.initialize();
     }
 
@@ -136,14 +135,12 @@ class LiveEventController {
             </div>
         `).join('');
 
-        // Eventos para abrir modal
         galleryGrid.querySelectorAll('.gallery-item').forEach((item, index) => {
             item.addEventListener('click', () => {
                 this.openModal(index);
             });
         });
 
-        // Animación de entrada para nuevas imágenes
         document.querySelectorAll('.gallery-item').forEach((item, i) => {
             item.style.animation = `fadeInUp 0.3s ease forwards`;
             item.style.animationDelay = `${i * 0.05}s`;
@@ -161,7 +158,6 @@ class LiveEventController {
             photoCount.innerHTML = `<i class="fas fa-images"></i> ${this.images.length} fotos`;
         }
 
-        // Contar usuarios únicos
         const uniqueUsers = new Set();
         this.images.forEach(img => {
             if (img.userId) {
@@ -216,7 +212,6 @@ class LiveEventController {
     // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // Botón volver
         const btnBack = document.getElementById('btnBack');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
@@ -224,7 +219,6 @@ class LiveEventController {
             });
         }
 
-        // Botón actualizar manual
         const refreshBtn = document.getElementById('refreshBtn');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', async () => {
@@ -237,7 +231,6 @@ class LiveEventController {
             });
         }
 
-        // Botón auto-refresh
         const autoRefreshBtn = document.getElementById('autoRefreshBtn');
         if (autoRefreshBtn) {
             autoRefreshBtn.addEventListener('click', () => {
@@ -245,7 +238,6 @@ class LiveEventController {
             });
         }
 
-        // Botón compartir QR
         const shareQrBtn = document.getElementById('shareQrBtn');
         if (shareQrBtn) {
             shareQrBtn.addEventListener('click', () => {
@@ -255,7 +247,13 @@ class LiveEventController {
             });
         }
 
-        // Modal - Cerrar
+        const projectBtn = document.getElementById('projectBtn');
+        if (projectBtn) {
+            projectBtn.addEventListener('click', () => {
+                window.location.href = `/host/projection?id=${this.eventoId}`;
+            });
+        }
+
         const modalCloseBtn = document.getElementById('modalCloseBtn');
         const modalOverlay = document.getElementById('imageModal');
         if (modalCloseBtn) {
@@ -269,7 +267,6 @@ class LiveEventController {
             });
         }
 
-        // Tecla ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
@@ -341,9 +338,6 @@ class LiveEventController {
         return `Hace ${days} d`;
     }
 
-    // ============================================
-    // 📦 SWEETALERT UTILITIES
-    // ============================================
     showSuccess(message) {
         Swal.fire({
             title: 'Éxito',
