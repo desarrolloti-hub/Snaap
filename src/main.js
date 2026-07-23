@@ -3,6 +3,12 @@ import { initRouter } from './router/router.js';
 import { initNavbar } from './modules/shared/navbar/navbarController.js';
 import { initNotification } from './modules/shared/notification/notificationController.js';
 import { userService } from './services/userService.js';
+import { navigateOrHref } from './utils/navigation.js';
+
+// Registrar helper global window.go para compatibilidad con cambios masivos
+if (typeof window !== 'undefined' && !window.go) {
+    window.go = navigateOrHref;
+}
 
 // 🔥 Inicializar navbar unificado primero
 initNavbar();
