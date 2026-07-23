@@ -51,32 +51,32 @@ export const routes = {
     // 🏠 RUTAS PÚBLICAS
     // ============================================
     "/": {
-        view: "/public/modules/visitor/home/home.html",
+        view: "/modules/visitor/home/home.html",
         controller: homeController,
         title: 'Snaap - Eventos Interactivos'
     },
     "/nosotros": {
-        view: "/public/modules/visitor/aboutUs/aboutUs.html",
+        view: "/modules/visitor/aboutUs/aboutUs.html",
         controller: aboutUsController,
         title: 'Sobre Nosotros - Snaap'
     },
     "/login": {
-        view: "/public/modules/visitor/login/login.html",
+        view: "/modules/visitor/login/login.html",
         controller: loginController,
         title: 'Iniciar Sesión - Snaap'
     },
     "/register": {
-        view: "/public/modules/visitor/register/register.html",
+        view: "/modules/visitor/register/register.html",
         controller: registerController,
         title: 'Registrarse - Snaap'
     },
     "/paquetes": {
-        view: "/public/modules/visitor/packages/packages.html",
+        view: "/modules/visitor/packages/packages.html",
         controller: packagesController,
         title: 'Paquetes - Snaap'
     },
     "/terms": {
-        view: "/public/modules/visitor/terms/terms.html",
+        view: "/modules/visitor/terms/terms.html",
         controller: termsController,
         title: 'Términos y Condiciones - Snaap'
     },
@@ -85,13 +85,13 @@ export const routes = {
     // 👤 RUTAS DE USUARIO (INVITADO)
     // ============================================
     "/user/home": {
-        view: "/public/modules/user/homeUser/homeUser.html",
+        view: "/modules/user/homeUser/homeUser.html",
         controller: initHomeUserController,
         title: 'Evento - Snaap',
         roles: ['user', 'host', 'sysadmin']
     },
     "/user/gallery": {
-        view: "/public/modules/user/galleryUser/galleryUser.html",
+        view: "/modules/user/galleryUser/galleryUser.html",
         controller: initGalleryUserController,
         title: 'Mi Galería - Snaap',
         roles: ['user', 'host', 'sysadmin']
@@ -101,61 +101,61 @@ export const routes = {
     // 🎤 RUTAS DE HOST
     // ============================================
     "/host": {
-        view: "/public/modules/host/homeHost/homeHost.html",
+        view: "/modules/host/homeHost/homeHost.html",
         controller: homeHostController,
         title: 'Dashboard - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/create-event": {
-        view: "/public/modules/host/createEvent/createEvent.html",
+        view: "/modules/host/createEvent/createEvent.html",
         controller: initCreateEvent,
         title: 'Crear Evento - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/events": {
-        view: "/public/modules/host/carroucelEvents/carroucelEvents.html",
+        view: "/modules/host/carroucelEvents/carroucelEvents.html",
         controller: carroucelEventsController,
         title: 'Mis Eventos - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/event-crud": {
-        view: "/public/modules/host/eventCrud/eventCrud.html",
+        view: "/modules/host/eventCrud/eventCrud.html",
         controller: eventCrudController,
         title: 'Gestionar Eventos - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/event-edit": {
-        view: "/public/modules/host/eventEditForm/eventEditForm.html",
+        view: "/modules/host/eventEditForm/eventEditForm.html",
         controller: eventEditFormController,
         title: 'Editar Evento - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/event-details": {
-        view: "/public/modules/host/eventDetails/eventDetails.html",
+        view: "/modules/host/eventDetails/eventDetails.html",
         controller: eventDetailsController,
         title: 'Detalles del Evento - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/live-event": {
-        view: "/public/modules/host/liveEvent/liveEvent.html",
+        view: "/modules/host/liveEvent/liveEvent.html",
         controller: initLiveEventController,
         title: 'Evento en Vivo - Snaap',
         roles: ['host', 'sysadmin']
     },
     "/host/projection": {
-        view: "/public/modules/host/projection/projection.html",
+        view: "/modules/host/projection/projection.html",
         controller: initProjectionController,
         title: 'Proyección - Snaap',
         roles: ['host', 'sysadmin']
     },
     "/host/profile": {
-        view: "/public/modules/host/profile/profile.html",
+        view: "/modules/host/profile/profile.html",
         controller: profileController,
         title: 'Mi Perfil - Snaap Host',
         roles: ['host', 'sysadmin']
     },
     "/host/profile/edit": {
-        view: "/public/modules/host/profileEdit/profileEdit.html",
+        view: "/modules/host/profileEdit/profileEdit.html",
         controller: profileEditController,
         title: 'Editar Perfil - Snaap Host',
         roles: ['host', 'sysadmin']
@@ -165,73 +165,73 @@ export const routes = {
     // 👑 RUTAS DE SYSADMIN
     // ============================================
     "/sysadmin/home": {
-        view: "/public/modules/sysadmin/homeSysadmin/homeSysadmin.html",
+        view: "/modules/sysadmin/homeSysadmin/homeSysadmin.html",
         controller: homeSysadminController,
         title: 'Panel de Control - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/hosts": {
-        view: "/public/modules/sysadmin/crudHost/crudHost.html",
+        view: "/modules/sysadmin/crudHost/crudHost.html",
         controller: crudHostController,
         title: 'Gestionar Hosts - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/hosts/create": {
-        view: "/public/modules/sysadmin/hostForm/hostForm.html",
+        view: "/modules/sysadmin/hostForm/hostForm.html",
         controller: hostFormController,
         title: 'Crear Host - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/hosts/edit": {
-        view: "/public/modules/sysadmin/hostEdit/hostEdit.html",
+        view: "/modules/sysadmin/hostEdit/hostEdit.html",
         controller: hostEditController,
         title: 'Editar Host - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/host-details": {
-        view: "/public/modules/sysadmin/hostDetails/hostDetails.html",
+        view: "/modules/sysadmin/hostDetails/hostDetails.html",
         controller: hostDetailsController,
         title: 'Detalles del Host - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/admins": {
-        view: "/public/modules/sysadmin/crudAdmin/crudAdmin.html",
+        view: "/modules/sysadmin/crudAdmin/crudAdmin.html",
         controller: crudAdminController,
         title: 'Gestionar Administradores - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/admins/create": {
-        view: "/public/modules/sysadmin/adminForm/adminForm.html",
+        view: "/modules/sysadmin/adminForm/adminForm.html",
         controller: adminFormController,
         title: 'Crear Administrador - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/admins/edit": {
-        view: "/public/modules/sysadmin/adminEdit/adminEdit.html",
+        view: "/modules/sysadmin/adminEdit/adminEdit.html",
         controller: adminEditController,
         title: 'Editar Administrador - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/admin-details": {
-        view: "/public/modules/sysadmin/adminDetails/adminDetails.html",
+        view: "/modules/sysadmin/adminDetails/adminDetails.html",
         controller: adminDetailsController,
         title: 'Detalles del Administrador - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/profile": {
-        view: "/public/modules/sysadmin/profileAdmin/profileAdmin.html",
+        view: "/modules/sysadmin/profileAdmin/profileAdmin.html",
         controller: profileAdminController,
         title: 'Mi Perfil - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/profile/edit": {
-        view: "/public/modules/sysadmin/profileEdit/profileEdit.html",
+        view: "/modules/sysadmin/profileEdit/profileEdit.html",
         controller: profileAdminEditController,
         title: 'Editar Perfil - Snaap Admin',
         roles: ['sysadmin']
     },
     "/sysadmin/carousel": {
-        view: "/public/modules/sysadmin/carouselAdmin/carouselAdmin.html",
+        view: "/modules/sysadmin/carouselAdmin/carouselAdmin.html",
         controller: carouselAdminController,
         title: 'Gestionar Carrusel - Snaap Admin',
         roles: ['sysadmin']
@@ -241,7 +241,7 @@ export const routes = {
     // 🔴 ERROR
     // ============================================
     "/404": {
-        view: "/public/modules/shared/errors/404.html",
+        view: "/modules/shared/errors/404.html",
         controller: init404Controller,
         title: 'Página no encontrada - Snaap'
     },

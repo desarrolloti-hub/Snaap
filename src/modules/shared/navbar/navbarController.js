@@ -61,7 +61,7 @@ export async function initNavbar() {
     }
 
     try {
-        const response = await fetch('/public/modules/shared/navbar/navbar.html');
+        const response = await fetch('/modules/shared/navbar/navbar.html');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const html = await response.text();
         navbarContainer.innerHTML = html;

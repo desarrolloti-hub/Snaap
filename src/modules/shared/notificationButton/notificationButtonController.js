@@ -18,7 +18,7 @@ export async function initNotificationButton() {
 
     // 🔥 Cargar HTML
     try {
-        const response = await fetch('/public/modules/shared/notificationButton/notificationButton.html');
+        const response = await fetch('/modules/shared/notificationButton/notificationButton.html');
         if (!response.ok) throw new Error('Error al cargar el componente');
         const html = await response.text();
         container.innerHTML = html;
