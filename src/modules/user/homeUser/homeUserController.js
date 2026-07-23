@@ -654,12 +654,15 @@ class HomeUserController {
 // âœ… EXPORT
 // ============================================
 export function initHomeUserController() {
+    if (window.__homeUserControllerInitialized) return;
+    window.__homeUserControllerInitialized = true;
     new HomeUserController();
 }
 
 // ============================================
 // ðŸš€ INIT
 // ============================================
+// Initialize when DOM is ready, but avoid double-instantiation
 document.addEventListener('DOMContentLoaded', () => {
-    new HomeUserController();
+    initHomeUserController();
 });
