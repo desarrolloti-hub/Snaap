@@ -15,25 +15,17 @@ class CarouselService {
   // ============================================
   // 📥 OBTENER ITEMS ACTIVOS
   // ============================================
-
-
-async obtenerItemsActivos() {
+  async obtenerItemsActivos() {
     try {
-        // 🔥 OBTENER SOLO IMÁGENES ACTIVAS DE FIRESTORE
-        const items = await carouselRepository.getActiveItems();
-        console.log(`📊 ${items.length} imágenes activas obtenidas`);
-        return {
-            success: true,
-            items: items
-        };
+      const items = await carouselRepository.getActiveItems();
+      console.log(`📊 ${items.length} imágenes activas obtenidas`);
+      return { success: true, items: items };
     } catch (error) {
-        console.error('Error al obtener items activos:', error);
-        return {
-            success: false,
-            error: error.message
-        };
+      console.error('Error al obtener items activos:', error);
+      return { success: false, error: error.message };
     }
-}
+  }
+
   // ============================================
   // 📥 OBTENER TODOS LOS ITEMS (admin)
   // ============================================
@@ -43,16 +35,10 @@ async obtenerItemsActivos() {
         throw new Error('No tienes permisos para administrar el carrusel');
       }
       const items = await carouselRepository.getAllItems();
-      return {
-        success: true,
-        items: items
-      };
+      return { success: true, items: items };
     } catch (error) {
       console.error('Error al obtener todos los items:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 
@@ -88,19 +74,29 @@ async obtenerItemsActivos() {
         imageUrl = uploadResult.url;
         imagePath = uploadResult.path;
         console.log('✅ Imagen subida a Storage:', imageUrl);
-      }
-
-      // 🔥 SI HAY URL, USARLA (pero guardar path vacío)
-      if (data.imageUrl && !imageFile) {
-        imageUrl = data.imageUrl;
-        imagePath = '';
+      } else if (data.imageUrl) {
+        // Si solo hay URL, intentar migrar a Storage
+        console.log('📤 Migrando imagen desde URL a Storage...');
+        const migrateResult = await storageService.migrarImagenDesdeUrl(
+          data.imageUrl,
+          'carrusel',
+          `carrusel_${Date.now()}`
+        );
+        
+        if (migrateResult.success) {
+          imageUrl = migrateResult.url;
+          imagePath = migrateResult.path;
+          console.log('✅ Imagen migrada a Storage:', imageUrl);
+        } else {
+          imageUrl = data.imageUrl;
+          console.warn('⚠️ No se pudo migrar, usando URL original');
+        }
       }
 
       if (!imageUrl) {
         throw new Error('La URL de la imagen es requerida');
       }
 
-      // Obtener el último orden
       const allItems = await carouselRepository.getAllItems();
       const maxOrder = allItems.reduce((max, item) => Math.max(max, item.order || 0), 0);
 
@@ -125,10 +121,7 @@ async obtenerItemsActivos() {
 
     } catch (error) {
       console.error('❌ Error al crear item del carrusel:', error);
-      return {
-        success: false,
-        error: error.message || 'Error al crear la imagen en el carrusel'
-      };
+      return { success: false, error: error.message || 'Error al crear la imagen en el carrusel' };
     }
   }
 
@@ -153,13 +146,9 @@ async obtenerItemsActivos() {
       if (imageFile) {
         console.log('📤 Subiendo nueva imagen a Storage...');
         
-        // Eliminar imagen anterior de Storage si existe
         if (existingItem.imagePath) {
           console.log('🗑️ Eliminando imagen anterior:', existingItem.imagePath);
-          const deleteResult = await storageService.eliminarImagen(existingItem.imagePath);
-          if (!deleteResult.success) {
-            console.warn('⚠️ No se pudo eliminar la imagen anterior:', deleteResult.error);
-          }
+          await storageService.eliminarImagen(existingItem.imagePath);
         }
 
         const uploadResult = await storageService.subirImagen(
@@ -175,12 +164,6 @@ async obtenerItemsActivos() {
         imageUrl = uploadResult.url;
         imagePath = uploadResult.path;
         console.log('✅ Nueva imagen subida a Storage:', imageUrl);
-      }
-
-      // 🔥 SI HAY NUEVA URL (sin archivo), usarla
-      if (data.imageUrl && !imageFile) {
-        imageUrl = data.imageUrl;
-        // No eliminar el path porque puede ser una URL externa
       }
 
       const updateData = {
@@ -204,10 +187,7 @@ async obtenerItemsActivos() {
 
     } catch (error) {
       console.error('❌ Error al actualizar item:', error);
-      return {
-        success: false,
-        error: error.message || 'Error al actualizar la imagen'
-      };
+      return { success: false, error: error.message || 'Error al actualizar la imagen' };
     }
   }
 
@@ -228,10 +208,7 @@ async obtenerItemsActivos() {
       // 🔥 ELIMINAR IMAGEN DE STORAGE SI EXISTE
       if (item.imagePath) {
         console.log('🗑️ Eliminando imagen de Storage:', item.imagePath);
-        const deleteResult = await storageService.eliminarImagen(item.imagePath);
-        if (!deleteResult.success) {
-          console.warn('⚠️ No se pudo eliminar la imagen de Storage:', deleteResult.error);
-        }
+        await storageService.eliminarImagen(item.imagePath);
       }
 
       await carouselRepository.delete(id);
@@ -243,116 +220,7 @@ async obtenerItemsActivos() {
 
     } catch (error) {
       console.error('❌ Error al eliminar item:', error);
-      return {
-        success: false,
-        error: error.message || 'Error al eliminar la imagen'
-      };
-    }
-  }
-
-  // ============================================
-  // 🔄 MIGRAR TODAS LAS IMÁGENES A STORAGE
-  // ============================================
-  async migrarImagenesCarrusel() {
-    try {
-      if (!this.usuarioActual || this.usuarioActual.role !== 'sysadmin') {
-        throw new Error('No tienes permisos para administrar el carrusel');
-      }
-
-      const allItems = await carouselRepository.getAllItems();
-      
-      if (allItems.length === 0) {
-        return {
-          success: true,
-          message: 'No hay imágenes para migrar',
-          migradas: 0
-        };
-      }
-
-      let migradas = 0;
-      const resultados = [];
-
-      for (const item of allItems) {
-        // Saltar si ya está en Storage
-        if (item.imageUrl && item.imageUrl.includes('firebasestorage')) {
-          console.log(`⏭️ ${item.title || 'Imagen'} ya está en Storage, saltando...`);
-          continue;
-        }
-
-        // Saltar si no tiene URL válida
-        if (!item.imageUrl || !item.imageUrl.startsWith('http')) {
-          console.log(`⏭️ ${item.title || 'Imagen'} no tiene URL válida, saltando...`);
-          continue;
-        }
-
-        console.log(`⬆️ Migrando: ${item.title || 'Imagen sin título'}...`);
-        
-        const result = await storageService.migrarImagenDesdeUrl(
-          item.imageUrl,
-          'carrusel',
-          `carrusel_${item.id}_${item.title?.replace(/\s/g, '_') || 'imagen'}`
-        );
-
-        if (result.success) {
-          // Actualizar en Firestore con la nueva URL y path
-          await carouselRepository.update(item.id, {
-            imageUrl: result.url,
-            imagePath: result.path
-          });
-          migradas++;
-          resultados.push({ 
-            id: item.id, 
-            title: item.title || 'Sin título', 
-            success: true,
-            newUrl: result.url
-          });
-          console.log(`✅ ${item.title || 'Imagen'} migrado correctamente`);
-        } else {
-          resultados.push({ 
-            id: item.id, 
-            title: item.title || 'Sin título', 
-            success: false, 
-            error: result.error 
-          });
-          console.log(`❌ Error al migrar ${item.title || 'Imagen'}:`, result.error);
-        }
-      }
-
-      return {
-        success: true,
-        message: `Se migraron ${migradas} imágenes correctamente`,
-        migradas: migradas,
-        resultados: resultados
-      };
-
-    } catch (error) {
-      console.error('❌ Error al migrar imágenes del carrusel:', error);
-      return {
-        success: false,
-        error: error.message || 'Error al migrar las imágenes'
-      };
-    }
-  }
-
-  // ============================================
-  // 🎯 OBTENER ITEM POR ID
-  // ============================================
-  async obtenerItemPorId(id) {
-    try {
-      const item = await carouselRepository.getById(id);
-      if (!item) {
-        throw new Error('Item no encontrado');
-      }
-      return {
-        success: true,
-        item: item
-      };
-    } catch (error) {
-      console.error('Error al obtener item:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message || 'Error al eliminar la imagen' };
     }
   }
 
@@ -382,10 +250,7 @@ async obtenerItemsActivos() {
 
     } catch (error) {
       console.error('Error al reordenar items:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 }

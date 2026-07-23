@@ -2,18 +2,19 @@
 import { storage } from '../config/firebaseConfig.js';
 import { 
   ref, 
+  uploadBytes,
   getDownloadURL, 
   deleteObject,
   listAll,
   getMetadata,
-  uploadBytes  // 🔥 AGREGAR ESTO
+  uploadBytesResumable
 } from 'firebase/storage';
 
 class StorageService {
   constructor() {
     this.usuarioActual = null;
-    // 🔥 USAR BASE64 EN VEZ DE STORAGE (para evitar CORS)
-    this.useBase64 = true; // Cambiar a false para usar Storage
+    // 🔥 AHORA USA STORAGE REAL (NO BASE64)
+    this.useBase64 = false;
   }
 
   setUsuarioActual(usuario) {
@@ -21,7 +22,7 @@ class StorageService {
   }
 
   // ============================================
-  // 📤 SUBIR IMAGEN - VERSIÓN BASE64 (SIN CORS)
+  // 📤 SUBIR IMAGEN A FIREBASE STORAGE
   // ============================================
   async subirImagen(file, carpeta = 'general', nombrePersonalizado = null) {
     try {
@@ -38,23 +39,39 @@ class StorageService {
         throw new Error(`Formato no permitido. Usa: ${allowedTypes.join(', ')}`);
       }
 
-      console.log(`📤 Convirtiendo imagen a Base64...`);
-      console.log(`📦 Tamaño: ${(file.size / 1024).toFixed(2)} KB`);
-      console.log(`📄 Tipo: ${file.type}`);
+      const extension = file.name.split('.').pop();
+      const nombreArchivo = nombrePersonalizado 
+        ? `${nombrePersonalizado}.${extension}` 
+        : `${Date.now()}_${file.name}`;
 
-      // 🔥 CONVERTIR A BASE64
-      const base64 = await this.fileToBase64(file);
-      
-      console.log(`✅ Imagen convertida a Base64 (${base64.length} caracteres)`);
+      const path = `imagenes/${carpeta}/${nombreArchivo}`;
+      const storageRef = ref(storage, path);
+
+      console.log(`📤 Subiendo imagen a Storage: ${path}`);
+
+      const snapshot = await uploadBytes(storageRef, file, {
+        contentType: file.type,
+        customMetadata: {
+          uploadedBy: this.usuarioActual?.uid || 'anonymous',
+          uploadedAt: new Date().toISOString(),
+          originalName: file.name,
+          size: String(file.size)
+        }
+      });
+
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      console.log(`✅ Imagen subida a Storage: ${downloadURL}`);
 
       return {
         success: true,
-        url: base64,
-        path: `base64_${Date.now()}`,
+        url: downloadURL,
+        path: path,
         fileName: file.name,
         size: file.size,
         type: file.type,
-        isBase64: true
+        isBase64: false,
+        storageRef: snapshot.ref
       };
 
     } catch (error) {
@@ -68,87 +85,98 @@ class StorageService {
   }
 
   // ============================================
-  // 📤 CONVERTIR ARCHIVO A BASE64
+  // 📤 SUBIR IMAGEN CON PROGRESO
   // ============================================
-  fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
+  async subirImagenConProgreso(file, carpeta = 'general', onProgress = null) {
+    try {
+      if (!file) throw new Error('No se proporcionó ningún archivo');
+      if (file.size > 5 * 1024 * 1024) throw new Error('La imagen no puede superar los 5MB');
+
+      const path = `imagenes/${carpeta}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, path);
+
+      const uploadTask = uploadBytesResumable(storageRef, file, {
+        contentType: file.type,
+        customMetadata: {
+          uploadedBy: this.usuarioActual?.uid || 'anonymous',
+          uploadedAt: new Date().toISOString()
+        }
+      });
+
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            if (onProgress) onProgress(progress);
+          },
+          (error) => reject({ success: false, error: error.message }),
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve({
+              success: true,
+              url: downloadURL,
+              path: path,
+              fileName: file.name,
+              size: file.size,
+              type: file.type,
+              isBase64: false
+            });
+          }
+        );
+      });
+
+    } catch (error) {
+      console.error('❌ Error:', error);
+      return { success: false, error: error.message };
+    }
   }
 
   // ============================================
-  // 📥 OBTENER URL DE IMAGEN (Para Base64, devuelve la misma)
+  // 📥 OBTENER URL DE IMAGEN
   // ============================================
   async obtenerUrl(path) {
     try {
-      if (!path) {
-        throw new Error('No se proporcionó un path');
-      }
+      if (!path) throw new Error('No se proporcionó un path');
       
-      // Si es Base64, devolver la misma URL
       if (path.startsWith('data:image')) {
-        return {
-          success: true,
-          url: path
-        };
+        return { success: true, url: path };
       }
       
       const storageRef = ref(storage, path);
       const url = await getDownloadURL(storageRef);
       
-      return {
-        success: true,
-        url: url
-      };
+      return { success: true, url: url };
     } catch (error) {
       console.error('Error al obtener URL:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 
   // ============================================
-  // 🗑️ ELIMINAR IMAGEN
+  // 🗑️ ELIMINAR IMAGEN DE STORAGE
   // ============================================
   async eliminarImagen(path) {
     try {
       if (!path) {
         console.warn('⚠️ No se proporcionó path para eliminar');
-        return {
-          success: true,
-          message: 'No hay imagen para eliminar'
-        };
+        return { success: true, message: 'No hay imagen para eliminar' };
       }
       
-      // Si es Base64, solo lo ignoramos
       if (path.startsWith('data:image') || path.startsWith('base64_')) {
         console.log(`✅ Imagen Base64 eliminada (virtual): ${path}`);
-        return {
-          success: true,
-          message: 'Imagen eliminada correctamente'
-        };
+        return { success: true, message: 'Imagen eliminada correctamente' };
       }
       
-      console.log(`🗑️ Eliminando imagen: ${path}`);
+      console.log(`🗑️ Eliminando imagen de Storage: ${path}`);
       const storageRef = ref(storage, path);
       await deleteObject(storageRef);
       console.log(`✅ Imagen eliminada: ${path}`);
       
-      return {
-        success: true,
-        message: 'Imagen eliminada correctamente'
-      };
+      return { success: true, message: 'Imagen eliminada correctamente' };
     } catch (error) {
       console.error('Error al eliminar imagen:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 
@@ -159,22 +187,14 @@ class StorageService {
     try {
       if (!url) {
         console.warn('⚠️ No se proporcionó URL para eliminar');
-        return {
-          success: true,
-          message: 'No hay imagen para eliminar'
-        };
+        return { success: true, message: 'No hay imagen para eliminar' };
       }
 
-      // Si es Base64, solo lo ignoramos
       if (url.startsWith('data:image')) {
-        console.log(`✅ Imagen Base64 eliminada (virtual): ${url.substring(0, 50)}...`);
-        return {
-          success: true,
-          message: 'Imagen eliminada correctamente'
-        };
+        console.log(`✅ Imagen Base64 eliminada (virtual)`);
+        return { success: true, message: 'Imagen eliminada correctamente' };
       }
 
-      // Si es URL de Storage, extraer path
       if (url.includes('firebasestorage.googleapis.com')) {
         try {
           const decodedUrl = decodeURIComponent(url);
@@ -188,16 +208,10 @@ class StorageService {
         }
       }
 
-      return {
-        success: true,
-        message: 'No se pudo eliminar la imagen, pero continuamos'
-      };
+      return { success: true, message: 'No se pudo eliminar la imagen, pero continuamos' };
     } catch (error) {
       console.error('Error al eliminar imagen por URL:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 
@@ -226,28 +240,36 @@ class StorageService {
       
       console.log(`📋 ${imagenes.length} imágenes encontradas en ${path}`);
       
-      return {
-        success: true,
-        imagenes: imagenes
-      };
+      return { success: true, imagenes: imagenes };
     } catch (error) {
       console.error('Error al listar imágenes:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return { success: false, error: error.message };
     }
   }
 
   // ============================================
-  // 🔄 MIGRAR IMAGEN DE URL A STORAGE (DESACTIVADO)
+  // 🔄 MIGRAR IMAGEN DE URL A STORAGE
   // ============================================
   async migrarImagenDesdeUrl(urlImagen, carpeta = 'general', nombrePersonalizado = null) {
-    console.warn('⚠️ Migración desactivada. Usando Base64.');
-    return {
-      success: false,
-      error: 'Migración desactivada. Usa Base64.'
-    };
+    try {
+      console.log(`⬆️ Migrando imagen desde URL...`);
+
+      const response = await fetch(urlImagen);
+      if (!response.ok) throw new Error(`Error al descargar imagen: ${response.status}`);
+
+      const blob = await response.blob();
+      const extension = blob.type.split('/')[1] || 'jpg';
+      const nombreArchivo = nombrePersonalizado 
+        ? `${nombrePersonalizado}.${extension}` 
+        : `migrado_${Date.now()}.${extension}`;
+
+      const file = new File([blob], nombreArchivo, { type: blob.type });
+      return await this.subirImagen(file, carpeta, nombreArchivo);
+
+    } catch (error) {
+      console.error('❌ Error al migrar imagen:', error);
+      return { success: false, error: error.message };
+    }
   }
 }
 

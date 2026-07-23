@@ -27,25 +27,16 @@ import { profileAdminController } from '../modules/sysadmin/profileAdmin/profile
 import { profileEditController as profileAdminEditController } from '../modules/sysadmin/profileEdit/profileEditController.js';
 import { carouselAdminController } from '../modules/sysadmin/carouselAdmin/carouselAdminController.js';
 
-// ============================================
-// 🔥 IMPORTS DE USUARIO
-// ============================================
+// IMPORTS DE USUARIO
 import { initHomeUserController } from '../modules/user/homeUser/homeUserController.js';
 import { initGalleryUserController } from '../modules/user/galleryUser/galleryUserController.js';
 
-// ============================================
-// 🔥 IMPORTS DE EVENTO EN VIVO
-// ============================================
+// IMPORTS DE EVENTO EN VIVO
 import { initLiveEventController } from '../modules/host/liveEvent/liveEventController.js';
 
-// ============================================
-// 🔥 IMPORTS DE PROYECCIÓN
-// ============================================
+// IMPORTS DE PROYECCIÓN
 import { initProjectionController } from '../modules/host/projection/projectionController.js';
 
-// ============================================
-// 🗺️ CONFIGURACIÓN DE RUTAS
-// ============================================
 export const routes = {
     // ============================================
     // 🏠 RUTAS PÚBLICAS
@@ -82,7 +73,7 @@ export const routes = {
     },
 
     // ============================================
-    // 👤 RUTAS DE USUARIO (INVITADO)
+    // 👤 RUTAS DE USUARIO
     // ============================================
     "/user/home": {
         view: "/modules/user/homeUser/homeUser.html",
@@ -246,52 +237,3 @@ export const routes = {
         title: 'Página no encontrada - Snaap'
     },
 };
-
-// ============================================
-// 🔍 OBTENER RUTAS POR ROL
-// ============================================
-export function getRoutesByRole(role) {
-    const allRoutes = Object.keys(routes);
-    const routePermissions = {
-        'user': ['/', '/nosotros', '/paquetes', '/terms', '/user/home', '/user/gallery'],
-        'host': ['/', '/nosotros', '/paquetes', '/terms', '/host', '/host/*', '/user/home', '/user/gallery'],
-        'sysadmin': ['/', '/nosotros', '/paquetes', '/terms', '/sysadmin/*', '/host/*', '/user/home', '/user/gallery'],
-    };
-    
-    const allowed = routePermissions[role] || [];
-    return allRoutes.filter(route => {
-        return allowed.some(pattern => {
-            if (pattern.endsWith('/*')) {
-                const base = pattern.slice(0, -2);
-                return route === base || route.startsWith(base + '/');
-            }
-            return route === pattern;
-        });
-    });
-}
-
-// ============================================
-// 🔍 OBTENER TÍTULO DE RUTA
-// ============================================
-export function getRouteTitle(path) {
-    const route = routes[path];
-    return route?.title || 'Snaap - Eventos Interactivos';
-}
-
-// ============================================
-// 🔍 VERIFICAR SI RUTA REQUIERE AUTENTICACIÓN
-// ============================================
-export function isProtectedRoute(path) {
-    const route = routes[path];
-    return route?.roles !== undefined;
-}
-
-// ============================================
-// 🔍 VERIFICAR SI USUARIO TIENE ACCESO
-// ============================================
-export function hasRouteAccess(path, userRole) {
-    const route = routes[path];
-    if (!route) return false;
-    if (!route.roles) return true;
-    return route.roles.includes(userRole);
-}
