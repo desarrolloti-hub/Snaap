@@ -43,7 +43,7 @@ class HomeUserController {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
                 console.warn('[homeUser] No current user found, redirecting to /login');
-                import('../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
+                import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
                 return;
             }
 

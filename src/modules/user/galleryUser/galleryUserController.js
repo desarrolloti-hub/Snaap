@@ -22,7 +22,7 @@ class GalleryUserController {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                import('../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
+                import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
                 return;
             }
 
