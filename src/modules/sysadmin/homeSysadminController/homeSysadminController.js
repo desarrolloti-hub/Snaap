@@ -1,15 +1,15 @@
-// src/modules/sysadmin/homeSysadminController/homeSysadminController.js
+﻿// src/modules/sysadmin/homeSysadminController/homeSysadminController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
 
 export async function homeSysadminController() {
-    console.log('🔥 Home Sysadmin Controller iniciado');
+    console.log('ðŸ”¥ Home Sysadmin Controller iniciado');
 
-    // Verificar autenticación
+    // Verificar autenticaciÃ³n
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -23,7 +23,7 @@ export async function homeSysadminController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -53,7 +53,7 @@ function loadStyles() {
 }
 
 // ============================================
-// 📥 CARGAR USUARIOS RECIENTES (CUENTAS NUEVAS)
+// ðŸ“¥ CARGAR USUARIOS RECIENTES (CUENTAS NUEVAS)
 // ============================================
 async function loadRecentUsers() {
     const container = document.getElementById('recentUsers');
@@ -77,14 +77,14 @@ async function loadRecentUsers() {
             return;
         }
 
-        // Ordenar por fecha de creación (más recientes primero)
+        // Ordenar por fecha de creaciÃ³n (mÃ¡s recientes primero)
         const sortedUsers = users.sort((a, b) => {
             const dateA = new Date(a.createdAt);
             const dateB = new Date(b.createdAt);
             return dateB - dateA;
         });
 
-        // Tomar los 8 más recientes
+        // Tomar los 8 mÃ¡s recientes
         const recentUsers = sortedUsers.slice(0, 8);
 
         container.innerHTML = recentUsers.map(user => {
@@ -117,7 +117,7 @@ async function loadRecentUsers() {
                             </small>
                         </div>
                         <div class="activity-time">
-                            <i class="fas fa-calendar-alt"></i> Se unió el ${fecha}
+                            <i class="fas fa-calendar-alt"></i> Se uniÃ³ el ${fecha}
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,7 @@ async function loadRecentUsers() {
         }).join('');
 
     } catch (error) {
-        console.error('❌ Error al cargar usuarios recientes:', error);
+        console.error('âŒ Error al cargar usuarios recientes:', error);
         container.innerHTML = `
             <div class="activity-item">
                 <div class="activity-icon">
@@ -142,7 +142,7 @@ async function loadRecentUsers() {
 }
 
 // ============================================
-// 📊 CARGAR DISTRIBUCIÓN DE USUARIOS (SOLO HOSTS Y ADMINS)
+// ðŸ“Š CARGAR DISTRIBUCIÃ“N DE USUARIOS (SOLO HOSTS Y ADMINS)
 // ============================================
 async function loadRolesDistribution() {
     try {
@@ -150,7 +150,7 @@ async function loadRolesDistribution() {
         const users = await userRepository.getAllUsers();
         
         if (!users) {
-            console.warn('⚠️ No se pudieron obtener usuarios');
+            console.warn('âš ï¸ No se pudieron obtener usuarios');
             return;
         }
 
@@ -164,15 +164,15 @@ async function loadRolesDistribution() {
         if (adminEl) adminEl.textContent = adminCount;
         if (hostEl) hostEl.textContent = hostCount;
 
-        console.log(`📊 Administradores: ${adminCount}, Hosts: ${hostCount}`);
+        console.log(`ðŸ“Š Administradores: ${adminCount}, Hosts: ${hostCount}`);
 
     } catch (error) {
-        console.error('❌ Error al cargar distribución de roles:', error);
+        console.error('âŒ Error al cargar distribuciÃ³n de roles:', error);
     }
 }
 
 // ============================================
-// 🔧 UTILIDADES
+// ðŸ”§ UTILIDADES
 // ============================================
 function escapeHtml(str) {
     if (!str) return '';

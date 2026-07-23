@@ -1,13 +1,13 @@
-// src/modules/sysadmin/adminForm/adminFormController.js
+﻿// src/modules/sysadmin/adminForm/adminFormController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 export async function adminFormController() {
-    console.log('🔥 Admin Form Controller iniciado');
+    console.log('ðŸ”¥ Admin Form Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -20,7 +20,7 @@ export async function adminFormController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -49,45 +49,45 @@ function setupForm() {
     const adminForm = document.getElementById('adminForm');
     if (adminForm) {
         adminForm.addEventListener('submit', saveAdmin);
-        console.log('✅ Event listener agregado al formulario');
+        console.log('âœ… Event listener agregado al formulario');
     }
 }
 
 // ============================================
-// 🔥 DELEGACIÓN DE EVENTOS
+// ðŸ”¥ DELEGACIÃ“N DE EVENTOS
 // ============================================
 function setupDelegation() {
-    console.log('🔧 Configurando delegación de eventos...');
+    console.log('ðŸ”§ Configurando delegaciÃ³n de eventos...');
     
     document.removeEventListener('click', handleDocumentClick);
     document.addEventListener('click', handleDocumentClick);
     
-    console.log('✅ Delegación de eventos configurada');
+    console.log('âœ… DelegaciÃ³n de eventos configurada');
 }
 
 function handleDocumentClick(e) {
-    // 🔥 BOTÓN VOLVER
+    // ðŸ”¥ BOTÃ“N VOLVER
     const btnVolver = e.target.closest('#btnVolver');
     if (btnVolver) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('🔙 Click en Volver (delegación)');
+        console.log('ðŸ”™ Click en Volver (delegaciÃ³n)');
         
         Swal.fire({
-            title: '¿Cancelar creación?',
-            text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
+            title: 'Â¿Cancelar creaciÃ³n?',
+            text: 'Â¿EstÃ¡s seguro de que quieres salir? Los datos no guardados se perderÃ¡n.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#ff007a',
             cancelButtonColor: '#4db8ff',
-            confirmButtonText: 'Sí, salir',
+            confirmButtonText: 'SÃ­, salir',
             cancelButtonText: 'Continuar'
         }).then((result) => {
             if (result.isConfirmed) {
                 if (typeof window.navigateTo === 'function') {
                     window.navigateTo('/sysadmin/admins');
                 } else {
-                    window.location.href = '/sysadmin/admins';
+                    window.go('');
                 }
             }
         });
@@ -106,7 +106,7 @@ async function saveAdmin(e) {
     const status = document.getElementById('adminStatus')?.value;
     const notes = document.getElementById('adminNotes')?.value.trim();
     
-    console.log('📝 Datos del formulario:', { username, email, password, phone, department, status, notes });
+    console.log('ðŸ“ Datos del formulario:', { username, email, password, phone, department, status, notes });
     
     if (!username || !email) {
         await Swal.fire({
@@ -120,8 +120,8 @@ async function saveAdmin(e) {
     
     if (!password || password.length < 6) {
         await Swal.fire({
-            title: 'Contraseña inválida',
-            text: 'La contraseña debe tener al menos 6 caracteres',
+            title: 'ContraseÃ±a invÃ¡lida',
+            text: 'La contraseÃ±a debe tener al menos 6 caracteres',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -133,7 +133,7 @@ async function saveAdmin(e) {
         if (existingUser) {
             await Swal.fire({
                 title: 'Email duplicado',
-                text: 'Ya existe un usuario con este correo electrónico',
+                text: 'Ya existe un usuario con este correo electrÃ³nico',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -167,7 +167,7 @@ async function saveAdmin(e) {
         
         if (result.success) {
             await Swal.fire({
-                title: '¡Creado!',
+                title: 'Â¡Creado!',
                 text: `El administrador "${result.user.username}" ha sido creado correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -176,7 +176,7 @@ async function saveAdmin(e) {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/admins');
             } else {
-                window.location.href = '/sysadmin/admins';
+                window.go('');
             }
         } else {
             await Swal.fire({
@@ -188,10 +188,10 @@ async function saveAdmin(e) {
         }
     } catch (error) {
         Swal.close();
-        console.error('❌ Error al crear administrador:', error);
+        console.error('âŒ Error al crear administrador:', error);
         await Swal.fire({
             title: 'Error',
-            text: error.message || 'Ocurrió un error al crear el administrador',
+            text: error.message || 'OcurriÃ³ un error al crear el administrador',
             icon: 'error',
             confirmButtonText: 'OK'
         });

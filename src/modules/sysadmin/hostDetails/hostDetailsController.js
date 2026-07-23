@@ -1,15 +1,15 @@
-// src/modules/sysadmin/hostDetails/hostDetailsController.js
+﻿// src/modules/sysadmin/hostDetails/hostDetailsController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 let currentHostId = null;
 
 export async function hostDetailsController() {
-    console.log('🔥 Host Details Controller iniciado');
+    console.log('ðŸ”¥ Host Details Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -22,7 +22,7 @@ export async function hostDetailsController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -40,12 +40,12 @@ export async function hostDetailsController() {
     if (!hostId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificó qué host ver',
+            text: 'No se especificÃ³ quÃ© host ver',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
             localStorage.removeItem('hostDetailId');
-            window.location.href = '/sysadmin/hosts';
+            window.go('');
         });
         return;
     }
@@ -60,7 +60,7 @@ async function loadHostDetails(hostId) {
     const card = document.getElementById('hostDetailsCard');
     
     if (!card) {
-        console.error('❌ No se encontró el elemento hostDetailsCard');
+        console.error('âŒ No se encontrÃ³ el elemento hostDetailsCard');
         return;
     }
     
@@ -91,7 +91,7 @@ async function loadHostDetails(hostId) {
         setupDetailEvents(host);
 
     } catch (error) {
-        console.error('❌ Error al cargar detalles:', error);
+        console.error('âŒ Error al cargar detalles:', error);
         card.innerHTML = `
             <div class="details-loading" style="color: #ff007a;">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -108,8 +108,8 @@ function setupDetailEvents(host) {
         btnEditar.parentNode.replaceChild(newBtn, btnEditar);
         
         newBtn.addEventListener('click', function() {
-            console.log('✏️ Editar host:', currentHostId);
-            window.location.href = `/sysadmin/hosts/edit?id=${currentHostId}`;
+            console.log('âœï¸ Editar host:', currentHostId);
+            window.go(`/sysadmin/hosts/edit?id=${currentHostId}`);
         });
     }
 }
@@ -125,11 +125,11 @@ function buildHostDetailsHTML(host) {
 
             <div class="detail-grid">
                 <div class="detail-group">
-                    <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                    <label><i class="fas fa-envelope"></i> Correo ElectrÃ³nico</label>
                     <div class="detail-value"><strong>${escapeHtml(host.email || 'No registrado')}</strong></div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-phone"></i> Teléfono</label>
+                    <label><i class="fas fa-phone"></i> TelÃ©fono</label>
                     <div class="detail-value">${host.phone || 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
@@ -152,19 +152,19 @@ function buildHostDetailsHTML(host) {
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-check-circle"></i> Email Verificado</label>
-                    <div class="detail-value">${host.emailVerified ? '✅ Sí' : '❌ No'}</div>
+                    <div class="detail-value">${host.emailVerified ? 'âœ… SÃ­' : 'âŒ No'}</div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-calendar-day"></i> Fecha de Registro</label>
                     <div class="detail-value">${host.createdAt ? new Date(host.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-clock"></i> Último Acceso</label>
+                    <label><i class="fas fa-clock"></i> Ãšltimo Acceso</label>
                     <div class="detail-value">${host.lastLogin ? new Date(host.lastLogin).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca'}</div>
                 </div>
                 ${host.bio ? `
                 <div class="detail-group full-width">
-                    <label><i class="fas fa-info-circle"></i> Biografía</label>
+                    <label><i class="fas fa-info-circle"></i> BiografÃ­a</label>
                     <div class="detail-value detail-bio">${escapeHtml(host.bio)}</div>
                 </div>
                 ` : ''}
@@ -180,7 +180,7 @@ function buildHostDetailsHTML(host) {
 }
 
 // ============================================
-// 🔧 CONFIGURAR EVENTOS (BOTÓN VOLVER)
+// ðŸ”§ CONFIGURAR EVENTOS (BOTÃ“N VOLVER)
 // ============================================
 function setupEventListeners() {
     const btnVolver = document.getElementById('btnVolver');
@@ -191,16 +191,16 @@ function setupEventListeners() {
         
         newBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('🔙 Click en Volver');
+            console.log('ðŸ”™ Click en Volver');
             
             Swal.fire({
-                title: '¿Volver atrás?',
-                text: '¿Estás seguro de que quieres salir de los detalles?',
+                title: 'Â¿Volver atrÃ¡s?',
+                text: 'Â¿EstÃ¡s seguro de que quieres salir de los detalles?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#ff007a',
                 cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'Sí, volver',
+                confirmButtonText: 'SÃ­, volver',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -208,14 +208,14 @@ function setupEventListeners() {
                     if (typeof window.navigateTo === 'function') {
                         window.navigateTo('/sysadmin/hosts');
                     } else {
-                        window.location.href = '/sysadmin/hosts';
+                        window.go('');
                     }
                 }
             });
         });
-        console.log('✅ Event listener agregado al botón Volver');
+        console.log('âœ… Event listener agregado al botÃ³n Volver');
     } else {
-        console.error('❌ Botón Volver no encontrado');
+        console.error('âŒ BotÃ³n Volver no encontrado');
     }
 }
 

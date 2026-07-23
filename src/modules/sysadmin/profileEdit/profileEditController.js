@@ -7,7 +7,7 @@ export async function profileEditController() {
 
     if (!userService.isAuthenticated()) {
         console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
         return;
     }
 
@@ -20,7 +20,7 @@ export async function profileEditController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/'));
         });
         return;
     }
@@ -133,7 +133,7 @@ async function saveProfile(e) {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/profile');
             } else {
-                window.location.href = '/sysadmin/profile';
+                import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/sysadmin/profile'));
             }
         } else {
             Swal.fire({
@@ -159,7 +159,7 @@ function goBack() {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo('/sysadmin/profile');
     } else {
-        window.location.href = '/sysadmin/profile';
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/sysadmin/profile'));
     }
 }
 

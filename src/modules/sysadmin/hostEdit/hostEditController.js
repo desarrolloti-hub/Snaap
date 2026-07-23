@@ -1,14 +1,14 @@
-// src/modules/sysadmin/hostEdit/hostEditController.js
+﻿// src/modules/sysadmin/hostEdit/hostEditController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 export async function hostEditController() {
-    console.log('🔥 Host Edit Controller iniciado');
+    console.log('ðŸ”¥ Host Edit Controller iniciado');
 
-    // Verificar autenticación
+    // Verificar autenticaciÃ³n
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -21,7 +21,7 @@ export async function hostEditController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -49,7 +49,7 @@ function loadStyles() {
 }
 
 // ============================================
-// 📥 CARGAR DATOS DEL HOST DESDE FIRESTORE
+// ðŸ“¥ CARGAR DATOS DEL HOST DESDE FIRESTORE
 // ============================================
 async function loadHostData() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -58,11 +58,11 @@ async function loadHostData() {
     if (!hostId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificó qué host editar',
+            text: 'No se especificÃ³ quÃ© host editar',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/sysadmin/hosts';
+            window.go('');
         });
         return;
     }
@@ -89,7 +89,7 @@ async function loadHostData() {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = '/sysadmin/hosts';
+                window.go('');
             });
             return;
         }
@@ -101,7 +101,7 @@ async function loadHostData() {
         document.getElementById('hostStatus').value = host.status || 'active';
         document.getElementById('hostBio').value = host.bio || '';
         
-        console.log('📥 Datos del host cargados:', host);
+        console.log('ðŸ“¥ Datos del host cargados:', host);
     } catch (error) {
         Swal.close();
         console.error('Error al cargar host:', error);
@@ -111,7 +111,7 @@ async function loadHostData() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/sysadmin/hosts';
+            window.go('');
         });
     }
 }
@@ -126,7 +126,7 @@ function setupForm() {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/hosts');
             } else {
-                window.location.href = '/sysadmin/hosts';
+                window.go('');
             }
         });
     }
@@ -136,7 +136,7 @@ function setupForm() {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/hosts');
             } else {
-                window.location.href = '/sysadmin/hosts';
+                window.go('');
             }
         });
     }
@@ -147,7 +147,7 @@ function setupForm() {
 }
 
 // ============================================
-// 💾 GUARDAR CAMBIOS EN FIRESTORE
+// ðŸ’¾ GUARDAR CAMBIOS EN FIRESTORE
 // ============================================
 async function saveHost(e) {
     e.preventDefault();
@@ -180,7 +180,7 @@ async function saveHost(e) {
     });
     
     try {
-        // 🔥 Obtener host actual
+        // ðŸ”¥ Obtener host actual
         const host = await userRepository.getById(editingHostId);
         if (!host) {
             Swal.close();
@@ -206,7 +206,7 @@ async function saveHost(e) {
         Swal.close();
         
         await Swal.fire({
-            title: '¡Actualizado!',
+            title: 'Â¡Actualizado!',
             text: 'El host ha sido actualizado correctamente',
             icon: 'success',
             confirmButtonText: 'OK'
@@ -215,7 +215,7 @@ async function saveHost(e) {
         if (typeof window.navigateTo === 'function') {
             window.navigateTo('/sysadmin/hosts');
         } else {
-            window.location.href = '/sysadmin/hosts';
+            window.go('');
         }
     } catch (error) {
         Swal.close();

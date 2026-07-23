@@ -1,4 +1,4 @@
-// src/router/router.js
+﻿// src/router/router.js
 import { routes } from './routes.js';
 import { authGuard } from '../core/authGuard.js';
 import { getCurrentUserRole, getRedirectPathByRole } from '../core/permissions.js';
@@ -54,17 +54,17 @@ async function navigateTo(path) {
 }
 
 async function handleRoute(path, isPopState = false) {
-    // 🔥 ELIMINAR PARÁMETROS DE CONSULTA PARA LA BÚSQUEDA DE RUTA
+    // ðŸ”¥ ELIMINAR PARÃMETROS DE CONSULTA PARA LA BÃšSQUEDA DE RUTA
     const pathWithoutParams = path.split('?')[0];
-    console.log(`📍 Navegando a: ${path} (ruta base: ${pathWithoutParams})`);
+    console.log(`ðŸ“ Navegando a: ${path} (ruta base: ${pathWithoutParams})`);
 
-    // 🔥 1. VERIFICAR AUTENTICACIÓN Y PERMISOS (usando la ruta sin parámetros)
+    // ðŸ”¥ 1. VERIFICAR AUTENTICACIÃ“N Y PERMISOS (usando la ruta sin parÃ¡metros)
     const canAccess = await authGuard(pathWithoutParams, (redirectPath) => {
         // Normalizar y evitar redirigir a la misma ruta (rompe bucles de redirect)
         let target = redirectPath && redirectPath.startsWith('/') ? redirectPath : ('/' + (redirectPath || ''));
         if (target !== '/' && target.endsWith('/')) target = target.slice(0, -1);
         if (target === pathWithoutParams) {
-            console.warn(`⚠️ Ignorando redirect a la misma ruta: ${target}`);
+            console.warn(`âš ï¸ Ignorando redirect a la misma ruta: ${target}`);
             return;
         }
 
@@ -72,7 +72,7 @@ async function handleRoute(path, isPopState = false) {
             window.history.pushState({}, '', target);
             handleRoute(target);
         } else {
-            window.location.href = target;
+            window.go(target);
         }
     });
 
@@ -80,10 +80,10 @@ async function handleRoute(path, isPopState = false) {
         return;
     }
 
-    // 🔥 2. ACTUALIZAR NAVBAR
+    // ðŸ”¥ 2. ACTUALIZAR NAVBAR
     updateNavbar();
 
-    // 🔥 3. BUSCAR RUTA SIN PARÁMETROS
+    // ðŸ”¥ 3. BUSCAR RUTA SIN PARÃMETROS
     let route = routes[pathWithoutParams];
     
     if (!route) {
@@ -97,7 +97,7 @@ async function handleRoute(path, isPopState = false) {
     }
     
     if (!route) {
-        console.warn(`⚠️ Ruta no encontrada: ${pathWithoutParams}, redirigiendo a 404`);
+        console.warn(`âš ï¸ Ruta no encontrada: ${pathWithoutParams}, redirigiendo a 404`);
         route = routes['/404'];
         if (pathWithoutParams !== '/404') {
             window.history.pushState({}, '', '/404');
@@ -105,7 +105,7 @@ async function handleRoute(path, isPopState = false) {
         }
     }
 
-    // 🔥 4. CARGAR LA VISTA
+    // ðŸ”¥ 4. CARGAR LA VISTA
     document.dispatchEvent(new CustomEvent('route:changing', { detail: { path } }));
 
     try {
@@ -125,16 +125,16 @@ async function handleRoute(path, isPopState = false) {
         }
 
         window.scrollTo(0, 0);
-        console.log(`✅ Vista cargada: ${path}`);
+        console.log(`âœ… Vista cargada: ${path}`);
     } catch (error) {
-        console.error('❌ Error cargando ruta:', error);
+        console.error('âŒ Error cargando ruta:', error);
         const appContainer = document.getElementById('app');
         if (appContainer) {
             appContainer.innerHTML = `
                 <div style="text-align:center; padding:100px; background:#0a0a14; color:white; min-height:100vh;">
-                    <h1 style="color:#ff007a;">⚠️ Error</h1>
+                    <h1 style="color:#ff007a;">âš ï¸ Error</h1>
                     <p style="color:#999;">${error.message}</p>
-                    <a href="/" data-link style="color:#4db8ff; text-decoration:none;">← Volver al inicio</a>
+                    <a href="/" data-link style="color:#4db8ff; text-decoration:none;">â† Volver al inicio</a>
                 </div>
             `;
         }

@@ -1,4 +1,4 @@
-// src/modules/sysadmin/carouselAdmin/carouselAdminController.js
+﻿// src/modules/sysadmin/carouselAdmin/carouselAdminController.js
 import { userService } from '../../../services/userService.js';
 import { carouselService } from '../../../services/carouselService.js';
 
@@ -7,11 +7,11 @@ let editingItemId = null;
 let eventsInitialized = false;
 
 export async function carouselAdminController() {
-    console.log('🔥 Carrusel Admin Controller iniciado');
+    console.log('ðŸ”¥ Carrusel Admin Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -23,7 +23,7 @@ export async function carouselAdminController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -44,14 +44,14 @@ export async function carouselAdminController() {
         setupAllEvents();
         eventsInitialized = true;
     } else {
-        console.log('⏭️ Eventos ya inicializados, saltando...');
+        console.log('â­ï¸ Eventos ya inicializados, saltando...');
     }
 }
 
 async function loadItems() {
     const container = document.getElementById('carouselItemsContainer');
     if (container) {
-        container.innerHTML = '<div class="loading-text">Cargando imágenes...</div>';
+        container.innerHTML = '<div class="loading-text">Cargando imÃ¡genes...</div>';
     }
 
     try {
@@ -71,7 +71,7 @@ async function loadItems() {
         console.error('Error:', error);
         Swal.fire({
             title: 'Error',
-            text: 'Error al cargar imágenes',
+            text: 'Error al cargar imÃ¡genes',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -86,7 +86,7 @@ function renderItems() {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-images"></i>
-                <p>No hay imágenes en el carrusel</p>
+                <p>No hay imÃ¡genes en el carrusel</p>
                 <p class="empty-state-subtitle">Haz clic en "Agregar imagen" para comenzar</p>
             </div>
         `;
@@ -103,13 +103,13 @@ function renderItems() {
                     <span class="item-status ${item.active ? 'active' : 'inactive'}">
                         ${item.active ? 'Activo' : 'Inactivo'}
                     </span>
-                    ${item.imagePath && item.imagePath.startsWith('base64_') ? '<span class="item-status base64">📷 Base64</span>' : ''}
+                    ${item.imagePath && item.imagePath.startsWith('base64_') ? '<span class="item-status base64">ðŸ“· Base64</span>' : ''}
                 </div>
             </div>
             <div class="item-info">
-                <h4>${item.title || 'Sin título'}</h4>
+                <h4>${item.title || 'Sin tÃ­tulo'}</h4>
                 <p>${item.subtitle || ''}</p>
-                ${item.link ? `<p class="item-link">🔗 ${item.link}</p>` : ''}
+                ${item.link ? `<p class="item-link">ðŸ”— ${item.link}</p>` : ''}
             </div>
             <div class="item-actions">
                 <button class="btn-toggle" data-id="${item.id}" data-active="${item.active}">
@@ -127,44 +127,44 @@ function renderItems() {
 }
 
 function setupAllEvents() {
-    console.log('🔧 Configurando eventos...');
+    console.log('ðŸ”§ Configurando eventos...');
     
     const addBtn = document.getElementById('addImageBtn');
     if (addBtn) {
         addBtn.onclick = function(e) {
             e.preventDefault();
-            console.log('➕ Click en Agregar imagen');
+            console.log('âž• Click en Agregar imagen');
             openAddModal();
             return false;
         };
-        console.log('✅ Evento asignado a "Agregar imagen"');
+        console.log('âœ… Evento asignado a "Agregar imagen"');
     }
 
     const migrateBtn = document.getElementById('migrateImagesBtn');
     if (migrateBtn) {
         migrateBtn.onclick = function(e) {
             e.preventDefault();
-            console.log('☁️ Click en Migrar a Storage');
+            console.log('â˜ï¸ Click en Migrar a Storage');
             Swal.fire({
-                title: 'Información',
-                text: 'ℹ️ Las imágenes se guardan en Base64. No es necesario migrar.',
+                title: 'InformaciÃ³n',
+                text: 'â„¹ï¸ Las imÃ¡genes se guardan en Base64. No es necesario migrar.',
                 icon: 'info',
                 confirmButtonText: 'OK'
             });
             return false;
         };
-        console.log('✅ Evento asignado a "Migrar a Storage"');
+        console.log('âœ… Evento asignado a "Migrar a Storage"');
     }
 
     const saveBtn = document.getElementById('saveImageBtn');
     if (saveBtn) {
         saveBtn.onclick = function(e) {
             e.preventDefault();
-            console.log('💾 Click en Guardar');
+            console.log('ðŸ’¾ Click en Guardar');
             saveImage();
             return false;
         };
-        console.log('✅ Evento asignado a "Guardar"');
+        console.log('âœ… Evento asignado a "Guardar"');
     }
 
     const closeBtn = document.getElementById('closeModal');
@@ -208,7 +208,7 @@ function setupAllEvents() {
             e.stopPropagation();
             const id = toggleBtn.dataset.id;
             const active = toggleBtn.dataset.active === 'true';
-            console.log('🔄 Toggle:', id, active);
+            console.log('ðŸ”„ Toggle:', id, active);
             toggleItem(id, active);
             return;
         }
@@ -218,7 +218,7 @@ function setupAllEvents() {
             e.preventDefault();
             e.stopPropagation();
             const id = editBtn.dataset.id;
-            console.log('✏️ Editar:', id);
+            console.log('âœï¸ Editar:', id);
             openEditModal(id);
             return;
         }
@@ -228,23 +228,23 @@ function setupAllEvents() {
             e.preventDefault();
             e.stopPropagation();
             const id = deleteBtn.dataset.id;
-            console.log('🗑️ Eliminar:', id);
+            console.log('ðŸ—‘ï¸ Eliminar:', id);
             deleteItem(id);
             return;
         }
     });
 
-    console.log('✅ Todos los eventos configurados');
+    console.log('âœ… Todos los eventos configurados');
 }
 
 function openAddModal() {
-    console.log('📝 Abriendo modal de agregar');
+    console.log('ðŸ“ Abriendo modal de agregar');
     
     const modal = document.getElementById('addImageModal');
     if (!modal) {
         Swal.fire({
             title: 'Error',
-            text: 'El modal no está disponible',
+            text: 'El modal no estÃ¡ disponible',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -256,7 +256,7 @@ function openAddModal() {
     document.getElementById('modalIcon').innerHTML = '<i class="fas fa-plus-circle"></i>';
     document.getElementById('saveImageBtn').textContent = 'Guardar';
     document.getElementById('imageRequired').textContent = '* (URL o archivo)';
-    document.getElementById('imageHint').textContent = 'Pega una URL de imagen o selecciona un archivo (se guardará en Base64)';
+    document.getElementById('imageHint').textContent = 'Pega una URL de imagen o selecciona un archivo (se guardarÃ¡ en Base64)';
     document.getElementById('imageForm').reset();
     document.getElementById('imageUrlInput').value = '';
     document.getElementById('imageFile').value = '';
@@ -266,17 +266,17 @@ function openAddModal() {
     document.body.classList.add('modal-open');
     
     setTimeout(() => document.getElementById('imageTitle').focus(), 100);
-    console.log('✅ Modal de agregar abierto correctamente');
+    console.log('âœ… Modal de agregar abierto correctamente');
 }
 
 function openEditModal(id) {
-    console.log('✏️ Abriendo modal de edición:', id);
+    console.log('âœï¸ Abriendo modal de ediciÃ³n:', id);
     
     const modal = document.getElementById('addImageModal');
     if (!modal) {
         Swal.fire({
             title: 'Error',
-            text: 'El modal no está disponible',
+            text: 'El modal no estÃ¡ disponible',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -299,7 +299,7 @@ function openEditModal(id) {
     document.getElementById('modalIcon').innerHTML = '<i class="fas fa-edit"></i>';
     document.getElementById('saveImageBtn').textContent = 'Actualizar';
     document.getElementById('imageRequired').textContent = ' (opcional)';
-    document.getElementById('imageHint').textContent = 'Deja en blanco para mantener la imagen actual. Si seleccionas archivo, se guardará en Base64.';
+    document.getElementById('imageHint').textContent = 'Deja en blanco para mantener la imagen actual. Si seleccionas archivo, se guardarÃ¡ en Base64.';
     document.getElementById('imageTitle').value = item.title || '';
     document.getElementById('imageSubtitle').value = item.subtitle || '';
     document.getElementById('imageLink').value = item.link || '';
@@ -310,7 +310,7 @@ function openEditModal(id) {
     modal.classList.add('show');
     document.body.classList.add('modal-open');
     
-    console.log('✅ Modal de edición abierto correctamente');
+    console.log('âœ… Modal de ediciÃ³n abierto correctamente');
 }
 
 function closeModalHandler() {
@@ -320,12 +320,12 @@ function closeModalHandler() {
         modal.classList.remove('show');
         document.body.classList.remove('modal-open');
         editingItemId = null;
-        console.log('✅ Modal cerrado');
+        console.log('âœ… Modal cerrado');
     }
 }
 
 async function saveImage() {
-    console.log('💾 Guardando imagen...');
+    console.log('ðŸ’¾ Guardando imagen...');
     
     const title = document.getElementById('imageTitle').value.trim();
     const subtitle = document.getElementById('imageSubtitle').value.trim();
@@ -336,7 +336,7 @@ async function saveImage() {
     if (!title) {
         Swal.fire({
             title: 'Campo Requerido',
-            text: 'Por favor ingresa un título',
+            text: 'Por favor ingresa un tÃ­tulo',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -355,8 +355,8 @@ async function saveImage() {
 
     if (imageUrl && !isValidUrl(imageUrl)) {
         Swal.fire({
-            title: 'URL Inválida',
-            text: 'La URL de imagen no es válida',
+            title: 'URL InvÃ¡lida',
+            text: 'La URL de imagen no es vÃ¡lida',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -416,12 +416,12 @@ async function saveImage() {
         Swal.close();
 
         if (result.success) {
-            let mensaje = `✅ ${editingItemId ? 'Actualizada' : 'Agregada'} correctamente`;
+            let mensaje = `âœ… ${editingItemId ? 'Actualizada' : 'Agregada'} correctamente`;
             if (imageFile && !imageUrl) {
                 mensaje += ' (imagen guardada en Base64)';
             }
             Swal.fire({
-                title: '¡Éxito!',
+                title: 'Â¡Ã‰xito!',
                 text: mensaje,
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -438,7 +438,7 @@ async function saveImage() {
         }
     } catch (error) {
         Swal.close();
-        console.error('❌ Error al guardar:', error);
+        console.error('âŒ Error al guardar:', error);
         Swal.fire({
             title: 'Error',
             text: error.message || 'Error al guardar la imagen',
@@ -458,14 +458,14 @@ function isValidUrl(string) {
 }
 
 async function toggleItem(id, currentActive) {
-    console.log('🔄 Toggle item:', id, currentActive);
+    console.log('ðŸ”„ Toggle item:', id, currentActive);
     try {
         const newActive = !currentActive;
         const result = await carouselService.actualizarItem(id, { active: newActive });
         
         if (result.success) {
             Swal.fire({
-                title: '¡Éxito!',
+                title: 'Â¡Ã‰xito!',
                 text: `Imagen ${newActive ? 'activada' : 'desactivada'} correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -491,7 +491,7 @@ async function toggleItem(id, currentActive) {
 }
 
 async function deleteItem(id) {
-    console.log('🗑️ Eliminar item:', id);
+    console.log('ðŸ—‘ï¸ Eliminar item:', id);
     const item = currentItems.find(i => i.id === id);
     if (!item) {
         Swal.fire({
@@ -504,11 +504,11 @@ async function deleteItem(id) {
     }
 
     const result = await Swal.fire({
-        title: '¿Eliminar imagen?',
-        html: `¿Estás seguro de eliminar la imagen <strong>${item.title || 'sin título'}</strong>?<br>Esta acción no se puede deshacer.`,
+        title: 'Â¿Eliminar imagen?',
+        html: `Â¿EstÃ¡s seguro de eliminar la imagen <strong>${item.title || 'sin tÃ­tulo'}</strong>?<br>Esta acciÃ³n no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'SÃ­, eliminar',
         cancelButtonText: 'Cancelar'
     });
 
@@ -528,7 +528,7 @@ async function deleteItem(id) {
         
         if (deleteResult.success) {
             Swal.fire({
-                title: '¡Éxito!',
+                title: 'Â¡Ã‰xito!',
                 text: 'Imagen eliminada correctamente',
                 icon: 'success',
                 confirmButtonText: 'OK'

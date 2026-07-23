@@ -1,21 +1,21 @@
-// src/modules/sysadmin/crudAdmin/crudAdminController.js
+﻿// src/modules/sysadmin/crudAdmin/crudAdminController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
-// ✅ Variable para evitar ejecuciones múltiples
+// âœ… Variable para evitar ejecuciones mÃºltiples
 let isInitialized = false;
 
 export async function crudAdminController() {
-    console.log('🔥 CRUD Admin Controller iniciado');
+    console.log('ðŸ”¥ CRUD Admin Controller iniciado');
 
     if (isInitialized) {
-        console.log('⏭️ Controlador ya inicializado');
+        console.log('â­ï¸ Controlador ya inicializado');
         return;
     }
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
         return;
     }
 
@@ -28,7 +28,7 @@ export async function crudAdminController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/'));
         });
         return;
     }
@@ -57,7 +57,7 @@ function loadStyles() {
 }
 
 // ============================================
-// 📥 CARGAR ADMINS DESDE FIRESTORE
+// ðŸ“¥ CARGAR ADMINS DESDE FIRESTORE
 // ============================================
 async function loadAdmins() {
     const tbody = document.getElementById('adminsTableBody');
@@ -78,7 +78,7 @@ async function loadAdmins() {
 }
 
 // ============================================
-// 🖼️ RENDERIZAR TABLA DE ADMINS
+// ðŸ–¼ï¸ RENDERIZAR TABLA DE ADMINS
 // ============================================
 function renderAdminsTable() {
     const searchTerm = document.getElementById('searchAdmin')?.value.toLowerCase() || '';
@@ -126,102 +126,102 @@ function renderAdminsTable() {
 }
 
 // ============================================
-// 🔥 DELEGACIÓN DE EVENTOS PARA BOTONES DE ACCIÓN
+// ðŸ”¥ DELEGACIÃ“N DE EVENTOS PARA BOTONES DE ACCIÃ“N
 // ============================================
 function setupDelegation() {
-    console.log('🔧 Configurando delegación de eventos...');
+    console.log('ðŸ”§ Configurando delegaciÃ³n de eventos...');
     
     // Remover listener anterior
     document.removeEventListener('click', handleDocumentClick);
     document.addEventListener('click', handleDocumentClick);
     
-    // 🔥 BUSCADOR
+    // ðŸ”¥ BUSCADOR
     const searchAdmin = document.getElementById('searchAdmin');
     if (searchAdmin) {
         const newSearch = searchAdmin.cloneNode(true);
         searchAdmin.parentNode.replaceChild(newSearch, searchAdmin);
         newSearch.addEventListener('input', () => renderAdminsTable());
-        console.log('✅ Event listener agregado al buscador');
+        console.log('âœ… Event listener agregado al buscador');
     }
     
-    console.log('✅ Delegación de eventos configurada');
+    console.log('âœ… DelegaciÃ³n de eventos configurada');
 }
 
 // ============================================
-// 🖱️ MANEJADOR DE CLICKS POR DELEGACIÓN
+// ðŸ–±ï¸ MANEJADOR DE CLICKS POR DELEGACIÃ“N
 // ============================================
 function handleDocumentClick(e) {
-    // 🔥 EL BOTÓN DE CREAR AHORA ES UN ENLACE, LO MANEJA EL ROUTER
+    // ðŸ”¥ EL BOTÃ“N DE CREAR AHORA ES UN ENLACE, LO MANEJA EL ROUTER
     // No necesitamos hacer nada para el enlace, el router lo maneja con data-link
     
-    // 🔍 Ver detalles
+    // ðŸ” Ver detalles
     const viewBtn = e.target.closest('.view-admin');
     if (viewBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = viewBtn.dataset.id;
-        console.log('👁️ Ver admin:', id);
+        console.log('ðŸ‘ï¸ Ver admin:', id);
         viewAdmin(id);
         return;
     }
     
-    // ✏️ Editar
+    // âœï¸ Editar
     const editBtn = e.target.closest('.edit-admin');
     if (editBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = editBtn.dataset.id;
-        console.log('✏️ Editar admin:', id);
+        console.log('âœï¸ Editar admin:', id);
         editAdmin(id);
         return;
     }
     
-    // 🔄 Habilitar/Inhabilitar
+    // ðŸ”„ Habilitar/Inhabilitar
     const toggleBtn = e.target.closest('.toggle-status');
     if (toggleBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = toggleBtn.dataset.id;
         const status = toggleBtn.dataset.status;
-        console.log('🔄 Toggle admin:', id, status);
+        console.log('ðŸ”„ Toggle admin:', id, status);
         toggleAdminStatus(id, status);
         return;
     }
 }
 
 // ============================================
-// 👁️ VER ADMIN
+// ðŸ‘ï¸ VER ADMIN
 // ============================================
 function viewAdmin(adminId) {
     if (!adminId) {
         Swal.fire({
             title: 'Error',
-            text: 'ID de administrador no válido',
+            text: 'ID de administrador no vÃ¡lido',
             icon: 'error',
             confirmButtonText: 'OK'
         });
         return;
     }
     localStorage.setItem('adminDetailId', adminId);
-    window.location.href = `/sysadmin/admin-details?id=${adminId}`;
+    window.go(`/sysadmin/admin-details?id=${adminId}`);
 }
 
 // ============================================
-// ✏️ EDITAR ADMIN
+// âœï¸ EDITAR ADMIN
 // ============================================
 function editAdmin(adminId) {
-    window.location.href = `/sysadmin/admins/edit?id=${adminId}`;
+    window.go(`/sysadmin/admins/edit?id=${adminId}`);
 }
 
 // ============================================
-// 🔄 HABILITAR/INHABILITAR ADMIN
+// ðŸ”„ HABILITAR/INHABILITAR ADMIN
 // ============================================
 async function toggleAdminStatus(adminId, currentStatus) {
     try {
         if (!adminId) {
             Swal.fire({
                 title: 'Error',
-                text: 'ID de administrador no válido',
+                text: 'ID de administrador no vÃ¡lido',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -242,7 +242,7 @@ async function toggleAdminStatus(adminId, currentStatus) {
         const currentUser = userService.getCurrentUser();
         if (currentUser && currentUser.id === adminId) {
             Swal.fire({
-                title: 'Acción no permitida',
+                title: 'AcciÃ³n no permitida',
                 text: 'No puedes inhabilitar tu propia cuenta',
                 icon: 'warning',
                 confirmButtonText: 'OK'
@@ -255,13 +255,13 @@ async function toggleAdminStatus(adminId, currentStatus) {
         const actionText = isActive ? 'inhabilitar' : 'habilitar';
 
         const result = await Swal.fire({
-            title: `${isActive ? '🚫' : '✅'} ¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Administrador?`,
-            text: `¿Estás seguro de ${actionText} al administrador "${admin.username}"?`,
+            title: `${isActive ? 'ðŸš«' : 'âœ…'} Â¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Administrador?`,
+            text: `Â¿EstÃ¡s seguro de ${actionText} al administrador "${admin.username}"?`,
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#ff007a',
             cancelButtonColor: '#4db8ff',
-            confirmButtonText: `Sí, ${actionText}`,
+            confirmButtonText: `SÃ­, ${actionText}`,
             cancelButtonText: 'Cancelar'
         });
 
@@ -282,7 +282,7 @@ async function toggleAdminStatus(adminId, currentStatus) {
             Swal.close();
             
             await Swal.fire({
-                title: '¡Actualizado!',
+                title: 'Â¡Actualizado!',
                 text: `El administrador ha sido ${actionText}do correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -303,7 +303,7 @@ async function toggleAdminStatus(adminId, currentStatus) {
 }
 
 // ============================================
-// 🔧 UTILIDADES
+// ðŸ”§ UTILIDADES
 // ============================================
 function getStatusText(status) {
     const statuses = {

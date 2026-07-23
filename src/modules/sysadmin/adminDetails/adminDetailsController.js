@@ -1,15 +1,15 @@
-// src/modules/sysadmin/adminDetails/adminDetailsController.js
+﻿// src/modules/sysadmin/adminDetails/adminDetailsController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 let currentAdminId = null;
 
 export async function adminDetailsController() {
-    console.log('🔥 Admin Details Controller iniciado');
+    console.log('ðŸ”¥ Admin Details Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
         return;
     }
 
@@ -22,7 +22,7 @@ export async function adminDetailsController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/'));
         });
         return;
     }
@@ -40,12 +40,12 @@ export async function adminDetailsController() {
     if (!adminId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificó qué administrador ver',
+            text: 'No se especificÃ³ quÃ© administrador ver',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
             localStorage.removeItem('adminDetailId');
-            window.location.href = '/sysadmin/admins';
+            window.go('');
         });
         return;
     }
@@ -59,7 +59,7 @@ async function loadAdminDetails(adminId) {
     const card = document.getElementById('adminDetailsCard');
     
     if (!card) {
-        console.error('❌ No se encontró el elemento adminDetailsCard');
+        console.error('âŒ No se encontrÃ³ el elemento adminDetailsCard');
         return;
     }
     
@@ -90,7 +90,7 @@ async function loadAdminDetails(adminId) {
         setupEventListeners();
 
     } catch (error) {
-        console.error('❌ Error al cargar detalles:', error);
+        console.error('âŒ Error al cargar detalles:', error);
         card.innerHTML = `
             <div class="details-loading" style="color: #ff007a;">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -113,11 +113,11 @@ function buildAdminDetailsHTML(admin) {
 
             <div class="detail-grid">
                 <div class="detail-group">
-                    <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                    <label><i class="fas fa-envelope"></i> Correo ElectrÃ³nico</label>
                     <div class="detail-value"><strong>${escapeHtml(admin.email || 'No registrado')}</strong></div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-phone"></i> Teléfono</label>
+                    <label><i class="fas fa-phone"></i> TelÃ©fono</label>
                     <div class="detail-value">${admin.phone || 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
@@ -140,14 +140,14 @@ function buildAdminDetailsHTML(admin) {
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-check-circle"></i> Email Verificado</label>
-                    <div class="detail-value">${admin.emailVerified ? '✅ Sí' : '❌ No'}</div>
+                    <div class="detail-value">${admin.emailVerified ? 'âœ… SÃ­' : 'âŒ No'}</div>
                 </div>
                 <div class="detail-group">
                     <label><i class="fas fa-calendar-day"></i> Fecha de Registro</label>
                     <div class="detail-value">${admin.createdAt ? new Date(admin.createdAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'No registrado'}</div>
                 </div>
                 <div class="detail-group">
-                    <label><i class="fas fa-clock"></i> Último Acceso</label>
+                    <label><i class="fas fa-clock"></i> Ãšltimo Acceso</label>
                     <div class="detail-value">${admin.lastLogin ? new Date(admin.lastLogin).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Nunca'}</div>
                 </div>
                 ${admin.notes || admin.bio ? `
@@ -158,7 +158,7 @@ function buildAdminDetailsHTML(admin) {
                 ` : ''}
             </div>
 
-            <!-- 🔥 ACCIONES: Botón Volver y Editar juntos -->
+            <!-- ðŸ”¥ ACCIONES: BotÃ³n Volver y Editar juntos -->
             <div class="detail-actions">
                 <button type="button" class="btn-back-detail" id="btnVolverDetail">
                     <i class="fas fa-arrow-left"></i> Volver
@@ -172,9 +172,9 @@ function buildAdminDetailsHTML(admin) {
 }
 
 function setupEventListeners() {
-    console.log('🔧 Configurando event listeners...');
+    console.log('ðŸ”§ Configurando event listeners...');
     
-    // 🔥 BOTÓN VOLVER (nuevo, junto a editar)
+    // ðŸ”¥ BOTÃ“N VOLVER (nuevo, junto a editar)
     const btnVolver = document.getElementById('btnVolverDetail');
     if (btnVolver) {
         const newBtn = btnVolver.cloneNode(true);
@@ -183,32 +183,28 @@ function setupEventListeners() {
         newBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🔙 Click en Volver');
+            console.log('ðŸ”™ Click en Volver');
             
             Swal.fire({
-                title: '¿Volver atrás?',
-                text: '¿Estás seguro de que quieres salir de los detalles?',
+                title: 'Â¿Volver atrÃ¡s?',
+                text: 'Â¿EstÃ¡s seguro de que quieres salir de los detalles?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#ff007a',
                 cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'Sí, volver',
+                confirmButtonText: 'SÃ­, volver',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
                     localStorage.removeItem('adminDetailId');
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/admins');
-                    } else {
-                        window.location.href = '/sysadmin/admins';
-                    }
+                            import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/sysadmin/admins'));
                 }
             });
         });
-        console.log('✅ Event listener agregado al botón Volver');
+        console.log('âœ… Event listener agregado al botÃ³n Volver');
     }
     
-    // 🔥 BOTÓN EDITAR
+    // ðŸ”¥ BOTÃ“N EDITAR
     const btnEditar = document.getElementById('btnEditarAdmin');
     if (btnEditar) {
         const newBtn = btnEditar.cloneNode(true);
@@ -216,10 +212,10 @@ function setupEventListeners() {
         
         newBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('✏️ Editar administrador:', currentAdminId);
-            window.location.href = `/sysadmin/admins/edit?id=${currentAdminId}`;
+            console.log('âœï¸ Editar administrador:', currentAdminId);
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref(`/sysadmin/admins/edit?id=${currentAdminId}`));
         });
-        console.log('✅ Event listener agregado al botón Editar');
+        console.log('âœ… Event listener agregado al botÃ³n Editar');
     }
 }
 

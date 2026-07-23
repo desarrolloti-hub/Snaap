@@ -1,4 +1,4 @@
-// src/modules/host/carroucelEvents/carroucelEventsController.js
+﻿// src/modules/host/carroucelEvents/carroucelEventsController.js
 import { carouselService } from '../../../services/carouselService.js';
 
 let carouselItems = [];
@@ -7,7 +7,7 @@ let autoPlayInterval = null;
 let isPaused = false;
 
 export async function carroucelEventsController() {
-    console.log('🔥 Carrusel de Eventos Controller iniciado');
+    console.log('ðŸ”¥ Carrusel de Eventos Controller iniciado');
     await loadCarouselImages();
     initCarousel();
 }
@@ -15,36 +15,36 @@ export async function carroucelEventsController() {
 async function loadCarouselImages() {
     const track = document.getElementById('snaap-carousel-track');
     if (!track) {
-        console.warn('⚠️ No se encontró el contenedor del carrusel');
+        console.warn('âš ï¸ No se encontrÃ³ el contenedor del carrusel');
         return;
     }
 
     try {
-        console.log('📤 Solicitando imágenes activas a Firestore...');
+        console.log('ðŸ“¤ Solicitando imÃ¡genes activas a Firestore...');
         const result = await carouselService.obtenerItemsActivos();
         
-        console.log('📊 Resultado completo:', result);
+        console.log('ðŸ“Š Resultado completo:', result);
         
         if (result.success && result.items && result.items.length > 0) {
             carouselItems = result.items.filter(item => item.active !== false);
-            console.log(`📊 ${carouselItems.length} imágenes activas cargadas desde Firestore`);
+            console.log(`ðŸ“Š ${carouselItems.length} imÃ¡genes activas cargadas desde Firestore`);
             
             carouselItems.forEach((item, index) => {
-                console.log(`   📌 [${index+1}] ${item.title} - URL: ${item.imageUrl ? 'Sí (Base64)' : 'No'}`);
+                console.log(`   ðŸ“Œ [${index+1}] ${item.title} - URL: ${item.imageUrl ? 'SÃ­ (Base64)' : 'No'}`);
             });
             
             if (carouselItems.length === 0) {
-                console.log('ℹ️ No hay imágenes activas en Firestore');
+                console.log('â„¹ï¸ No hay imÃ¡genes activas en Firestore');
                 showEmptyMessage(track);
                 return;
             }
         } else {
-            console.log('ℹ️ No hay imágenes en Firestore');
+            console.log('â„¹ï¸ No hay imÃ¡genes en Firestore');
             showEmptyMessage(track);
             return;
         }
     } catch (error) {
-        console.error('❌ Error al cargar imágenes:', error);
+        console.error('âŒ Error al cargar imÃ¡genes:', error);
         showEmptyMessage(track);
         return;
     }
@@ -57,7 +57,7 @@ function showEmptyMessage(track) {
         <div class="empty-carousel">
             <i class="fas fa-images"></i>
             <p>No hay eventos disponibles</p>
-            <small>El administrador agregará imágenes pronto</small>
+            <small>El administrador agregarÃ¡ imÃ¡genes pronto</small>
         </div>
     `;
 }
@@ -97,7 +97,7 @@ function renderCarousel(track) {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo(link);
             } else {
-                window.location.href = link;
+                window.go(link);
             }
         });
         
@@ -199,7 +199,7 @@ function setupPauseOnHover(track) {
 }
 
 function initCarousel() {
-    console.log('✅ Carrusel inicializado');
+    console.log('âœ… Carrusel inicializado');
     
     document.addEventListener('visibilitychange', () => {
         const track = document.getElementById('snaap-carousel-track');

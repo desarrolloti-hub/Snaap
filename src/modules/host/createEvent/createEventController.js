@@ -1,29 +1,29 @@
-// src/modules/host/createEvent/createEventController.js
+﻿// src/modules/host/createEvent/createEventController.js
 import { eventService } from '../../../services/eventService.js';
 import { userService } from '../../../services/userService.js';
 import { qrService } from '../../../services/qrService.js';
 
 const packagesDetails = {
     basico: {
-        nombre: "Paquete Básico",
+        nombre: "Paquete BÃ¡sico",
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 50 invitados",
             "Capacidad de almacenamiento para 200 fotos",
             "Solo puedes subir fotos, dibujos y notas",
-            "Duración: 24 horas después del evento",
+            "DuraciÃ³n: 24 horas despuÃ©s del evento",
         ]
     },
     estandar: {
-        nombre: "Paquete Estándar",
+        nombre: "Paquete EstÃ¡ndar",
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 100 invitados",
-            "Galería de fotos premium",
-            "Música en vivo (1 hora)",
+            "GalerÃ­a de fotos premium",
+            "MÃºsica en vivo (1 hora)",
             "Soporte prioritario",
-            "Duración: 48 horas después del evento",
-            "Video streaming básico"
+            "DuraciÃ³n: 48 horas despuÃ©s del evento",
+            "Video streaming bÃ¡sico"
         ]
     },
     premium: {
@@ -31,12 +31,12 @@ const packagesDetails = {
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 150 invitados",
-            "Galería de fotos + video",
-            "Música en vivo (2 horas)",
+            "GalerÃ­a de fotos + video",
+            "MÃºsica en vivo (2 horas)",
             "Soporte 24/7",
-            "Duración: 72 horas después del evento",
+            "DuraciÃ³n: 72 horas despuÃ©s del evento",
             "Video streaming HD",
-            "Fotógrafo profesional"
+            "FotÃ³grafo profesional"
         ]
     },
     empresarial: {
@@ -46,7 +46,7 @@ const packagesDetails = {
             "Capacidad para 200 invitados",
             "Cobertura multimedia completa",
             "Soporte dedicado",
-            "Duración: 7 días después del evento",
+            "DuraciÃ³n: 7 dÃ­as despuÃ©s del evento",
             "Streaming 4K",
             "Marca personalizada"
         ]
@@ -62,20 +62,20 @@ export function initCreateEvent() {
 
     if (!form) return;
 
-    // 🔥 Verificar autenticación
+    // ðŸ”¥ Verificar autenticaciÃ³n
     if (!userService.isAuthenticated()) {
         Swal.fire({
             title: 'Acceso Denegado',
-            text: 'Debes iniciar sesión para crear un evento',
+            text: 'Debes iniciar sesiÃ³n para crear un evento',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/login';
+            window.go('');
         });
         return;
     }
 
-    // 🔥 Obtener usuario actual y configurar servicios
+    // ðŸ”¥ Obtener usuario actual y configurar servicios
     const user = userService.getCurrentUser();
     if (user) {
         qrService.setUsuarioActual(user);
@@ -92,15 +92,15 @@ export function initCreateEvent() {
             const details = packagesDetails[selectedPackage];
 
             let html = `
-                <p><strong>📦 ${details.nombre}</strong></p>
-                <p><strong>💰 Precio:</strong> ${details.precio}</p>
+                <p><strong>ðŸ“¦ ${details.nombre}</strong></p>
+                <p><strong>ðŸ’° Precio:</strong> ${details.precio}</p>
                 <div>
-                    <strong>✨ Características incluidas:</strong>
+                    <strong>âœ¨ CaracterÃ­sticas incluidas:</strong>
                     <ul>
             `;
 
             details.caracteristicas.forEach(feature => {
-                html += `<li>✓ ${feature}</li>`;
+                html += `<li>âœ“ ${feature}</li>`;
             });
 
             html += `
@@ -153,12 +153,12 @@ export function initCreateEvent() {
             return;
         }
 
-        // 🔥 Obtener usuario actual
+        // ðŸ”¥ Obtener usuario actual
         const user = userService.getCurrentUser();
         if (!user) {
             Swal.fire({
                 title: 'Error',
-                text: 'No se pudo obtener la información del usuario',
+                text: 'No se pudo obtener la informaciÃ³n del usuario',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -176,11 +176,11 @@ export function initCreateEvent() {
         });
 
         try {
-            // 🔥 Establecer el usuario actual en el servicio
+            // ðŸ”¥ Establecer el usuario actual en el servicio
             eventService.setUsuarioActual(user);
             qrService.setUsuarioActual(user);
 
-            // 🔥 Crear evento con datos del host
+            // ðŸ”¥ Crear evento con datos del host
             const result = await eventService.crearEvento({
                 nombre: eventName,
                 paquete: selectedPackage,
@@ -200,21 +200,21 @@ export function initCreateEvent() {
                 const evento = result.evento;
                 const eventoId = evento.id;
 
-                console.log(`✅ Evento creado con ID: ${eventoId}`);
+                console.log(`âœ… Evento creado con ID: ${eventoId}`);
 
-                // 🔥 2. GENERAR QR AUTOMÁTICAMENTE
+                // ðŸ”¥ 2. GENERAR QR AUTOMÃTICAMENTE
                 await generarQrAutomatico(eventoId, evento, user);
 
-                // Guardar también en localStorage para compatibilidad
+                // Guardar tambiÃ©n en localStorage para compatibilidad
                 guardarEventoLocal(evento);
 
-                // 🔥 MOSTRAR ÉXITO CON OPCIÓN A VER QR
+                // ðŸ”¥ MOSTRAR Ã‰XITO CON OPCIÃ“N A VER QR
                 Swal.fire({
-                    title: '¡Evento creado!',
+                    title: 'Â¡Evento creado!',
                     html: `
                         El evento <strong>${evento.nombre}</strong> ha sido creado exitosamente.<br><br>
                         <i class="fas fa-qrcode" style="color: #4db8ff; font-size: 2rem;"></i><br>
-                        <small>Se ha generado automáticamente el código QR para este evento.</small>
+                        <small>Se ha generado automÃ¡ticamente el cÃ³digo QR para este evento.</small>
                     `,
                     icon: 'success',
                     confirmButtonText: 'Ver QR',
@@ -227,13 +227,13 @@ export function initCreateEvent() {
                         if (typeof window.navigateTo === 'function') {
                             window.navigateTo(`/host/qr-generator?id=${eventoId}`);
                         } else {
-                            window.location.href = `/host/qr-generator?id=${eventoId}`;
+                            window.go(`/host/qr-generator?id=${eventoId}`);
                         }
                     } else {
                         if (typeof window.navigateTo === 'function') {
                             window.navigateTo('/host/event-crud');
                         } else {
-                            window.location.href = '/host/event-crud';
+                            window.go('');
                         }
                     }
                 });
@@ -251,10 +251,10 @@ export function initCreateEvent() {
             }
         } catch (error) {
             Swal.close();
-            console.error('Error en creación de evento:', error);
+            console.error('Error en creaciÃ³n de evento:', error);
             Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al crear el evento',
+                text: 'OcurriÃ³ un error al crear el evento',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -264,11 +264,11 @@ export function initCreateEvent() {
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
             Swal.fire({
-                title: '¿Cancelar creación?',
-                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
+                title: 'Â¿Cancelar creaciÃ³n?',
+                text: 'Â¿EstÃ¡s seguro de que quieres cancelar? Los datos no guardados se perderÃ¡n.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Sí, cancelar',
+                confirmButtonText: 'SÃ­, cancelar',
                 cancelButtonText: 'Continuar'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -281,11 +281,11 @@ export function initCreateEvent() {
 }
 
 // ============================================
-// 📤 GENERAR QR AUTOMÁTICAMENTE
+// ðŸ“¤ GENERAR QR AUTOMÃTICAMENTE
 // ============================================
 async function generarQrAutomatico(eventoId, evento, user) {
     try {
-        console.log(`📤 Generando QR automático para evento: ${eventoId}`);
+        console.log(`ðŸ“¤ Generando QR automÃ¡tico para evento: ${eventoId}`);
 
         const qrData = {
             eventName: evento.nombre || 'Evento',
@@ -297,21 +297,21 @@ async function generarQrAutomatico(eventoId, evento, user) {
         const result = await qrService.generarQr(eventoId, qrData);
 
         if (result.success) {
-            console.log(`✅ QR generado automáticamente para: ${evento.nombre}`);
-            console.log(`   📊 Token: ${result.qrCode?.token || 'N/A'}`);
+            console.log(`âœ… QR generado automÃ¡ticamente para: ${evento.nombre}`);
+            console.log(`   ðŸ“Š Token: ${result.qrCode?.token || 'N/A'}`);
         } else {
-            console.error(`❌ Error al generar QR automático:`, result.error);
+            console.error(`âŒ Error al generar QR automÃ¡tico:`, result.error);
         }
 
         return result;
 
     } catch (error) {
-        console.error('❌ Error en generarQrAutomatico:', error);
+        console.error('âŒ Error en generarQrAutomatico:', error);
         return { success: false, error: error.message };
     }
 }
 
-// Función para guardar evento en localStorage (compatibilidad)
+// FunciÃ³n para guardar evento en localStorage (compatibilidad)
 function guardarEventoLocal(evento) {
     try {
         let eventos = JSON.parse(localStorage.getItem('snaap_events') || '[]');
@@ -331,12 +331,12 @@ function guardarEventoLocal(evento) {
     }
 }
 
-// Función para mostrar eventos guardados (solo para referencia)
+// FunciÃ³n para mostrar eventos guardados (solo para referencia)
 function mostrarEventosGuardados() {
     try {
         const eventos = JSON.parse(localStorage.getItem('snaap_events') || '[]');
         if (eventos.length > 0) {
-            console.log(`📊 ${eventos.length} eventos guardados localmente`);
+            console.log(`ðŸ“Š ${eventos.length} eventos guardados localmente`);
         }
     } catch (error) {
         // Ignorar errores

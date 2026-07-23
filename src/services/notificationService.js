@@ -1,4 +1,4 @@
-// src/services/notificationService.js
+﻿// src/services/notificationService.js
 import { notificationRepository } from '../repositories/notificationRepository.js';
 
 class NotificationService {
@@ -13,39 +13,39 @@ class NotificationService {
     }
 
     // ============================================
-    // 📱 SUSCRIBIRSE A NOTIFICACIONES (MODO SIMPLE)
+    // ðŸ“± SUSCRIBIRSE A NOTIFICACIONES (MODO SIMPLE)
     // ============================================
     async subscribeToNotifications() {
         try {
-            console.log('🔔 Iniciando suscripción (modo simple)...');
+            console.log('ðŸ”” Iniciando suscripciÃ³n (modo simple)...');
 
             if (!this.usuarioActual) {
                 return { success: false, error: 'Usuario no autenticado' };
             }
 
-            // 🔥 VERIFICAR QUE ESTAMOS EN EL NAVEGADOR
+            // ðŸ”¥ VERIFICAR QUE ESTAMOS EN EL NAVEGADOR
             if (typeof window === 'undefined') {
-                return { success: false, error: 'No estás en un navegador' };
+                return { success: false, error: 'No estÃ¡s en un navegador' };
             }
 
-            // 🔥 VERIFICAR QUE NOTIFICATION EXISTE
+            // ðŸ”¥ VERIFICAR QUE NOTIFICATION EXISTE
             if (!window.Notification) {
-                console.warn('⚠️ window.Notification no existe');
+                console.warn('âš ï¸ window.Notification no existe');
                 return { 
                     success: false, 
                     error: 'Tu navegador no soporta notificaciones. Usa Chrome o Firefox.' 
                 };
             }
 
-            console.log('✅ window.Notification existe');
+            console.log('âœ… window.Notification existe');
 
-            // 🔥 SOLICITAR PERMISO
+            // ðŸ”¥ SOLICITAR PERMISO
             let permission = 'denied';
             try {
                 permission = await window.Notification.requestPermission();
-                console.log('📊 Permiso obtenido:', permission);
+                console.log('ðŸ“Š Permiso obtenido:', permission);
             } catch (permError) {
-                console.error('❌ Error al solicitar permiso:', permError);
+                console.error('âŒ Error al solicitar permiso:', permError);
                 return { 
                     success: false, 
                     error: 'Error al solicitar permiso: ' + permError.message 
@@ -53,16 +53,16 @@ class NotificationService {
             }
 
             if (permission !== 'granted') {
-                console.warn('⚠️ Permiso denegado:', permission);
+                console.warn('âš ï¸ Permiso denegado:', permission);
                 return { 
                     success: false, 
                     error: 'Permiso denegado. Acepta los permisos en tu navegador.' 
                 };
             }
 
-            console.log('✅ Permiso concedido');
+            console.log('âœ… Permiso concedido');
 
-            // 🔥 GUARDAR EN FIRESTORE (para mantener registro)
+            // ðŸ”¥ GUARDAR EN FIRESTORE (para mantener registro)
             try {
                 await notificationRepository.saveToken(
                     this.usuarioActual.uid,
@@ -75,13 +75,13 @@ class NotificationService {
                         type: 'simple_notification'
                     }
                 );
-                console.log('✅ Registro guardado en Firestore');
+                console.log('âœ… Registro guardado en Firestore');
             } catch (saveError) {
-                console.error('❌ Error al guardar:', saveError);
+                console.error('âŒ Error al guardar:', saveError);
             }
 
             this.isSubscribed = true;
-            console.log('✅ Suscrito a notificaciones (modo simple)');
+            console.log('âœ… Suscrito a notificaciones (modo simple)');
 
             return { 
                 success: true, 
@@ -89,7 +89,7 @@ class NotificationService {
             };
 
         } catch (error) {
-            console.error('❌ Error general:', error);
+            console.error('âŒ Error general:', error);
             return { 
                 success: false, 
                 error: error.message || 'Error al suscribirse' 
@@ -98,11 +98,11 @@ class NotificationService {
     }
 
     // ============================================
-    // 💬 MOSTRAR NOTIFICACIÓN
+    // ðŸ’¬ MOSTRAR NOTIFICACIÃ“N
     // ============================================
     showNotification({ title, body, icon, link }) {
         try {
-            // 🔥 USAR NOTIFICACIÓN DEL SISTEMA
+            // ðŸ”¥ USAR NOTIFICACIÃ“N DEL SISTEMA
             if (window.Notification && window.Notification.permission === 'granted') {
                 const notification = new window.Notification(title, {
                     body: body,
@@ -112,7 +112,7 @@ class NotificationService {
 
                 notification.onclick = () => {
                     if (link) {
-                        window.location.href = link;
+                        if (typeof window.navigateTo === 'function') window.navigateTo(link); else window.go(link);
                     }
                     notification.close();
                 };
@@ -121,7 +121,7 @@ class NotificationService {
                 return;
             }
 
-            // 🔥 FALLBACK: NOTIFICACIÓN EN LA UI
+            // ðŸ”¥ FALLBACK: NOTIFICACIÃ“N EN LA UI
             let container = document.getElementById('notificationContainer');
             if (!container) {
                 container = document.createElement('div');
@@ -160,7 +160,7 @@ class NotificationService {
 
             const iconEl = document.createElement('div');
             iconEl.style.cssText = `font-size: 1.5rem; flex-shrink: 0;`;
-            iconEl.textContent = icon || '📢';
+            iconEl.textContent = icon || 'ðŸ“¢';
 
             const contentEl = document.createElement('div');
             contentEl.style.cssText = `flex: 1; min-width: 0;`;
@@ -193,7 +193,7 @@ class NotificationService {
                 flex-shrink: 0;
                 padding: 0 0 0 10px;
             `;
-            closeBtn.innerHTML = '×';
+            closeBtn.innerHTML = 'Ã—';
             closeBtn.onclick = (e) => {
                 e.stopPropagation();
                 notificationEl.style.opacity = '0';
@@ -208,7 +208,7 @@ class NotificationService {
             notificationEl.appendChild(closeBtn);
 
             notificationEl.onclick = () => {
-                if (link) window.location.href = link;
+                if (link) { if (typeof window.navigateTo === 'function') window.navigateTo(link); else window.go(link); }
                 notificationEl.remove();
             };
 
@@ -223,12 +223,12 @@ class NotificationService {
             }, 5000);
 
         } catch (error) {
-            console.error('❌ Error al mostrar notificación:', error);
+            console.error('âŒ Error al mostrar notificaciÃ³n:', error);
         }
     }
 
     // ============================================
-    // 📥 OBTENER NOTIFICACIONES DEL USUARIO
+    // ðŸ“¥ OBTENER NOTIFICACIONES DEL USUARIO
     // ============================================
     async getUserNotifications() {
         try {
@@ -253,7 +253,7 @@ class NotificationService {
     }
 
     // ============================================
-    // 📌 MARCAR COMO LEÍDA
+    // ðŸ“Œ MARCAR COMO LEÃDA
     // ============================================
     async markAsRead(notificationId) {
         try {
@@ -265,7 +265,7 @@ class NotificationService {
             
             return {
                 success: true,
-                message: 'Notificación marcada como leída'
+                message: 'NotificaciÃ³n marcada como leÃ­da'
             };
         } catch (error) {
             return {
@@ -276,7 +276,7 @@ class NotificationService {
     }
 
     // ============================================
-    // 📌 MARCAR TODAS COMO LEÍDAS
+    // ðŸ“Œ MARCAR TODAS COMO LEÃDAS
     // ============================================
     async markAllAsRead() {
         try {
@@ -288,7 +288,7 @@ class NotificationService {
             
             return {
                 success: true,
-                message: 'Todas las notificaciones marcadas como leídas'
+                message: 'Todas las notificaciones marcadas como leÃ­das'
             };
         } catch (error) {
             return {
@@ -299,7 +299,7 @@ class NotificationService {
     }
 
     // ============================================
-    // 🛠️ UTILIDADES
+    // ðŸ› ï¸ UTILIDADES
     // ============================================
     getBrowserInfo() {
         try {
@@ -316,27 +316,27 @@ class NotificationService {
     }
 
     // ============================================
-    // 🔄 DESSUSCRIBIRSE
+    // ðŸ”„ DESSUSCRIBIRSE
     // ============================================
     async unsubscribe() {
         try {
             if (!this.isSubscribed) {
-                return { success: true, message: 'Ya estás desuscrito' };
+                return { success: true, message: 'Ya estÃ¡s desuscrito' };
             }
 
             this.isSubscribed = false;
-            console.log('✅ Desuscrito');
+            console.log('âœ… Desuscrito');
 
             return { success: true, message: 'Desuscrito correctamente' };
 
         } catch (error) {
-            console.error('❌ Error al desuscribirse:', error);
+            console.error('âŒ Error al desuscribirse:', error);
             return { success: false, error: error.message };
         }
     }
 
     // ============================================
-    // 📊 OBTENER ESTADO DE SUSCRIPCIÓN
+    // ðŸ“Š OBTENER ESTADO DE SUSCRIPCIÃ“N
     // ============================================
     getSubscriptionStatus() {
         return {

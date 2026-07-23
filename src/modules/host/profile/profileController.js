@@ -1,9 +1,9 @@
-// src/modules/host/profile/profileController.js
+﻿// src/modules/host/profile/profileController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
 
-// Datos del perfil (se cargarán desde Firebase)
+// Datos del perfil (se cargarÃ¡n desde Firebase)
 let profileData = {
     fullName: '',
     email: '',
@@ -20,30 +20,30 @@ let profileData = {
 
 const specialtiesMap = {
     'weddings': 'Bodas',
-    'birthdays': 'Cumpleaños',
+    'birthdays': 'CumpleaÃ±os',
     'corporate': 'Eventos Corporativos',
     'concerts': 'Conciertos',
     'private': 'Fiestas Privadas'
 };
 
 // ============================================
-// 📥 CARGAR DATOS DEL USUARIO DESDE FIRESTORE
+// ðŸ“¥ CARGAR DATOS DEL USUARIO DESDE FIRESTORE
 // ============================================
 const loadUserData = async () => {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            console.warn('⚠️ No hay usuario autenticado');
+            console.warn('âš ï¸ No hay usuario autenticado');
             return;
         }
 
         const userData = await userRepository.getByUid(user.uid);
         if (!userData) {
-            console.warn('⚠️ Usuario no encontrado en Firestore');
+            console.warn('âš ï¸ Usuario no encontrado en Firestore');
             return;
         }
 
-        console.log('📥 Datos del usuario desde Firestore:', userData);
+        console.log('ðŸ“¥ Datos del usuario desde Firestore:', userData);
 
         profileData = {
             fullName: userData.username || user.displayName || 'Usuario',
@@ -63,13 +63,13 @@ const loadUserData = async () => {
 
         return profileData;
     } catch (error) {
-        console.error('❌ Error al cargar datos del usuario:', error);
+        console.error('âŒ Error al cargar datos del usuario:', error);
         return null;
     }
 };
 
 // ============================================
-// 📊 CARGAR ESTADÍSTICAS DE EVENTOS DESDE FIRESTORE
+// ðŸ“Š CARGAR ESTADÃSTICAS DE EVENTOS DESDE FIRESTORE
 // ============================================
 const loadEventStats = async (uid) => {
     try {
@@ -91,20 +91,20 @@ const loadEventStats = async (uid) => {
 
             return estadisticas;
         } else {
-            console.error('Error al cargar estadísticas:', result.error);
+            console.error('Error al cargar estadÃ­sticas:', result.error);
             // Fallback a localStorage
             loadEventStatsFromLocalStorage();
             return null;
         }
     } catch (error) {
-        console.error('❌ Error al cargar estadísticas:', error);
+        console.error('âŒ Error al cargar estadÃ­sticas:', error);
         loadEventStatsFromLocalStorage();
         return null;
     }
 };
 
 // ============================================
-// 📊 FALLBACK: CARGAR ESTADÍSTICAS DE LOCALSTORAGE
+// ðŸ“Š FALLBACK: CARGAR ESTADÃSTICAS DE LOCALSTORAGE
 // ============================================
 const loadEventStatsFromLocalStorage = () => {
     const stored = localStorage.getItem('eventos');
@@ -125,7 +125,7 @@ const loadEventStatsFromLocalStorage = () => {
 };
 
 // ============================================
-// 🖼️ RENDERIZAR PERFIL
+// ðŸ–¼ï¸ RENDERIZAR PERFIL
 // ============================================
 const renderProfile = () => {
     const avatarImg = document.getElementById('profileAvatar');
@@ -155,26 +155,26 @@ const renderProfile = () => {
     if (viewEmail) viewEmail.textContent = profileData.email || '-';
     if (viewPhone) viewPhone.textContent = profileData.phone || 'No registrado';
     if (viewCompany) viewCompany.textContent = profileData.company || 'No registrada';
-    if (viewBio) viewBio.textContent = profileData.bio || 'Sin descripción';
+    if (viewBio) viewBio.textContent = profileData.bio || 'Sin descripciÃ³n';
     if (viewWebsite) viewWebsite.textContent = profileData.website || 'No registrado';
     if (viewSpecialty) viewSpecialty.textContent = specialtiesMap[profileData.specialty] || 'No especificada';
     if (viewExperience) viewExperience.textContent = profileData.experience || 0;
     if (viewEventsCompleted) viewEventsCompleted.textContent = profileData.eventsCompleted || 0;
     if (memberSinceEl) memberSinceEl.textContent = profileData.memberSince || 'Enero 2024';
 
-    console.log('✅ Perfil renderizado correctamente');
+    console.log('âœ… Perfil renderizado correctamente');
 };
 
 // ============================================
-// 🗑️ ELIMINAR CUENTA
+// ðŸ—‘ï¸ ELIMINAR CUENTA
 // ============================================
 const deleteAccount = () => {
     Swal.fire({
         title: 'Eliminar Cuenta',
-        html: '¿Estás seguro de que deseas eliminar tu cuenta?<br>Esta acción no se puede deshacer y todos tus eventos serán eliminados.',
+        html: 'Â¿EstÃ¡s seguro de que deseas eliminar tu cuenta?<br>Esta acciÃ³n no se puede deshacer y todos tus eventos serÃ¡n eliminados.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'SÃ­, eliminar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -187,24 +187,24 @@ const deleteAccount = () => {
                 const user = userService.getCurrentUser();
                 if (user && user.id) {
                     await userRepository.delete(user.id);
-                    console.log('🗑️ Usuario eliminado de Firestore');
+                    console.log('ðŸ—‘ï¸ Usuario eliminado de Firestore');
                 }
 
                 await userService.logout();
 
                 await Swal.fire({
                     title: 'Cuenta Eliminada',
-                    text: 'Tu cuenta ha sido eliminada. Serás redirigido al inicio.',
+                    text: 'Tu cuenta ha sido eliminada. SerÃ¡s redirigido al inicio.',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
 
-                window.location.href = '/';
+                window.go('');
             } catch (error) {
-                console.error('❌ Error al eliminar cuenta:', error);
+                console.error('âŒ Error al eliminar cuenta:', error);
                 Swal.fire({
                     title: 'Error',
-                    text: 'Ocurrió un error al eliminar la cuenta',
+                    text: 'OcurriÃ³ un error al eliminar la cuenta',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -214,21 +214,21 @@ const deleteAccount = () => {
 };
 
 // ============================================
-// 🔙 VOLVER ATRÁS
+// ðŸ”™ VOLVER ATRÃS
 // ============================================
 const goBack = () => {
-    window.location.href = '/host';
+    window.go('');
 };
 
 // ============================================
-// 🚀 CONTROLADOR PRINCIPAL
+// ðŸš€ CONTROLADOR PRINCIPAL
 // ============================================
 export async function profileController() {
-    console.log('🔥 Controlador profileController iniciado');
+    console.log('ðŸ”¥ Controlador profileController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
+        window.go('');
         return;
     }
 
@@ -237,7 +237,7 @@ export async function profileController() {
     // Cargar datos del usuario desde Firestore
     await loadUserData();
 
-    // 🔥 Cargar estadísticas de eventos desde Firestore
+    // ðŸ”¥ Cargar estadÃ­sticas de eventos desde Firestore
     if (user && user.uid) {
         await loadEventStats(user.uid);
     } else {
@@ -256,7 +256,7 @@ export async function profileController() {
     const btnEditarPerfil = document.getElementById('btnEditarPerfil');
     if (btnEditarPerfil) {
         btnEditarPerfil.addEventListener('click', () => {
-            window.location.href = '/host/profile/edit';
+            window.go('');
         });
     }
 

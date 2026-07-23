@@ -1,4 +1,4 @@
-// src/modules/host/homeHost/homeHostController.js
+﻿// src/modules/host/homeHost/homeHostController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
@@ -7,17 +7,17 @@ import { carroucelEventsController } from '../carroucelEvents/carroucelEventsCon
 let carouselLoaded = false;
 
 export async function homeHostController() {
-    console.log('🔥 Home Host Controller cargado');
+    console.log('ðŸ”¥ Home Host Controller cargado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
+        window.go('');
         return;
     }
 
     const user = userService.getCurrentUser();
     if (!user) {
-        console.warn('⚠️ No se pudo obtener el usuario');
+        console.warn('âš ï¸ No se pudo obtener el usuario');
         return;
     }
 
@@ -26,14 +26,14 @@ export async function homeHostController() {
     if (!carouselLoaded) {
         await carroucelEventsController();
         carouselLoaded = true;
-        console.log('✅ Carrusel cargado correctamente');
+        console.log('âœ… Carrusel cargado correctamente');
     }
 
     await loadStats(user.uid);
     await loadRecentEvents(user.uid);
     setupQuickActions();
 
-    console.log('✅ Home Host Controller finalizado');
+    console.log('âœ… Home Host Controller finalizado');
 }
 
 const updateWelcomeMessage = (user) => {
@@ -54,12 +54,12 @@ const loadStats = async (uid) => {
         if (result.success) {
             const { estadisticas } = result;
 
-            console.log('📊 Estadísticas recibidas:', estadisticas);
+            console.log('ðŸ“Š EstadÃ­sticas recibidas:', estadisticas);
 
             const totalEventsEl = document.getElementById('totalEvents');
             if (totalEventsEl) {
                 totalEventsEl.textContent = estadisticas.totalEventos || 0;
-                console.log(`📊 Total eventos: ${estadisticas.totalEventos}`);
+                console.log(`ðŸ“Š Total eventos: ${estadisticas.totalEventos}`);
             }
 
             const totalPhotosEl = document.getElementById('totalPhotos');
@@ -84,11 +84,11 @@ const loadStats = async (uid) => {
             }
 
         } else {
-            console.error('Error al cargar estadísticas:', result.error);
+            console.error('Error al cargar estadÃ­sticas:', result.error);
             loadStatsFromLocalStorage();
         }
     } catch (error) {
-        console.error('❌ Error al cargar estadísticas:', error);
+        console.error('âŒ Error al cargar estadÃ­sticas:', error);
         loadStatsFromLocalStorage();
     }
 };
@@ -114,7 +114,7 @@ const loadStatsFromLocalStorage = () => {
     if (totalPhotosEl) totalPhotosEl.textContent = totalPhotos;
     if (activeEventsEl) activeEventsEl.textContent = activeEvents;
 
-    console.log(`📊 Fallback - Total eventos: ${totalEvents}`);
+    console.log(`ðŸ“Š Fallback - Total eventos: ${totalEvents}`);
 };
 
 const loadRecentEvents = async (uid) => {
@@ -139,7 +139,7 @@ const loadRecentEvents = async (uid) => {
                 container.innerHTML = `
                     <div class="no-events">
                         <i class="fas fa-calendar-plus"></i>
-                        <p>No tienes eventos aún</p>
+                        <p>No tienes eventos aÃºn</p>
                         <small>Crea tu primer evento</small>
                     </div>
                 `;
@@ -188,11 +188,11 @@ const loadRecentEvents = async (uid) => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const id = btn.dataset.id;
-                    console.log(`🔍 Ver evento ${id}`);
+                    console.log(`ðŸ” Ver evento ${id}`);
                     if (typeof window.navigateTo === 'function') {
                         window.navigateTo(`/host/event-details?id=${id}`);
                     } else {
-                        window.location.href = `/host/event-details?id=${id}`;
+                        window.go(`/host/event-details?id=${id}`);
                     }
                 });
             });
@@ -202,7 +202,7 @@ const loadRecentEvents = async (uid) => {
             loadRecentEventsFromLocalStorage();
         }
     } catch (error) {
-        console.error('❌ Error al cargar eventos recientes:', error);
+        console.error('âŒ Error al cargar eventos recientes:', error);
         loadRecentEventsFromLocalStorage();
     }
 };
@@ -222,7 +222,7 @@ const loadRecentEventsFromLocalStorage = () => {
         container.innerHTML = `
             <div class="no-events">
                 <i class="fas fa-calendar-plus"></i>
-                <p>No tienes eventos aún</p>
+                <p>No tienes eventos aÃºn</p>
                 <small>Crea tu primer evento</small>
             </div>
         `;
@@ -272,7 +272,7 @@ const setupQuickActions = () => {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/host/create-event');
             } else {
-                window.location.href = '/host/create-event';
+                window.go('');
             }
         });
     }
@@ -282,7 +282,7 @@ const setupQuickActions = () => {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/host/event-crud');
             } else {
-                window.location.href = '/host/event-crud';
+                window.go('');
             }
         });
     }
@@ -292,7 +292,7 @@ const setupQuickActions = () => {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/host/event-crud');
             } else {
-                window.location.href = '/host/event-crud';
+                window.go('');
             }
         });
     }

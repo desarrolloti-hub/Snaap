@@ -1,9 +1,9 @@
-// src/modules/visitor/register/registerController.js
+﻿// src/modules/visitor/register/registerController.js
 import { userService } from '../../../services/userService.js';
 import { getRedirectPathByRole } from '../../../core/permissions.js';
 
 export async function registerController() {
-    console.log('🔥 Register Controller iniciado');
+    console.log('ðŸ”¥ Register Controller iniciado');
 
     if (userService.isAuthenticated()) {
         const user = userService.getCurrentUser();
@@ -43,8 +43,8 @@ export async function registerController() {
         icon.addEventListener('click', () => {
             const social = icon.getAttribute('data-social') || 'red social';
             Swal.fire({
-                title: 'Próximamente',
-                text: `Registro con ${social} estará disponible pronto.`,
+                title: 'PrÃ³ximamente',
+                text: `Registro con ${social} estarÃ¡ disponible pronto.`,
                 icon: 'info',
                 confirmButtonText: 'OK'
             });
@@ -53,7 +53,7 @@ export async function registerController() {
 }
 
 // ============================================
-// 📧 REGISTRO CON EMAIL
+// ðŸ“§ REGISTRO CON EMAIL
 // ============================================
 async function handleRegister(e) {
     e.preventDefault();
@@ -76,8 +76,8 @@ async function handleRegister(e) {
 
     if (password !== confirmPassword) {
         Swal.fire({
-            title: 'Contraseñas no coinciden',
-            text: 'Las contraseñas ingresadas no son iguales',
+            title: 'ContraseÃ±as no coinciden',
+            text: 'Las contraseÃ±as ingresadas no son iguales',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -86,8 +86,8 @@ async function handleRegister(e) {
 
     if (password.length < 6) {
         Swal.fire({
-            title: 'Contraseña muy corta',
-            text: 'La contraseña debe tener al menos 6 caracteres',
+            title: 'ContraseÃ±a muy corta',
+            text: 'La contraseÃ±a debe tener al menos 6 caracteres',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -96,8 +96,8 @@ async function handleRegister(e) {
 
     if (!acceptTerms) {
         Swal.fire({
-            title: 'Términos y condiciones',
-            text: 'Debes aceptar los términos y condiciones para registrarte.',
+            title: 'TÃ©rminos y condiciones',
+            text: 'Debes aceptar los tÃ©rminos y condiciones para registrarte.',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -107,8 +107,8 @@ async function handleRegister(e) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         Swal.fire({
-            title: 'Email inválido',
-            text: 'Por favor ingresa un correo electrónico válido',
+            title: 'Email invÃ¡lido',
+            text: 'Por favor ingresa un correo electrÃ³nico vÃ¡lido',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -137,13 +137,13 @@ async function handleRegister(e) {
                 }
             }));
 
-            // 🔥 MENSAJE CON VERIFICACIÓN DE EMAIL
+            // ðŸ”¥ MENSAJE CON VERIFICACIÃ“N DE EMAIL
             await Swal.fire({
-                title: '¡Registro exitoso!',
+                title: 'Â¡Registro exitoso!',
                 html: `${result.message}<br><br>
-                       <strong>📧 Revisa tu correo electrónico</strong><br>
-                       <small>Hemos enviado un enlace de verificación a ${email}.<br>
-                       Debes verificarlo antes de iniciar sesión.</small>`,
+                       <strong>ðŸ“§ Revisa tu correo electrÃ³nico</strong><br>
+                       <small>Hemos enviado un enlace de verificaciÃ³n a ${email}.<br>
+                       Debes verificarlo antes de iniciar sesiÃ³n.</small>`,
                 icon: 'success',
                 confirmButtonText: 'Entendido'
             });
@@ -162,7 +162,7 @@ async function handleRegister(e) {
         console.error('Error en registro:', error);
         Swal.fire({
             title: 'Error',
-            text: 'Ocurrió un error al registrar el usuario',
+            text: 'OcurriÃ³ un error al registrar el usuario',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -170,7 +170,7 @@ async function handleRegister(e) {
 }
 
 // ============================================
-// 🔐 REGISTRO CON GOOGLE (desde ícono)
+// ðŸ” REGISTRO CON GOOGLE (desde Ã­cono)
 // ============================================
 async function handleGoogleRegister() {
     Swal.fire({
@@ -196,8 +196,8 @@ async function handleGoogleRegister() {
             }));
 
             await Swal.fire({
-                title: '¡Registro exitoso!',
-                text: `✅ ${result.message}`,
+                title: 'Â¡Registro exitoso!',
+                text: `âœ… ${result.message}`,
                 icon: 'success',
                 confirmButtonText: 'Continuar'
             });
@@ -217,7 +217,7 @@ async function handleGoogleRegister() {
         console.error('Error en Google register:', error);
         Swal.fire({
             title: 'Error',
-            text: 'Ocurrió un error al registrar con Google',
+            text: 'OcurriÃ³ un error al registrar con Google',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -228,6 +228,6 @@ function redirectTo(path) {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(path);
     } else {
-        window.location.href = path;
+        window.go(path);
     }
 }

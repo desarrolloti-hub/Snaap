@@ -1,34 +1,34 @@
-// src/modules/host/profileEdit/profileEditController.js
+﻿// src/modules/host/profileEdit/profileEditController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 // ============================================
-// 📥 CARGAR DATOS DEL USUARIO DESDE FIRESTORE
+// ðŸ“¥ CARGAR DATOS DEL USUARIO DESDE FIRESTORE
 // ============================================
 const loadUserData = async () => {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            console.warn('⚠️ No hay usuario autenticado');
+            console.warn('âš ï¸ No hay usuario autenticado');
             return null;
         }
 
         const userData = await userRepository.getByUid(user.uid);
         if (!userData) {
-            console.warn('⚠️ Usuario no encontrado en Firestore');
+            console.warn('âš ï¸ Usuario no encontrado en Firestore');
             return null;
         }
 
-        console.log('📥 Datos del usuario para editar:', userData);
+        console.log('ðŸ“¥ Datos del usuario para editar:', userData);
         return userData;
     } catch (error) {
-        console.error('❌ Error al cargar datos:', error);
+        console.error('âŒ Error al cargar datos:', error);
         return null;
     }
 };
 
 // ============================================
-// 🖼️ RENDERIZAR FORMULARIO
+// ðŸ–¼ï¸ RENDERIZAR FORMULARIO
 // ============================================
 const renderForm = (userData) => {
     if (!userData) return;
@@ -60,7 +60,7 @@ const renderForm = (userData) => {
         }
     }
 
-    // Estadísticas
+    // EstadÃ­sticas
     const stored = localStorage.getItem('eventos');
     let totalEvents = 0;
     let totalGuests = 0;
@@ -83,11 +83,11 @@ const renderForm = (userData) => {
         memberSince.textContent = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
     }
 
-    console.log('✅ Formulario renderizado');
+    console.log('âœ… Formulario renderizado');
 };
 
 // ============================================
-// 💾 GUARDAR CAMBIOS EN FIRESTORE
+// ðŸ’¾ GUARDAR CAMBIOS EN FIRESTORE
 // ============================================
 const saveChanges = async () => {
     const fullName = document.getElementById('fullName')?.value.trim();
@@ -103,7 +103,7 @@ const saveChanges = async () => {
     // Validaciones
     if (!fullName || fullName.length < 3) {
         await Swal.fire({
-            title: 'Nombre inválido',
+            title: 'Nombre invÃ¡lido',
             text: 'El nombre debe tener al menos 3 caracteres',
             icon: 'warning',
             confirmButtonText: 'OK'
@@ -113,8 +113,8 @@ const saveChanges = async () => {
 
     if (!email || !userService.isValidEmail(email)) {
         await Swal.fire({
-            title: 'Email inválido',
-            text: 'Por favor ingresa un correo electrónico válido',
+            title: 'Email invÃ¡lido',
+            text: 'Por favor ingresa un correo electrÃ³nico vÃ¡lido',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -157,13 +157,13 @@ const saveChanges = async () => {
             }));
 
             await Swal.fire({
-                title: '¡Perfil actualizado!',
+                title: 'Â¡Perfil actualizado!',
                 text: 'Tus datos han sido guardados correctamente',
                 icon: 'success',
                 confirmButtonText: 'Ver perfil'
             });
 
-            window.location.href = '/host/profile';
+            window.go('');
         } else {
             await Swal.fire({
                 title: 'Error',
@@ -174,10 +174,10 @@ const saveChanges = async () => {
         }
     } catch (error) {
         Swal.close();
-        console.error('❌ Error al guardar:', error);
+        console.error('âŒ Error al guardar:', error);
         await Swal.fire({
             title: 'Error',
-            text: 'Ocurrió un error al guardar los cambios',
+            text: 'OcurriÃ³ un error al guardar los cambios',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -185,7 +185,7 @@ const saveChanges = async () => {
 };
 
 // ============================================
-// 🖼️ SUBIR AVATAR
+// ðŸ–¼ï¸ SUBIR AVATAR
 // ============================================
 const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -214,7 +214,7 @@ const setupAvatarUpload = () => {
             if (file.size > 5 * 1024 * 1024) {
                 await Swal.fire({
                     title: 'Error',
-                    text: 'La imagen es demasiado grande. Máximo 5MB',
+                    text: 'La imagen es demasiado grande. MÃ¡ximo 5MB',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -248,7 +248,7 @@ const setupAvatarUpload = () => {
 
                 if (result.success) {
                     await Swal.fire({
-                        title: '¡Avatar actualizado!',
+                        title: 'Â¡Avatar actualizado!',
                         text: 'Tu foto de perfil ha sido actualizada',
                         icon: 'success',
                         confirmButtonText: 'OK'
@@ -268,19 +268,19 @@ const setupAvatarUpload = () => {
 };
 
 // ============================================
-// 🔙 CANCELAR Y VOLVER
+// ðŸ”™ CANCELAR Y VOLVER
 // ============================================
 const cancelChanges = () => {
     Swal.fire({
-        title: 'Cancelar Edición',
-        text: '¿Estás seguro de que quieres cancelar? Los cambios no se guardarán.',
+        title: 'Cancelar EdiciÃ³n',
+        text: 'Â¿EstÃ¡s seguro de que quieres cancelar? Los cambios no se guardarÃ¡n.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, cancelar',
+        confirmButtonText: 'SÃ­, cancelar',
         cancelButtonText: 'Continuar editando'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/host/profile';
+            window.go('');
         }
     });
 };
@@ -288,28 +288,28 @@ const cancelChanges = () => {
 const goBack = () => {
     Swal.fire({
         title: 'Salir sin guardar',
-        text: 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?',
+        text: 'Tienes cambios sin guardar. Â¿EstÃ¡s seguro de que quieres salir?',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, salir',
+        confirmButtonText: 'SÃ­, salir',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '/host/profile';
+            window.go('');
         }
     });
 };
 
 // ============================================
-// 🗑️ ELIMINAR CUENTA
+// ðŸ—‘ï¸ ELIMINAR CUENTA
 // ============================================
 const deleteAccount = () => {
     Swal.fire({
         title: 'Eliminar Cuenta',
-        html: '¿Estás seguro de que deseas eliminar tu cuenta?<br>Esta acción no se puede deshacer y todos tus eventos serán eliminados.',
+        html: 'Â¿EstÃ¡s seguro de que deseas eliminar tu cuenta?<br>Esta acciÃ³n no se puede deshacer y todos tus eventos serÃ¡n eliminados.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'SÃ­, eliminar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -322,24 +322,24 @@ const deleteAccount = () => {
                 const user = userService.getCurrentUser();
                 if (user && user.id) {
                     await userRepository.delete(user.id);
-                    console.log('🗑️ Usuario eliminado de Firestore');
+                    console.log('ðŸ—‘ï¸ Usuario eliminado de Firestore');
                 }
 
                 await userService.logout();
 
                 await Swal.fire({
                     title: 'Cuenta Eliminada',
-                    text: 'Tu cuenta ha sido eliminada. Serás redirigido al inicio.',
+                    text: 'Tu cuenta ha sido eliminada. SerÃ¡s redirigido al inicio.',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
 
-                window.location.href = '/';
+                window.go('');
             } catch (error) {
-                console.error('❌ Error al eliminar cuenta:', error);
+                console.error('âŒ Error al eliminar cuenta:', error);
                 Swal.fire({
                     title: 'Error',
-                    text: 'Ocurrió un error al eliminar la cuenta',
+                    text: 'OcurriÃ³ un error al eliminar la cuenta',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -349,14 +349,14 @@ const deleteAccount = () => {
 };
 
 // ============================================
-// 🚀 CONTROLADOR PRINCIPAL
+// ðŸš€ CONTROLADOR PRINCIPAL
 // ============================================
 export async function profileEditController() {
-    console.log('🔥 Controlador profileEditController iniciado');
+    console.log('ðŸ”¥ Controlador profileEditController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
+        window.go('');
         return;
     }
 
@@ -368,7 +368,7 @@ export async function profileEditController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/host/profile';
+            window.go('');
         });
         return;
     }
@@ -416,7 +416,7 @@ export async function profileEditController() {
         });
     }
 
-    console.log('✅ Controlador profileEditController finalizado');
+    console.log('âœ… Controlador profileEditController finalizado');
 }
 
 export default profileEditController;

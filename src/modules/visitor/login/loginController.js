@@ -1,16 +1,16 @@
-// src/modules/visitor/login/loginController.js
+﻿// src/modules/visitor/login/loginController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { getRedirectPathByRole } from '../../../core/permissions.js';
 
-// 🔥 Credenciales del admin
+// ðŸ”¥ Credenciales del admin
 const ADMIN_CREDENTIALS = {
     email: 'admin123@gmail.com',
     password: 'Tuya5703'
 };
 
 export async function loginController() {
-    console.log('🔥 Login Controller iniciado');
+    console.log('ðŸ”¥ Login Controller iniciado');
 
     if (userService.isAuthenticated()) {
         const user = userService.getCurrentUser();
@@ -58,8 +58,8 @@ export async function loginController() {
         icon.addEventListener('click', () => {
             const social = icon.getAttribute('data-social') || 'red social';
             Swal.fire({
-                title: 'Próximamente',
-                text: `Inicio de sesión con ${social} estará disponible pronto.`,
+                title: 'PrÃ³ximamente',
+                text: `Inicio de sesiÃ³n con ${social} estarÃ¡ disponible pronto.`,
                 icon: 'info',
                 confirmButtonText: 'OK'
             });
@@ -68,7 +68,7 @@ export async function loginController() {
 }
 
 // ============================================
-// 📧 LOGIN CON EMAIL
+// ðŸ“§ LOGIN CON EMAIL
 // ============================================
 async function handleLogin(e) {
     e.preventDefault();
@@ -77,7 +77,7 @@ async function handleLogin(e) {
     const password = document.getElementById('login-password').value;
     const acceptTerms = document.getElementById('acceptTerms').checked;
 
-    console.log('🔍 Email ingresado:', email);
+    console.log('ðŸ” Email ingresado:', email);
 
     if (!email || !password) {
         Swal.fire({
@@ -91,8 +91,8 @@ async function handleLogin(e) {
 
     if (!acceptTerms) {
         Swal.fire({
-            title: 'Términos y condiciones',
-            text: 'Debes aceptar los términos y condiciones para iniciar sesión.',
+            title: 'TÃ©rminos y condiciones',
+            text: 'Debes aceptar los tÃ©rminos y condiciones para iniciar sesiÃ³n.',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -100,10 +100,10 @@ async function handleLogin(e) {
     }
 
     const isAdmin = email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password;
-    console.log('🔍 Es admin?', isAdmin);
+    console.log('ðŸ” Es admin?', isAdmin);
 
     Swal.fire({
-        title: 'Iniciando sesión...',
+        title: 'Iniciando sesiÃ³n...',
         text: 'Por favor espera',
         allowOutsideClick: false,
         didOpen: () => {
@@ -115,17 +115,17 @@ async function handleLogin(e) {
         let result;
 
         if (isAdmin) {
-            console.log('👑 Iniciando sesión como ADMIN');
+            console.log('ðŸ‘‘ Iniciando sesiÃ³n como ADMIN');
             result = await userService.loginUsuario(email, password);
             
             if (result.success) {
-                console.log('✅ Admin autenticado correctamente');
+                console.log('âœ… Admin autenticado correctamente');
                 await userService.actualizarPerfil({ role: 'sysadmin' });
                 const userDoc = await userRepository.getByUid(result.user.uid);
                 userService.setUsuarioActual(userDoc);
                 result.user = userDoc;
                 result.role = 'sysadmin';
-                console.log('✅ Admin configurado como sysadmin correctamente');
+                console.log('âœ… Admin configurado como sysadmin correctamente');
             }
         } else {
             result = await userService.loginUsuario(email, password);
@@ -143,28 +143,28 @@ async function handleLogin(e) {
             }));
 
             await Swal.fire({
-                title: '¡Bienvenido!',
+                title: 'Â¡Bienvenido!',
                 text: result.message,
                 icon: 'success',
                 confirmButtonText: 'Continuar'
             });
 
             const redirectPath = getRedirectPathByRole(result.role || result.user?.role || 'host');
-            console.log('🔀 Redirigiendo a:', redirectPath);
+            console.log('ðŸ”€ Redirigiendo a:', redirectPath);
             redirectTo(redirectPath);
         } else {
-            const errorMsg = result.error || 'Error al iniciar sesión';
+            const errorMsg = result.error || 'Error al iniciar sesiÃ³n';
             
-            // 🔥 DETECTAR SI ES ERROR DE VERIFICACIÓN DE EMAIL
-            const isVerificationError = errorMsg.includes('verificado') || errorMsg.includes('verificación');
+            // ðŸ”¥ DETECTAR SI ES ERROR DE VERIFICACIÃ“N DE EMAIL
+            const isVerificationError = errorMsg.includes('verificado') || errorMsg.includes('verificaciÃ³n');
             
             if (isVerificationError) {
                 Swal.fire({
-                    title: '⛔ Email no verificado',
+                    title: 'â›” Email no verificado',
                     html: `${errorMsg}<br><br>
                            <small>Revisa tu bandeja de entrada y carpeta de spam.<br>
                            <button id="resendVerificationBtn" class="swal2-confirm" style="margin-top:10px; padding:8px 20px; border-radius:50px; background:transparent; border:2px solid #4db8ff; color:#fff; cursor:pointer;">
-                               Reenviar verificación
+                               Reenviar verificaciÃ³n
                            </button></small>`,
                     icon: 'error',
                     confirmButtonText: 'OK',
@@ -174,7 +174,7 @@ async function handleLogin(e) {
                             resendBtn.addEventListener('click', async () => {
                                 const result = await userService.reenviarVerificacionEmail();
                                 Swal.fire({
-                                    title: result.success ? '📧 Enviado!' : 'Error',
+                                    title: result.success ? 'ðŸ“§ Enviado!' : 'Error',
                                     text: result.success ? result.message : result.error,
                                     icon: result.success ? 'success' : 'error',
                                     confirmButtonText: 'OK'
@@ -194,15 +194,15 @@ async function handleLogin(e) {
         }
     } catch (error) {
         Swal.close();
-        console.error('❌ ERROR COMPLETO:', error);
+        console.error('âŒ ERROR COMPLETO:', error);
         
-        let mensaje = 'Ocurrió un error al iniciar sesión';
+        let mensaje = 'OcurriÃ³ un error al iniciar sesiÃ³n';
         if (error.code === 'auth/user-not-found') {
             mensaje = 'Usuario no encontrado. Verifica tus credenciales.';
         } else if (error.code === 'auth/wrong-password') {
-            mensaje = 'Contraseña incorrecta. Intenta de nuevo.';
+            mensaje = 'ContraseÃ±a incorrecta. Intenta de nuevo.';
         } else if (error.code === 'auth/too-many-requests') {
-            mensaje = 'Demasiados intentos. Intenta más tarde.';
+            mensaje = 'Demasiados intentos. Intenta mÃ¡s tarde.';
         } else if (error.message) {
             mensaje = error.message;
         }
@@ -217,11 +217,11 @@ async function handleLogin(e) {
 }
 
 // ============================================
-// 🔐 LOGIN CON GOOGLE
+// ðŸ” LOGIN CON GOOGLE
 // ============================================
 async function handleGoogleLogin() {
     Swal.fire({
-        title: 'Iniciando sesión con Google...',
+        title: 'Iniciando sesiÃ³n con Google...',
         text: 'Por favor espera',
         allowOutsideClick: false,
         didOpen: () => {
@@ -243,7 +243,7 @@ async function handleGoogleLogin() {
             }));
 
             await Swal.fire({
-                title: '¡Bienvenido!',
+                title: 'Â¡Bienvenido!',
                 text: result.message,
                 icon: 'success',
                 confirmButtonText: 'Continuar'
@@ -252,7 +252,7 @@ async function handleGoogleLogin() {
             const redirectPath = getRedirectPathByRole(result.role);
             redirectTo(redirectPath);
         } else {
-            const errorMsg = result.error || 'Error al iniciar sesión con Google';
+            const errorMsg = result.error || 'Error al iniciar sesiÃ³n con Google';
             
             Swal.fire({
                 title: 'Error',
@@ -266,7 +266,7 @@ async function handleGoogleLogin() {
         console.error('Error en Google login:', error);
         Swal.fire({
             title: 'Error',
-            text: 'Ocurrió un error al iniciar sesión con Google',
+            text: 'OcurriÃ³ un error al iniciar sesiÃ³n con Google',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -274,12 +274,12 @@ async function handleGoogleLogin() {
 }
 
 // ============================================
-// 🔐 RECUPERAR CONTRASEÑA
+// ðŸ” RECUPERAR CONTRASEÃ‘A
 // ============================================
 async function handleForgotPassword() {
     const { value: email } = await Swal.fire({
-        title: 'Recuperar Contraseña',
-        text: 'Ingresa tu correo electrónico y te enviaremos un enlace de recuperación.',
+        title: 'Recuperar ContraseÃ±a',
+        text: 'Ingresa tu correo electrÃ³nico y te enviaremos un enlace de recuperaciÃ³n.',
         input: 'email',
         inputPlaceholder: 'tu@email.com',
         showCancelButton: true,
@@ -291,7 +291,7 @@ async function handleForgotPassword() {
             }
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(value)) {
-                return 'Email inválido';
+                return 'Email invÃ¡lido';
             }
         }
     });
@@ -312,7 +312,7 @@ async function handleForgotPassword() {
 
             if (result.success) {
                 Swal.fire({
-                    title: '¡Enviado!',
+                    title: 'Â¡Enviado!',
                     text: result.message,
                     icon: 'success',
                     confirmButtonText: 'OK'
@@ -329,7 +329,7 @@ async function handleForgotPassword() {
             Swal.close();
             Swal.fire({
                 title: 'Error',
-                text: 'Ocurrió un error al enviar el enlace',
+                text: 'OcurriÃ³ un error al enviar el enlace',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -341,7 +341,7 @@ function redirectTo(path) {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(path);
     } else {
-        window.location.href = path;
+        window.go(path);
     }
 }
 

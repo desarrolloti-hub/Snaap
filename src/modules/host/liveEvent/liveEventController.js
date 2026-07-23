@@ -1,10 +1,10 @@
-// src/modules/host/liveEvent/liveEventController.js
+﻿// src/modules/host/liveEvent/liveEventController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
 // ============================================
-// 🎮 CONTROLADOR DE EVENTO EN VIVO
+// ðŸŽ® CONTROLADOR DE EVENTO EN VIVO
 // ============================================
 class LiveEventController {
     constructor() {
@@ -19,13 +19,13 @@ class LiveEventController {
     }
 
     // ============================================
-    // 🚀 INICIALIZACIÓN
+    // ðŸš€ INICIALIZACIÃ“N
     // ============================================
     async initialize() {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                window.location.href = '/login';
+                window.go('');
                 return;
             }
 
@@ -33,7 +33,7 @@ class LiveEventController {
             this.eventoId = urlParams.get('id');
 
             if (!this.eventoId) {
-                this.showError('No se especificó un evento');
+                this.showError('No se especificÃ³ un evento');
                 return;
             }
 
@@ -50,7 +50,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // 📥 CARGAR DATOS DEL EVENTO
+    // ðŸ“¥ CARGAR DATOS DEL EVENTO
     // ============================================
     async loadEventData() {
         try {
@@ -59,7 +59,7 @@ class LiveEventController {
                 throw new Error(result.error);
             }
             this.eventoData = result.evento;
-            console.log('✅ Evento cargado:', this.eventoData?.nombre);
+            console.log('âœ… Evento cargado:', this.eventoData?.nombre);
         } catch (error) {
             console.error('Error loading event data:', error);
             throw error;
@@ -67,7 +67,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // 🖼️ ACTUALIZAR HEADER
+    // ðŸ–¼ï¸ ACTUALIZAR HEADER
     // ============================================
     updateEventHeader() {
         const titleEl = document.getElementById('eventTitle');
@@ -77,7 +77,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // 📋 CARGAR IMÁGENES DEL EVENTO
+    // ðŸ“‹ CARGAR IMÃGENES DEL EVENTO
     // ============================================
     async loadImages() {
         try {
@@ -88,19 +88,19 @@ class LiveEventController {
             }
 
             this.images = result.images;
-            console.log(`📋 ${this.images.length} imágenes del evento`);
+            console.log(`ðŸ“‹ ${this.images.length} imÃ¡genes del evento`);
 
             this.renderGallery();
             this.updateStats();
 
         } catch (error) {
             console.error('Error loading images:', error);
-            this.showError('Error al cargar las imágenes');
+            this.showError('Error al cargar las imÃ¡genes');
         }
     }
 
     // ============================================
-    // 🎨 RENDERIZAR GALERÍA
+    // ðŸŽ¨ RENDERIZAR GALERÃA
     // ============================================
     renderGallery() {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -125,7 +125,7 @@ class LiveEventController {
             <div class="gallery-item" data-index="${index}">
                 <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
                 <span class="gallery-type ${image.type}">
-                    ${image.type === 'photo' ? '📸' : '🎨'}
+                    ${image.type === 'photo' ? 'ðŸ“¸' : 'ðŸŽ¨'}
                 </span>
                 <div class="gallery-item-info">
                     <span class="gallery-item-date">
@@ -148,7 +148,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // 📊 ACTUALIZAR ESTADÍSTICAS
+    // ðŸ“Š ACTUALIZAR ESTADÃSTICAS
     // ============================================
     updateStats() {
         const photoCount = document.getElementById('photoCount');
@@ -171,7 +171,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // 🖼️ MODAL
+    // ðŸ–¼ï¸ MODAL
     // ============================================
     openModal(index) {
         const image = this.images[index];
@@ -209,13 +209,13 @@ class LiveEventController {
     }
 
     // ============================================
-    // 🎯 CONFIGURAR EVENTOS
+    // ðŸŽ¯ CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
         const btnBack = document.getElementById('btnBack');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
-                window.location.href = `/host/event-details?id=${this.eventoId}`;
+                window.go(`/host/event-details?id=${this.eventoId}`);
             });
         }
 
@@ -227,7 +227,7 @@ class LiveEventController {
                 await this.loadImages();
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
                 refreshBtn.disabled = false;
-                this.showSuccess('✅ Galería actualizada');
+                this.showSuccess('âœ… GalerÃ­a actualizada');
             });
         }
 
@@ -243,14 +243,14 @@ class LiveEventController {
             shareQrBtn.addEventListener('click', () => {
                 const url = `${window.location.origin}/user/home?eventId=${this.eventoId}`;
                 navigator.clipboard.writeText(url);
-                this.showSuccess('✅ Enlace copiado al portapapeles');
+                this.showSuccess('âœ… Enlace copiado al portapapeles');
             });
         }
 
         const projectBtn = document.getElementById('projectBtn');
         if (projectBtn) {
             projectBtn.addEventListener('click', () => {
-                window.location.href = `/host/projection?id=${this.eventoId}`;
+                window.go(`/host/projection?id=${this.eventoId}`);
             });
         }
 
@@ -275,14 +275,14 @@ class LiveEventController {
     }
 
     // ============================================
-    // 🔄 AUTO-REFRESH
+    // ðŸ”„ AUTO-REFRESH
     // ============================================
     startAutoRefresh() {
         if (this.autoRefresh) {
             this.refreshInterval = setInterval(async () => {
                 await this.loadImages();
             }, this.intervalTime);
-            console.log(`🔄 Auto-refresh activado (${this.intervalTime / 1000}s)`);
+            console.log(`ðŸ”„ Auto-refresh activado (${this.intervalTime / 1000}s)`);
         }
     }
 
@@ -299,11 +299,11 @@ class LiveEventController {
                 btn.classList.add('btn-snaap');
             }
             if (info) {
-                info.textContent = '🔄 Actualización automática activada';
+                info.textContent = 'ðŸ”„ ActualizaciÃ³n automÃ¡tica activada';
                 info.style.color = '#4db8ff';
             }
             this.startAutoRefresh();
-            this.showSuccess('🔄 Auto-refresh activado');
+            this.showSuccess('ðŸ”„ Auto-refresh activado');
         } else {
             if (this.refreshInterval) {
                 clearInterval(this.refreshInterval);
@@ -315,15 +315,15 @@ class LiveEventController {
                 btn.classList.add('btn-snaap-secondary');
             }
             if (info) {
-                info.textContent = '⏸️ Actualización automática pausada';
+                info.textContent = 'â¸ï¸ ActualizaciÃ³n automÃ¡tica pausada';
                 info.style.color = '#ff007a';
             }
-            this.showInfo('⏸️ Auto-refresh pausado');
+            this.showInfo('â¸ï¸ Auto-refresh pausado');
         }
     }
 
     // ============================================
-    // 📦 UTILIDADES
+    // ðŸ“¦ UTILIDADES
     // ============================================
     getTimeAgo(date) {
         const now = new Date();
@@ -340,7 +340,7 @@ class LiveEventController {
 
     showSuccess(message) {
         Swal.fire({
-            title: 'Éxito',
+            title: 'Ã‰xito',
             text: message,
             icon: 'success',
             timer: 2000,
@@ -373,14 +373,14 @@ class LiveEventController {
 }
 
 // ============================================
-// ✅ EXPORT
+// âœ… EXPORT
 // ============================================
 export function initLiveEventController() {
     new LiveEventController();
 }
 
 // ============================================
-// 🚀 INIT
+// ðŸš€ INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     new LiveEventController();

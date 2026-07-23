@@ -1,9 +1,9 @@
-// src/modules/user/galleryUser/galleryUserController.js
+﻿// src/modules/user/galleryUser/galleryUserController.js
 import { userService } from '../../../services/userService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
 // ============================================
-// 🎮 CONTROLADOR DE GALERÍA
+// ðŸŽ® CONTROLADOR DE GALERÃA
 // ============================================
 class GalleryUserController {
     constructor() {
@@ -16,24 +16,24 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 🚀 INICIALIZACIÓN
+    // ðŸš€ INICIALIZACIÃ“N
     // ============================================
     async initialize() {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                window.location.href = '/login';
+                import('../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
                 return;
             }
 
-            // 🔥 OBTENER EVENTO ID DE LA URL
+            // ðŸ”¥ OBTENER EVENTO ID DE LA URL
             const urlParams = new URLSearchParams(window.location.search);
             this.eventoId = urlParams.get('eventId');
 
-            console.log('🔍 Evento ID para galería:', this.eventoId);
+            console.log('ðŸ” Evento ID para galerÃ­a:', this.eventoId);
 
             if (!this.eventoId) {
-                this.showError('No se especificó un evento');
+                this.showError('No se especificÃ³ un evento');
                 return;
             }
 
@@ -43,12 +43,12 @@ class GalleryUserController {
 
         } catch (error) {
             console.error('Error initializing gallery:', error);
-            this.showError('Error al cargar la galería');
+            this.showError('Error al cargar la galerÃ­a');
         }
     }
 
     // ============================================
-    // 📋 CARGAR IMÁGENES DEL EVENTO
+    // ðŸ“‹ CARGAR IMÃGENES DEL EVENTO
     // ============================================
     async loadImages() {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -58,32 +58,32 @@ class GalleryUserController {
             galleryGrid.innerHTML = `
                 <div class="loading-spinner">
                     <div class="spinner"></div>
-                    <p><i class="fas fa-spinner fa-spin"></i> Cargando imágenes...</p>
+                    <p><i class="fas fa-spinner fa-spin"></i> Cargando imÃ¡genes...</p>
                 </div>
             `;
 
-            // 🔥 OBTENER TODAS LAS IMÁGENES DEL USUARIO
+            // ðŸ”¥ OBTENER TODAS LAS IMÃGENES DEL USUARIO
             const result = await userImageService.getUserImages();
             
             if (!result.success) {
                 throw new Error(result.error);
             }
 
-            // 🔥 FILTRAR SOLO LAS DEL EVENTO ACTUAL
+            // ðŸ”¥ FILTRAR SOLO LAS DEL EVENTO ACTUAL
             this.allImages = result.images.filter(img => img.eventoId === this.eventoId);
-            console.log(`📋 ${this.allImages.length} imágenes del evento cargadas`);
+            console.log(`ðŸ“‹ ${this.allImages.length} imÃ¡genes del evento cargadas`);
 
             // Aplicar filtro
             this.applyFilter();
 
         } catch (error) {
             console.error('Error loading images:', error);
-            galleryGrid.innerHTML = `<p class="error-message">Error al cargar imágenes: ${error.message}</p>`;
+            galleryGrid.innerHTML = `<p class="error-message">Error al cargar imÃ¡genes: ${error.message}</p>`;
         }
     }
 
     // ============================================
-    // 🎨 APLICAR FILTRO
+    // ðŸŽ¨ APLICAR FILTRO
     // ============================================
     applyFilter() {
         if (this.currentFilter === 'all') {
@@ -97,7 +97,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 🎨 RENDERIZAR GALERÍA
+    // ðŸŽ¨ RENDERIZAR GALERÃA
     // ============================================
     renderGallery(images) {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -131,7 +131,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 🖼️ MODAL
+    // ðŸ–¼ï¸ MODAL
     // ============================================
     openModal(index) {
         const image = this.filteredImages[index];
@@ -145,7 +145,7 @@ class GalleryUserController {
         if (modalImage) modalImage.src = image.url;
         
         const dateText = this.formatDate(image.date);
-        const typeText = image.type === 'photo' ? '📸 Foto' : '🎨 Dibujo';
+        const typeText = image.type === 'photo' ? 'ðŸ“¸ Foto' : 'ðŸŽ¨ Dibujo';
         
         if (modalDate) {
             modalDate.innerHTML = `<i class="fas fa-calendar-day"></i> ${dateText} - ${typeText}`;
@@ -161,16 +161,16 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 🗑️ ELIMINAR IMAGEN
+    // ðŸ—‘ï¸ ELIMINAR IMAGEN
     // ============================================
     async handleDeleteImage(e) {
         const index = parseInt(e.target.dataset.index);
         if (isNaN(index)) return;
 
-        const confirmDelete = confirm('⚠️ ¿Estás seguro de que quieres eliminar esta imagen?');
+        const confirmDelete = confirm('âš ï¸ Â¿EstÃ¡s seguro de que quieres eliminar esta imagen?');
         if (!confirmDelete) return;
 
-        // 🔥 Encontrar el índice en el array completo de imágenes del evento
+        // ðŸ”¥ Encontrar el Ã­ndice en el array completo de imÃ¡genes del evento
         const imageToDelete = this.filteredImages[index];
         const globalIndex = this.allImages.findIndex(img => img.url === imageToDelete.url);
 
@@ -182,7 +182,7 @@ class GalleryUserController {
 
             this.closeModal();
             await this.loadImages();
-            this.showSuccess('✅ Imagen eliminada exitosamente');
+            this.showSuccess('âœ… Imagen eliminada exitosamente');
 
         } catch (error) {
             console.error('Error deleting image:', error);
@@ -191,14 +191,14 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 🎯 CONFIGURAR EVENTOS
+    // ðŸŽ¯ CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // Botón volver - 🔥 REDIRIGE AL EVENTO CON EL ID
+        // BotÃ³n volver - ðŸ”¥ REDIRIGE AL EVENTO CON EL ID
         const btnBack = document.getElementById('btnBack');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
-                window.location.href = `/user/home?eventId=${this.eventoId}`;
+                window.go(`/user/home?eventId=${this.eventoId}`);
             });
         }
 
@@ -241,7 +241,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // 📊 ACTUALIZAR CONTADOR
+    // ðŸ“Š ACTUALIZAR CONTADOR
     // ============================================
     updateCounter() {
         const counter = document.getElementById('imageCounter');
@@ -249,13 +249,13 @@ class GalleryUserController {
             const total = this.allImages.length;
             const filtered = this.filteredImages.length;
             counter.textContent = filtered === total ? 
-                `${total} imágenes` : 
-                `${filtered} de ${total} imágenes`;
+                `${total} imÃ¡genes` : 
+                `${filtered} de ${total} imÃ¡genes`;
         }
     }
 
     // ============================================
-    // 📦 UTILIDADES
+    // ðŸ“¦ UTILIDADES
     // ============================================
     formatDate(date) {
         if (!date) return 'Fecha no disponible';
@@ -276,33 +276,33 @@ class GalleryUserController {
                     <circle cx="8.5" cy="8.5" r="1.5"/>
                     <path d="M21 15l-5-5L5 21"/>
                 </svg>
-                <h3><i class="fas fa-image"></i> No hay imágenes en este evento</h3>
+                <h3><i class="fas fa-image"></i> No hay imÃ¡genes en este evento</h3>
                 <p><i class="fas fa-camera"></i> Captura una foto o sube un dibujo para comenzar</p>
-                <button class="btn-snaap" onclick="window.location.href='/user/home?eventId=${this.eventoId}'">
+                <button class="btn-snaap" onclick="window.go('/user/home?eventId=${this.eventoId}'">
                     <i class="fas fa-arrow-left"></i> Volver al evento
                 </button>
             </div>
-        `;
+        `);
     }
 
     showSuccess(message) {
-        alert('✅ ' + message);
+        alert('âœ… ' + message);
     }
 
     showError(message) {
-        alert('❌ ' + message);
+        alert('âŒ ' + message);
     }
 }
 
 // ============================================
-// ✅ EXPORT
+// âœ… EXPORT
 // ============================================
 export function initGalleryUserController() {
     new GalleryUserController();
 }
 
 // ============================================
-// 🚀 INIT
+// ðŸš€ INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     new GalleryUserController();

@@ -1,8 +1,8 @@
-// src/modules/shared/errors/404Controller.js
+﻿// src/modules/shared/errors/404Controller.js
 import { userService } from '../../../services/userService.js';
 import { getRedirectPathByRole } from '../../../core/permissions.js';
 
-// Función para cargar estilos específicos del 404
+// FunciÃ³n para cargar estilos especÃ­ficos del 404
 function load404Styles() {
     if (!document.querySelector('link[href*="404.css"]')) {
         const link = document.createElement('link');
@@ -12,20 +12,20 @@ function load404Styles() {
     }
 }
 
-// 🔥 Función para redirigir según el rol
+// ðŸ”¥ FunciÃ³n para redirigir segÃºn el rol
 function redirectToHome() {
     const user = userService.getCurrentUser();
     if (user) {
-        // Si está logueado, redirigir a su dashboard según rol
+        // Si estÃ¡ logueado, redirigir a su dashboard segÃºn rol
         const redirectPath = getRedirectPathByRole(user.role);
-        window.location.href = redirectPath;
+        window.go(redirectPath);
     } else {
-        // Si no está logueado, ir al inicio
-        window.location.href = '/';
+        // Si no estÃ¡ logueado, ir al inicio
+        window.go('');
     }
 }
 
-// Función para iniciar el contador de redirección
+// FunciÃ³n para iniciar el contador de redirecciÃ³n
 function startCountdown(seconds = 3) {
     let timeLeft = seconds;
     const countdownElement = document.getElementById('countdown');
@@ -51,15 +51,15 @@ function setupEventListeners() {
     }
 }
 
-// Inicializar la página 404
+// Inicializar la pÃ¡gina 404
 function init404() {
-    // 🔥 Mostrar mensaje personalizado según rol
+    // ðŸ”¥ Mostrar mensaje personalizado segÃºn rol
     updateWelcomeMessage();
     setupEventListeners();
     startCountdown(4);
 }
 
-// 🔥 Actualizar mensaje según el rol del usuario
+// ðŸ”¥ Actualizar mensaje segÃºn el rol del usuario
 function updateWelcomeMessage() {
     const user = userService.getCurrentUser();
     const titleEl = document.querySelector('.error-title');
@@ -69,7 +69,7 @@ function updateWelcomeMessage() {
         const roleMessages = {
             'sysadmin': {
                 title: 'Acceso restringido',
-                desc: 'Esta sección no está disponible para administradores.'
+                desc: 'Esta secciÃ³n no estÃ¡ disponible para administradores.'
             },
             'host': {
                 title: 'Sitio en mantenimiento',
@@ -87,9 +87,9 @@ function updateWelcomeMessage() {
     }
 }
 
-// Función principal del controlador
+// FunciÃ³n principal del controlador
 export async function init404Controller() {
-    console.log('🔥 Inicializando 404Controller...');
+    console.log('ðŸ”¥ Inicializando 404Controller...');
     
     load404Styles();
     

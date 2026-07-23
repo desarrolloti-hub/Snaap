@@ -1,13 +1,13 @@
-// src/modules/sysadmin/profileAdmin/profileAdminController.js
+﻿// src/modules/sysadmin/profileAdmin/profileAdminController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 export async function profileAdminController() {
-    console.log('🔥 Profile Admin Controller iniciado');
+    console.log('ðŸ”¥ Profile Admin Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -20,7 +20,7 @@ export async function profileAdminController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -34,11 +34,11 @@ async function loadProfileData(uid) {
         const userData = await userRepository.getByUid(uid);
         
         if (!userData) {
-            console.warn('⚠️ Usuario no encontrado en Firestore');
+            console.warn('âš ï¸ Usuario no encontrado en Firestore');
             return;
         }
 
-        console.log('📥 Datos del admin:', userData);
+        console.log('ðŸ“¥ Datos del admin:', userData);
 
         const usernameEl = document.getElementById('profileUsername');
         const emailEl = document.getElementById('profileEmail');
@@ -53,7 +53,7 @@ async function loadProfileData(uid) {
         if (notesEl) notesEl.textContent = userData.bio || userData.notes || 'Sin notas';
 
     } catch (error) {
-        console.error('❌ Error al cargar perfil:', error);
+        console.error('âŒ Error al cargar perfil:', error);
         Swal.fire({
             title: 'Error',
             text: 'No se pudieron cargar los datos del perfil',
@@ -71,7 +71,7 @@ function setupEventListeners() {
             if (typeof window.navigateTo === 'function') {
                 window.navigateTo('/sysadmin/profile/edit');
             } else {
-                window.location.href = '/sysadmin/profile/edit';
+                window.go('');
             }
         });
     }

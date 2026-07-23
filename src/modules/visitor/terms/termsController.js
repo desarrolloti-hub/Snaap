@@ -131,11 +131,7 @@ export async function termsController() {
     const backBtn = document.getElementById('backToHome');
     if (backBtn) {
         backBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/');
-            } else {
-                window.location.href = '/';
-            }
+    import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/'));
         });
     }
 }

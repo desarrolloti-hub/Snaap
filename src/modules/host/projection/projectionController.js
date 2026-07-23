@@ -1,10 +1,10 @@
-// src/modules/host/projection/projectionController.js
+﻿// src/modules/host/projection/projectionController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
 // ============================================
-// 🎮 CONTROLADOR DE PROYECCIÓN
+// ðŸŽ® CONTROLADOR DE PROYECCIÃ“N
 // ============================================
 class ProjectionController {
     constructor() {
@@ -19,13 +19,13 @@ class ProjectionController {
     }
 
     // ============================================
-    // 🚀 INICIALIZACIÓN
+    // ðŸš€ INICIALIZACIÃ“N
     // ============================================
     async initialize() {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                window.location.href = '/login';
+                if (typeof window.navigateTo === 'function') window.navigateTo('/login'); else window.go('');
                 return;
             }
 
@@ -33,7 +33,7 @@ class ProjectionController {
             this.eventoId = urlParams.get('id');
 
             if (!this.eventoId) {
-                this.showError('No se especificó un evento');
+                this.showError('No se especificÃ³ un evento');
                 return;
             }
 
@@ -41,22 +41,22 @@ class ProjectionController {
             this.setupEventListeners();
             this.startSlideshow();
 
-            // 🔥 ENTRAR EN PANTALLA COMPLETA
+            // ðŸ”¥ ENTRAR EN PANTALLA COMPLETA
             this.enterFullscreen();
 
-            // 🔥 AUTO-REFRESH CADA 10 SEGUNDOS
+            // ðŸ”¥ AUTO-REFRESH CADA 10 SEGUNDOS
             setInterval(() => {
                 this.refreshImages();
             }, 10000);
 
         } catch (error) {
             console.error('Error initializing projection:', error);
-            this.showError('Error al cargar la proyección');
+            this.showError('Error al cargar la proyecciÃ³n');
         }
     }
 
     // ============================================
-    // 📋 CARGAR IMÁGENES
+    // ðŸ“‹ CARGAR IMÃGENES
     // ============================================
     async loadImages() {
         try {
@@ -67,7 +67,7 @@ class ProjectionController {
             }
 
             this.images = result.images;
-            console.log(`📋 ${this.images.length} imágenes cargadas`);
+            console.log(`ðŸ“‹ ${this.images.length} imÃ¡genes cargadas`);
 
             if (this.images.length === 0) {
                 this.showEmptyState();
@@ -80,12 +80,12 @@ class ProjectionController {
 
         } catch (error) {
             console.error('Error loading images:', error);
-            this.showError('Error al cargar las imágenes');
+            this.showError('Error al cargar las imÃ¡genes');
         }
     }
 
     // ============================================
-    // 🖼️ MOSTRAR IMAGEN
+    // ðŸ–¼ï¸ MOSTRAR IMAGEN
     // ============================================
     showImage() {
         if (this.images.length === 0) {
@@ -100,7 +100,7 @@ class ProjectionController {
             slideImage.src = image.url;
             slideImage.alt = image.fileName || 'Foto';
             
-            // 🔥 REINICIAR ANIMACIÓN
+            // ðŸ”¥ REINICIAR ANIMACIÃ“N
             slideImage.style.animation = 'none';
             setTimeout(() => {
                 slideImage.style.animation = 'fadeIn 0.5s ease';
@@ -109,7 +109,7 @@ class ProjectionController {
     }
 
     // ============================================
-    // ▶️ INICIAR PRESENTACIÓN
+    // â–¶ï¸ INICIAR PRESENTACIÃ“N
     // ============================================
     startSlideshow() {
         if (this.intervalId) {
@@ -122,32 +122,32 @@ class ProjectionController {
             this.nextImage();
         }, this.intervalTime);
 
-        console.log(`▶️ Proyección iniciada (${this.intervalTime / 1000}s)`);
+        console.log(`â–¶ï¸ ProyecciÃ³n iniciada (${this.intervalTime / 1000}s)`);
     }
 
     // ============================================
-    // ⏭️ SIGUIENTE IMAGEN (BUCLE INFINITO)
+    // â­ï¸ SIGUIENTE IMAGEN (BUCLE INFINITO)
     // ============================================
     nextImage() {
         if (this.images.length === 0) return;
 
-        // 🔥 CUANDO LLEGA AL FINAL, VUELVE A EMPEZAR
+        // ðŸ”¥ CUANDO LLEGA AL FINAL, VUELVE A EMPEZAR
         if (this.currentIndex < this.images.length - 1) {
             this.currentIndex++;
         } else {
-            this.currentIndex = 0; // 🔁 BUCLE INFINITO
+            this.currentIndex = 0; // ðŸ” BUCLE INFINITO
         }
 
         this.showImage();
     }
 
     // ============================================
-    // 🖥️ PANTALLA COMPLETA
+    // ðŸ–¥ï¸ PANTALLA COMPLETA
     // ============================================
     enterFullscreen() {
         const container = document.getElementById('projectionContainer');
         
-        // 🔥 INTENTAR ENTRAR EN PANTALLA COMPLETA
+        // ðŸ”¥ INTENTAR ENTRAR EN PANTALLA COMPLETA
         try {
             if (container.requestFullscreen) {
                 container.requestFullscreen();
@@ -156,21 +156,21 @@ class ProjectionController {
             } else if (container.msRequestFullscreen) {
                 container.msRequestFullscreen();
             }
-            console.log('🖥️ Pantalla completa activada');
+            console.log('ðŸ–¥ï¸ Pantalla completa activada');
         } catch (error) {
-            console.log('⚠️ No se pudo activar pantalla completa:', error);
+            console.log('âš ï¸ No se pudo activar pantalla completa:', error);
         }
 
-        // 🔥 ESCUCHAR CUANDO SALGA DE PANTALLA COMPLETA
+        // ðŸ”¥ ESCUCHAR CUANDO SALGA DE PANTALLA COMPLETA
         document.addEventListener('fullscreenchange', () => {
             if (!document.fullscreenElement) {
-                console.log('🖥️ Salió de pantalla completa');
+                console.log('ðŸ–¥ï¸ SaliÃ³ de pantalla completa');
             }
         });
     }
 
     // ============================================
-    // 🔄 ACTUALIZAR IMÁGENES (Auto-refresh)
+    // ðŸ”„ ACTUALIZAR IMÃGENES (Auto-refresh)
     // ============================================
     async refreshImages() {
         try {
@@ -179,18 +179,18 @@ class ProjectionController {
 
             const newImages = result.images;
             
-            // 🔥 SI HAY NUEVAS IMÁGENES
+            // ðŸ”¥ SI HAY NUEVAS IMÃGENES
             if (newImages.length > this.images.length) {
                 const oldLength = this.images.length;
                 this.images = newImages;
                 
-                // Si estábamos en la última o no había fotos, mostrar la nueva
+                // Si estÃ¡bamos en la Ãºltima o no habÃ­a fotos, mostrar la nueva
                 if (this.currentIndex >= oldLength - 1 || oldLength === 0) {
                     this.currentIndex = oldLength;
                     this.showImage();
                 }
                 
-                console.log(`📋 ${newImages.length - oldLength} imágenes nuevas agregadas`);
+                console.log(`ðŸ“‹ ${newImages.length - oldLength} imÃ¡genes nuevas agregadas`);
             }
         } catch (error) {
             console.error('Error refreshing images:', error);
@@ -198,7 +198,7 @@ class ProjectionController {
     }
 
     // ============================================
-    // 🎨 ESTADOS
+    // ðŸŽ¨ ESTADOS
     // ============================================
     showEmptyState() {
         document.getElementById('emptyState').style.display = 'flex';
@@ -211,32 +211,32 @@ class ProjectionController {
     }
 
     // ============================================
-    // 🎯 CONFIGURAR EVENTOS
+    // ðŸŽ¯ CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // 🔥 BOTÓN SALIR
+        // ðŸ”¥ BOTÃ“N SALIR
         const exitBtn = document.getElementById('exitBtn');
         if (exitBtn) {
             exitBtn.addEventListener('click', () => {
-                // Salir de pantalla completa si está activa
+                // Salir de pantalla completa si estÃ¡ activa
                 if (document.fullscreenElement) {
                     document.exitFullscreen();
                 }
-                window.location.href = `/host/live-event?id=${this.eventoId}`;
+                if (typeof window.navigateTo === 'function') window.navigateTo(`/host/live-event?id=${this.eventoId}`); else window.go(`/host/live-event?id=${this.eventoId}`);
             });
         }
 
-        // 🔥 TECLA ESC PARA SALIR
+        // ðŸ”¥ TECLA ESC PARA SALIR
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                // Si está en pantalla completa, solo sale de ella
-                // El botón Salir es el que redirige
+                // Si estÃ¡ en pantalla completa, solo sale de ella
+                // El botÃ³n Salir es el que redirige
             }
         });
     }
 
     // ============================================
-    // 📦 UTILIDADES
+    // ðŸ“¦ UTILIDADES
     // ============================================
     showError(message) {
         Swal.fire({
@@ -249,14 +249,14 @@ class ProjectionController {
 }
 
 // ============================================
-// ✅ EXPORT
+// âœ… EXPORT
 // ============================================
 export function initProjectionController() {
     new ProjectionController();
 }
 
 // ============================================
-// 🚀 INIT
+// ðŸš€ INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     new ProjectionController();

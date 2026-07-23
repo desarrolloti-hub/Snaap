@@ -1,13 +1,13 @@
-// src/modules/sysadmin/adminEdit/adminEditController.js
+﻿// src/modules/sysadmin/adminEdit/adminEditController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 export async function adminEditController() {
-    console.log('🔥 Admin Edit Controller iniciado');
+    console.log('ðŸ”¥ Admin Edit Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -20,7 +20,7 @@ export async function adminEditController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -28,7 +28,7 @@ export async function adminEditController() {
     loadStyles();
     await loadAdminData();
     setupForm();
-    // 🔥 Agregar delegación de eventos
+    // ðŸ”¥ Agregar delegaciÃ³n de eventos
     setupDelegation();
 }
 
@@ -56,11 +56,11 @@ async function loadAdminData() {
     if (!adminId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificó qué administrador editar',
+            text: 'No se especificÃ³ quÃ© administrador editar',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/sysadmin/admins';
+            window.go('');
         });
         return;
     }
@@ -87,7 +87,7 @@ async function loadAdminData() {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = '/sysadmin/admins';
+                window.go('');
             });
             return;
         }
@@ -99,7 +99,7 @@ async function loadAdminData() {
         document.getElementById('adminStatus').value = admin.status || 'active';
         document.getElementById('adminNotes').value = admin.notes || admin.bio || '';
         
-        console.log('📥 Datos del administrador cargados:', admin);
+        console.log('ðŸ“¥ Datos del administrador cargados:', admin);
     } catch (error) {
         Swal.close();
         console.error('Error al cargar administrador:', error);
@@ -109,63 +109,63 @@ async function loadAdminData() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/sysadmin/admins';
+            window.go('');
         });
     }
 }
 
 function setupForm() {
-    // 🔥 FORMULARIO
+    // ðŸ”¥ FORMULARIO
     const adminForm = document.getElementById('adminForm');
     if (adminForm) {
         adminForm.addEventListener('submit', saveAdmin);
-        console.log('✅ Event listener agregado al formulario');
+        console.log('âœ… Event listener agregado al formulario');
     }
 }
 
 // ============================================
-// 🔥 DELEGACIÓN DE EVENTOS
+// ðŸ”¥ DELEGACIÃ“N DE EVENTOS
 // ============================================
 function setupDelegation() {
-    console.log('🔧 Configurando delegación de eventos...');
+    console.log('ðŸ”§ Configurando delegaciÃ³n de eventos...');
     
     // Remover listeners anteriores
     document.removeEventListener('click', handleDocumentClick);
     document.addEventListener('click', handleDocumentClick);
     
-    console.log('✅ Delegación de eventos configurada');
+    console.log('âœ… DelegaciÃ³n de eventos configurada');
 }
 
 function handleDocumentClick(e) {
-    // 🔥 BOTÓN VOLVER
+    // ðŸ”¥ BOTÃ“N VOLVER
     const btnVolver = e.target.closest('#btnVolver');
     if (btnVolver) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('🔙 Click en Volver (delegación)');
+        console.log('ðŸ”™ Click en Volver (delegaciÃ³n)');
         
         Swal.fire({
-            title: '¿Cancelar edición?',
-            text: '¿Estás seguro de que quieres salir? Los cambios no guardados se perderán.',
+            title: 'Â¿Cancelar ediciÃ³n?',
+            text: 'Â¿EstÃ¡s seguro de que quieres salir? Los cambios no guardados se perderÃ¡n.',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#ff007a',
             cancelButtonColor: '#4db8ff',
-            confirmButtonText: 'Sí, salir',
+            confirmButtonText: 'SÃ­, salir',
             cancelButtonText: 'Continuar editando'
         }).then((result) => {
             if (result.isConfirmed) {
                 if (typeof window.navigateTo === 'function') {
                     window.navigateTo('/sysadmin/admins');
                 } else {
-                    window.location.href = '/sysadmin/admins';
+                    window.go('');
                 }
             }
         });
         return;
     }
     
-    // 🔥 BOTÓN GUARDAR (por si acaso)
+    // ðŸ”¥ BOTÃ“N GUARDAR (por si acaso)
     const btnSave = e.target.closest('.btn-save');
     if (btnSave) {
         // El formulario ya maneja el submit
@@ -229,7 +229,7 @@ async function saveAdmin(e) {
         Swal.close();
         
         await Swal.fire({
-            title: '¡Actualizado!',
+            title: 'Â¡Actualizado!',
             text: 'El administrador ha sido actualizado correctamente',
             icon: 'success',
             confirmButtonText: 'OK'
@@ -238,7 +238,7 @@ async function saveAdmin(e) {
         if (typeof window.navigateTo === 'function') {
             window.navigateTo('/sysadmin/admins');
         } else {
-            window.location.href = '/sysadmin/admins';
+            window.go('');
         }
     } catch (error) {
         Swal.close();

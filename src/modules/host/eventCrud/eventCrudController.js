@@ -1,19 +1,19 @@
-// src/modules/host/eventCrud/eventCrudController.js
+﻿// src/modules/host/eventCrud/eventCrudController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { eventoRepository } from '../../../repositories/eventRepository.js';
 
-// ✅ EXPORTACIÓN CORRECTA
+// âœ… EXPORTACIÃ“N CORRECTA
 export async function eventCrudController() {
-    console.log('🔥 Event CRUD Controller iniciado');
+    console.log('ðŸ”¥ Event CRUD Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
         return;
     }
 
-    // 🔥 Establecer el usuario actual en el servicio
+    // ðŸ”¥ Establecer el usuario actual en el servicio
     const user = userService.getCurrentUser();
     eventService.setUsuarioActual(user);
 
@@ -40,25 +40,25 @@ function loadStyles() {
 }
 
 // ============================================
-// 📥 CARGAR EVENTOS DESDE FIRESTORE
+// ðŸ“¥ CARGAR EVENTOS DESDE FIRESTORE
 // ============================================
 async function loadEventosFromFirestore() {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            console.warn('⚠️ No hay usuario autenticado');
+            console.warn('âš ï¸ No hay usuario autenticado');
             return [];
         }
 
-        console.log('👤 Usuario actual:', user);
-        console.log('🎯 Rol del usuario:', user.role);
+        console.log('ðŸ‘¤ Usuario actual:', user);
+        console.log('ðŸŽ¯ Rol del usuario:', user.role);
 
-        // 🔥 OBTENER EVENTOS SEGÚN EL ROL
+        // ðŸ”¥ OBTENER EVENTOS SEGÃšN EL ROL
         const result = await eventService.obtenerEventosPorRol(user.uid, user.role);
 
         if (result.success) {
             const eventos = result.eventos;
-            console.log(`📊 ${eventos.length} eventos encontrados para el rol ${user.role}`);
+            console.log(`ðŸ“Š ${eventos.length} eventos encontrados para el rol ${user.role}`);
 
             // Guardar en localStorage para compatibilidad
             localStorage.setItem('eventos', JSON.stringify(eventos));
@@ -69,13 +69,13 @@ async function loadEventosFromFirestore() {
             return loadEventosFromLocalStorage();
         }
     } catch (error) {
-        console.error('❌ Error al cargar eventos:', error);
+        console.error('âŒ Error al cargar eventos:', error);
         return loadEventosFromLocalStorage();
     }
 }
 
 // ============================================
-// 📥 FALLBACK: CARGAR EVENTOS DE LOCALSTORAGE
+// ðŸ“¥ FALLBACK: CARGAR EVENTOS DE LOCALSTORAGE
 // ============================================
 function loadEventosFromLocalStorage() {
     const stored = localStorage.getItem('snaap_events');
@@ -83,7 +83,7 @@ function loadEventosFromLocalStorage() {
         try {
             const eventos = JSON.parse(stored);
             if (eventos.length > 0) {
-                console.log('📊 Eventos cargados desde localStorage:', eventos.length);
+                console.log('ðŸ“Š Eventos cargados desde localStorage:', eventos.length);
                 return eventos;
             }
         } catch (e) {
@@ -94,13 +94,13 @@ function loadEventosFromLocalStorage() {
 }
 
 // ============================================
-// 🖼️ RENDERIZAR LISTA DE EVENTOS
+// ðŸ–¼ï¸ RENDERIZAR LISTA DE EVENTOS
 // ============================================
 function renderEventosList(eventos, filter = '') {
     const container = document.getElementById('eventosList');
     if (!container) return;
     
-    console.log('🖼️ Renderizando eventos:', eventos.length);
+    console.log('ðŸ–¼ï¸ Renderizando eventos:', eventos.length);
     
     const filteredEventos = eventos.filter(evento => {
         const nombre = evento.nombre || evento.title || '';
@@ -136,9 +136,9 @@ function renderEventosList(eventos, filter = '') {
         const attendees = evento.attendees || evento.invitados?.length || 0;
         const photos = evento.uploadedPhotos || 0;
         const estado = evento.estado || 'pending';
-        const estadoText = estado === 'active' ? '✅ Activo' : 
-                          estado === 'completed' ? '📌 Completado' : 
-                          estado === 'cancelled' ? '❌ Cancelado' : '⏳ Pendiente';
+        const estadoText = estado === 'active' ? 'âœ… Activo' : 
+                          estado === 'completed' ? 'ðŸ“Œ Completado' : 
+                          estado === 'cancelled' ? 'âŒ Cancelado' : 'â³ Pendiente';
         
         return `
             <div class="evento-card" data-id="${evento.id}">
@@ -165,12 +165,12 @@ function renderEventosList(eventos, filter = '') {
         `;
     }).join('');
     
-    // Agregar event listeners usando delegación
+    // Agregar event listeners usando delegaciÃ³n
     setupButtonListeners(container);
 }
 
 // ============================================
-// 🔧 CONFIGURAR EVENT LISTENERS DE LOS BOTONES
+// ðŸ”§ CONFIGURAR EVENT LISTENERS DE LOS BOTONES
 // ============================================
 function setupButtonListeners(container) {
     // Ver detalles
@@ -179,7 +179,7 @@ function setupButtonListeners(container) {
             e.preventDefault();
             e.stopPropagation();
             const id = btn.getAttribute('data-id');
-            console.log('🔍 Ver detalles del evento:', id);
+            console.log('ðŸ” Ver detalles del evento:', id);
             redirectToViewDetails(id);
         });
     });
@@ -190,7 +190,7 @@ function setupButtonListeners(container) {
             e.preventDefault();
             e.stopPropagation();
             const id = btn.getAttribute('data-id');
-            console.log('✏️ Editar evento:', id);
+            console.log('âœï¸ Editar evento:', id);
             redirectToEditForm(id);
         });
     });
@@ -208,17 +208,17 @@ function setupButtonListeners(container) {
 }
 
 // ============================================
-// 🗑️ MOSTRAR MODAL DE ELIMINACIÓN
+// ðŸ—‘ï¸ MOSTRAR MODAL DE ELIMINACIÃ“N
 // ============================================
 function showDeleteModal(evento) {
     Swal.fire({
-        title: '¿Eliminar Evento?',
-        html: `¿Estás seguro de eliminar el evento <strong>${evento.nombre}</strong>?<br>Esta acción no se puede deshacer.`,
+        title: 'Â¿Eliminar Evento?',
+        html: `Â¿EstÃ¡s seguro de eliminar el evento <strong>${evento.nombre}</strong>?<br>Esta acciÃ³n no se puede deshacer.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff007a',
         cancelButtonColor: '#4db8ff',
-        confirmButtonText: 'Sí, eliminar',
+        confirmButtonText: 'SÃ­, eliminar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -236,7 +236,7 @@ function showDeleteModal(evento) {
                 Swal.close();
                 
                 await Swal.fire({
-                    title: '¡Evento Eliminado!',
+                    title: 'Â¡Evento Eliminado!',
                     text: 'El evento ha sido eliminado correctamente',
                     icon: 'success',
                     confirmButtonText: 'OK'
@@ -256,7 +256,7 @@ function showDeleteModal(evento) {
 }
 
 // ============================================
-// 🗑️ ELIMINAR EVENTO DE FIRESTORE
+// ðŸ—‘ï¸ ELIMINAR EVENTO DE FIRESTORE
 // ============================================
 async function deleteEventoFromFirestore(id) {
     try {
@@ -276,7 +276,7 @@ async function deleteEventoFromFirestore(id) {
         }
 
         await eventoRepository.delete(id);
-        console.log(`🗑️ Evento ${id} eliminado de Firestore`);
+        console.log(`ðŸ—‘ï¸ Evento ${id} eliminado de Firestore`);
 
         // Actualizar localStorage
         const eventos = JSON.parse(localStorage.getItem('eventos') || '[]');
@@ -292,14 +292,14 @@ async function deleteEventoFromFirestore(id) {
 }
 
 // ============================================
-// 🔀 REDIRECCIONES
+// ðŸ”€ REDIRECCIONES
 // ============================================
 function redirectToEditForm(eventoId) {
     localStorage.setItem('eventoParaEditar', eventoId);
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(`/host/event-edit?id=${eventoId}`);
     } else {
-        window.location.href = `/host/event-edit?id=${eventoId}`;
+        window.go(`/host/event-edit?id=${eventoId}`);
     }
 }
 
@@ -307,7 +307,7 @@ function redirectToViewDetails(eventoId) {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(`/host/event-details?id=${eventoId}`);
     } else {
-        window.location.href = `/host/event-details?id=${eventoId}`;
+        window.go(`/host/event-details?id=${eventoId}`);
     }
 }
 
@@ -316,18 +316,18 @@ function redirectToCreateForm() {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo('/host/create-event');
     } else {
-        window.location.href = '/host/create-event';
+        window.go('');
     }
 }
 
 // ============================================
-// 📥 CARGAR Y RENDERIZAR EVENTOS
+// ðŸ“¥ CARGAR Y RENDERIZAR EVENTOS
 // ============================================
 async function loadAndRenderEvents() {
-    // Verificar autenticación
+    // Verificar autenticaciÃ³n
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
         return;
     }
     
@@ -340,12 +340,12 @@ async function loadAndRenderEvents() {
 }
 
 // ============================================
-// 🔧 CONFIGURAR EVENTOS DEL CRUD
+// ðŸ”§ CONFIGURAR EVENTOS DEL CRUD
 // ============================================
 function setupEventListeners() {
-    console.log('🔧 Configurando event listeners...');
+    console.log('ðŸ”§ Configurando event listeners...');
     
-    // Búsqueda
+    // BÃºsqueda
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
@@ -353,7 +353,7 @@ function setupEventListeners() {
         });
     }
     
-    // Botón crear nuevo evento
+    // BotÃ³n crear nuevo evento
     const btnCrearEvento = document.getElementById('btnCrearEvento');
     if (btnCrearEvento) {
         btnCrearEvento.addEventListener('click', (e) => {
@@ -362,8 +362,8 @@ function setupEventListeners() {
         });
     }
     
-    console.log('✅ Event CRUD Controller finalizado');
+    console.log('âœ… Event CRUD Controller finalizado');
 }
 
-// ✅ EXPORTACIÓN POR DEFECTO (para compatibilidad)
+// âœ… EXPORTACIÃ“N POR DEFECTO (para compatibilidad)
 export default eventCrudController;

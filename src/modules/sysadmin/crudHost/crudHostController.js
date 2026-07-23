@@ -1,13 +1,13 @@
-// src/modules/sysadmin/crudHost/crudHostController.js
+﻿// src/modules/sysadmin/crudHost/crudHostController.js
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 export async function crudHostController() {
-    console.log('🔥 CRUD Host Controller iniciado');
+    console.log('ðŸ”¥ CRUD Host Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('⚠️ Usuario no autenticado');
-        window.location.href = '/login';
+        console.warn('âš ï¸ Usuario no autenticado');
+        window.go('');
         return;
     }
 
@@ -20,7 +20,7 @@ export async function crudHostController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.location.href = '/';
+            window.go('');
         });
         return;
     }
@@ -48,7 +48,7 @@ function loadStyles() {
 }
 
 // ============================================
-// 📥 CARGAR HOSTS DESDE FIRESTORE
+// ðŸ“¥ CARGAR HOSTS DESDE FIRESTORE
 // ============================================
 async function loadHosts() {
     const tbody = document.getElementById('hostsTableBody');
@@ -58,11 +58,11 @@ async function loadHosts() {
 
     try {
         const allUsers = await userRepository.getAllUsers();
-        console.log('📊 Todos los usuarios:', allUsers);
+        console.log('ðŸ“Š Todos los usuarios:', allUsers);
         
         currentHosts = allUsers.filter(u => u.role === 'host');
         
-        console.log(`📊 ${currentHosts.length} hosts encontrados en Firestore`);
+        console.log(`ðŸ“Š ${currentHosts.length} hosts encontrados en Firestore`);
         renderHostsTable();
     } catch (error) {
         console.error('Error al cargar hosts:', error);
@@ -73,7 +73,7 @@ async function loadHosts() {
 }
 
 // ============================================
-// 🖼️ RENDERIZAR TABLA DE HOSTS
+// ðŸ–¼ï¸ RENDERIZAR TABLA DE HOSTS
 // ============================================
 function renderHostsTable() {
     const searchTerm = document.getElementById('searchHost')?.value.toLowerCase() || '';
@@ -131,14 +131,14 @@ function renderHostsTable() {
 }
 
 // ============================================
-// 🔧 CONFIGURAR EVENTOS
+// ðŸ”§ CONFIGURAR EVENTOS
 // ============================================
 function setupEventListeners() {
     document.getElementById('createHostBtn')?.addEventListener('click', () => {
         if (typeof window.navigateTo === 'function') {
             window.navigateTo('/sysadmin/hosts/create');
         } else {
-            window.location.href = '/sysadmin/hosts/create';
+            window.go('');
         }
     });
     
@@ -146,16 +146,16 @@ function setupEventListeners() {
 }
 
 // ============================================
-// 👁️ VER HOST - REDIRIGE A PÁGINA DE DETALLES
+// ðŸ‘ï¸ VER HOST - REDIRIGE A PÃGINA DE DETALLES
 // ============================================
 function viewHost(hostId) {
-    console.log('🔍 Ver detalles del host con ID:', hostId);
+    console.log('ðŸ” Ver detalles del host con ID:', hostId);
     
     if (!hostId) {
-        console.error('❌ ID de host no válido');
+        console.error('âŒ ID de host no vÃ¡lido');
         Swal.fire({
             title: 'Error',
-            text: 'ID de host no válido',
+            text: 'ID de host no vÃ¡lido',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -163,37 +163,37 @@ function viewHost(hostId) {
     }
     
     const url = `/sysadmin/host-details?id=${hostId}`;
-    console.log('🔀 Redirigiendo a:', url);
+    console.log('ðŸ”€ Redirigiendo a:', url);
     
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(url);
     } else {
-        window.location.href = url;
+        window.go(url);
     }
 }
 
 // ============================================
-// ✏️ EDITAR HOST
+// âœï¸ EDITAR HOST
 // ============================================
 function editHost(hostId) {
     if (typeof window.navigateTo === 'function') {
         window.navigateTo(`/sysadmin/hosts/edit?id=${hostId}`);
     } else {
-        window.location.href = `/sysadmin/hosts/edit?id=${hostId}`;
+        window.go(`/sysadmin/hosts/edit?id=${hostId}`);
     }
 }
 
 // ============================================
-// 🔄 HABILITAR/INHABILITAR HOST
+// ðŸ”„ HABILITAR/INHABILITAR HOST
 // ============================================
 async function toggleHostStatus(hostId, currentStatus) {
     try {
-        console.log('🔄 Cambiando estado del host:', hostId, 'Estado actual:', currentStatus);
+        console.log('ðŸ”„ Cambiando estado del host:', hostId, 'Estado actual:', currentStatus);
         
         if (!hostId) {
             Swal.fire({
                 title: 'Error',
-                text: 'ID de host no válido',
+                text: 'ID de host no vÃ¡lido',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -214,14 +214,14 @@ async function toggleHostStatus(hostId, currentStatus) {
         const isActive = currentStatus === 'active';
         const newStatus = isActive ? 'inactive' : 'active';
         const actionText = isActive ? 'inhabilitar' : 'habilitar';
-        const actionEmoji = isActive ? '🚫' : '✅';
+        const actionEmoji = isActive ? 'ðŸš«' : 'âœ…';
 
         const result = await Swal.fire({
-            title: `${actionEmoji} ¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Host?`,
-            text: `¿Estás seguro de ${actionText} al host "${host.username}"?`,
+            title: `${actionEmoji} Â¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Host?`,
+            text: `Â¿EstÃ¡s seguro de ${actionText} al host "${host.username}"?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: `Sí, ${actionText}`,
+            confirmButtonText: `SÃ­, ${actionText}`,
             cancelButtonText: 'Cancelar'
         });
 
@@ -235,23 +235,23 @@ async function toggleHostStatus(hostId, currentStatus) {
                 }
             });
 
-            // 🔥 ACTUALIZAR ESTADO EN FIRESTORE
+            // ðŸ”¥ ACTUALIZAR ESTADO EN FIRESTORE
             host.status = newStatus;
             host.updatedAt = new Date();
             await userRepository.update(host);
             
-            console.log(`✅ Host ${host.username} ${actionText}do correctamente`);
+            console.log(`âœ… Host ${host.username} ${actionText}do correctamente`);
             
             Swal.close();
             
             await Swal.fire({
-                title: '¡Actualizado!',
+                title: 'Â¡Actualizado!',
                 text: `El host ha sido ${actionText}do correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
             
-            // 🔥 RECARGAR LISTA
+            // ðŸ”¥ RECARGAR LISTA
             await loadHosts();
         }
     } catch (error) {
@@ -267,7 +267,7 @@ async function toggleHostStatus(hostId, currentStatus) {
 }
 
 // ============================================
-// 🔧 UTILIDADES
+// ðŸ”§ UTILIDADES
 // ============================================
 function getStatusText(status) {
     const statuses = {
