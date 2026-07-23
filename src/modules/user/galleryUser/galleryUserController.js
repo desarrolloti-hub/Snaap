@@ -276,13 +276,13 @@ class GalleryUserController {
                     <circle cx="8.5" cy="8.5" r="1.5"/>
                     <path d="M21 15l-5-5L5 21"/>
                 </svg>
-                <h3><i class="fas fa-image"></i> No hay imÃ¡genes en este evento</h3>
+                <h3><i class="fas fa-image"></i> No hay imágenes en este evento</h3>
                 <p><i class="fas fa-camera"></i> Captura una foto o sube un dibujo para comenzar</p>
-                <button class="btn-snaap" onclick="window.go('/user/home?eventId=${this.eventoId}'">
+                <button class="btn-snaap" onclick="window.go('/user/home?eventId=${this.eventoId}')">
                     <i class="fas fa-arrow-left"></i> Volver al evento
                 </button>
             </div>
-        `);
+        `;
     }
 
     showSuccess(message) {
