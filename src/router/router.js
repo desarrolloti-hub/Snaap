@@ -41,6 +41,13 @@ async function navigateTo(path) {
         cleanPath = cleanPath.slice(0, -1);
     }
     
+    // Si ya estamos en la misma ruta no empujar otra entrada al historial (evita loops)
+    if (cleanPath === window.location.pathname) {
+        await handleRoute(cleanPath);
+        isNavigating = false;
+        return;
+    }
+
     window.history.pushState({}, '', cleanPath);
     await handleRoute(cleanPath);
     isNavigating = false;
@@ -53,11 +60,19 @@ async function handleRoute(path, isPopState = false) {
 
     // 🔥 1. VERIFICAR AUTENTICACIÓN Y PERMISOS (usando la ruta sin parámetros)
     const canAccess = await authGuard(pathWithoutParams, (redirectPath) => {
+        // Normalizar y evitar redirigir a la misma ruta (rompe bucles de redirect)
+        let target = redirectPath && redirectPath.startsWith('/') ? redirectPath : ('/' + (redirectPath || ''));
+        if (target !== '/' && target.endsWith('/')) target = target.slice(0, -1);
+        if (target === pathWithoutParams) {
+            console.warn(`⚠️ Ignorando redirect a la misma ruta: ${target}`);
+            return;
+        }
+
         if (!isPopState) {
-            window.history.pushState({}, '', redirectPath);
-            handleRoute(redirectPath);
+            window.history.pushState({}, '', target);
+            handleRoute(target);
         } else {
-            window.location.href = redirectPath;
+            window.location.href = target;
         }
     });
 
