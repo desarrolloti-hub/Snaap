@@ -33,8 +33,16 @@ class HomeUserController {
     // ============================================
     async initialize() {
         try {
+            console.log('[homeUser] initialize start', {
+                pathname: window.location.pathname,
+                search: window.location.search,
+                hasCurrentUser: !!userService.getCurrentUser(),
+                currentUser: userService.getCurrentUser()
+            });
+
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
+                console.warn('[homeUser] No current user found, redirecting to /login');
                 import('../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
                 return;
             }
@@ -42,20 +50,28 @@ class HomeUserController {
             const urlParams = new URLSearchParams(window.location.search);
             this.eventoId = urlParams.get('eventId');
 
+            console.log('[homeUser] eventId resolved', this.eventoId);
+
             if (!this.eventoId) {
-                this.showError('No se especificÃ³ un evento');
+                console.warn('[homeUser] Missing eventId in URL');
+                this.showError('No se especificó un evento');
                 return;
             }
 
+            console.log('[homeUser] Loading event data...');
             await this.loadEventData();
+            console.log('[homeUser] Loading user data...');
             await this.loadUserData();
+            console.log('[homeUser] Setting up listeners...');
             this.setupEventListeners();
+            console.log('[homeUser] Loading user images...');
             await this.loadUserImages();
+            console.log('[homeUser] Updating event header...');
             this.updateEventHeader();
 
         } catch (error) {
-            console.error('Error initializing user home:', error);
-            this.showError('Error al cargar la pÃ¡gina');
+            console.error('[homeUser] Error initializing user home:', error);
+            this.showError('Error al cargar la página');
         }
     }
 
@@ -64,14 +80,16 @@ class HomeUserController {
     // ============================================
     async loadEventData() {
         try {
+            console.log('[homeUser] Calling eventService.obtenerEventoPorId with', this.eventoId);
             const result = await eventService.obtenerEventoPorId(this.eventoId);
+            console.log('[homeUser] eventService result', result);
             if (!result.success) {
-                throw new Error(result.error);
+                throw new Error(result.error || 'No se pudo obtener el evento');
             }
             this.eventoData = result.evento;
-            console.log('âœ… Evento cargado:', this.eventoData?.nombre);
+            console.log('[homeUser] Evento cargado:', this.eventoData?.nombre);
         } catch (error) {
-            console.error('Error loading event data:', error);
+            console.error('[homeUser] Error loading event data:', error);
             throw error;
         }
     }
@@ -81,7 +99,9 @@ class HomeUserController {
     // ============================================
     async loadUserData() {
         try {
+            console.log('[homeUser] Calling userService.obtenerUsuarioPorUid for', this.currentUser.uid);
             const result = await userService.obtenerUsuarioPorUid(this.currentUser.uid);
+            console.log('[homeUser] userService profile result', result);
             
             if (result.success) {
                 this.userData = result.user;
@@ -94,7 +114,7 @@ class HomeUserController {
             }
             
         } catch (error) {
-            console.error('âŒ Error loading user data:', error);
+            console.error('[homeUser] Error loading user data:', error);
             this.userData = this.currentUser;
             if (!this.userData.images) {
                 this.userData.images = [];
@@ -287,22 +307,25 @@ class HomeUserController {
     // ============================================
     async loadUserImages() {
         try {
+            console.log('[homeUser] Calling userImageService.getUserImages');
             const result = await userImageService.getUserImages();
+            console.log('[homeUser] userImageService result', result);
             
             if (!result.success) {
-                throw new Error(result.error);
+                throw new Error(result.error || 'No se pudieron obtener las imágenes');
             }
 
-            const allImages = result.images;
+            const allImages = result.images || [];
             const eventImages = allImages.filter(img => img.eventoId === this.eventoId);
 
+            console.log('[homeUser] images for event', this.eventoId, eventImages.length, allImages.length);
             this.images = eventImages;
             this.previewImages = eventImages.slice(0, 12);
             
             this.renderPreview();
             
         } catch (error) {
-            console.error('Error loading images:', error);
+            console.error('[homeUser] Error loading images:', error);
         }
     }
 
