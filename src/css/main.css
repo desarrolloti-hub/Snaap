@@ -26,6 +26,33 @@
 /* Pages */
 @import url('./pages/home.css');
 @import url('./pages/404.css');
+/*Host*/
+@import url('./pages/homeHost.css');
+@import url('./components/createEvent.css');
+@import url('./components/eventCrud.css');
+@import url('./components/profile.css');
+@import url('./components/eventDetails.css');
+@import url('./components/qrGenerator.css');
+@import url('./components/projection.css');
+@import url('./components/profileEditHost.css');
+@import url('./components/profileEdit.css');
+@import url('./components/profile.css');
+@import url('./components/liveEvent.css');
+@import url('./components/eventEditForm.css');
+@import url('./components/carroucelEvents.css');
+/*sysadmin*/
+@import url('./components/adminDetails.css');
+@import url('./components/adminEdit.css');
+@import url('./components/adminForm.css');
+@import url('./components/carouselAdmin.css');
+@import url('./components/crudAdmin.css');
+@import url('./components/crudHost.css');
+@import url('./components/hostDetails.css');
+@import url('./components/hostEdit.css');
+@import url('./components/hostForm.css');
+@import url('./components/profileAdmin.css');
+/*user*/
+@import url('./components/homeUser.css');
 
 /* @import url('./pages/main.css');   /* si existe — LO ELIMINAMOS PARA EVITAR EL ERROR */
 
