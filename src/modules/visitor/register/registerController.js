@@ -2,13 +2,27 @@
 import { userService } from '../../../services/userService.js';
 import { getRedirectPathByRole } from '../../../core/permissions.js';
 
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 🚀 CONTROLADOR PRINCIPAL
+// ============================================
 export async function registerController() {
-    console.log('ðŸ”¥ Register Controller iniciado');
+    console.log('🔥 Register Controller iniciado');
 
     if (userService.isAuthenticated()) {
         const user = userService.getCurrentUser();
         const redirectPath = getRedirectPathByRole(user.role);
-        redirectTo(redirectPath);
+        navigateTo(redirectPath);
         return;
     }
 
@@ -21,7 +35,7 @@ export async function registerController() {
     if (backToLoginBtn) {
         backToLoginBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            redirectTo('/login');
+            navigateTo('/login');
         });
     }
 
@@ -29,7 +43,7 @@ export async function registerController() {
     if (termsLink) {
         termsLink.addEventListener('click', (e) => {
             e.preventDefault();
-            redirectTo('/terms');
+            navigateTo('/terms');
         });
     }
 
@@ -43,17 +57,17 @@ export async function registerController() {
         icon.addEventListener('click', () => {
             const social = icon.getAttribute('data-social') || 'red social';
             Swal.fire({
-                title: 'PrÃ³ximamente',
-                text: `Registro con ${social} estarÃ¡ disponible pronto.`,
+                title: 'Próximamente',
+                text: `Registro con ${social} estará disponible pronto.`,
                 icon: 'info',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Entendido'
             });
         });
     });
 }
 
 // ============================================
-// ðŸ“§ REGISTRO CON EMAIL
+// 📧 REGISTRO CON EMAIL
 // ============================================
 async function handleRegister(e) {
     e.preventDefault();
@@ -64,60 +78,64 @@ async function handleRegister(e) {
     const confirmPassword = document.getElementById('register-confirm-password').value;
     const acceptTerms = document.getElementById('acceptTermsRegister').checked;
 
+    // ============================================
+    // VALIDACIONES
+    // ============================================
     if (!name || !email || !password || !confirmPassword) {
-        Swal.fire({
+        await Swal.fire({
             title: 'Campos incompletos',
-            text: 'Por favor completa todos los campos',
+            text: 'Por favor completa todos los campos para registrarte.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
     if (password !== confirmPassword) {
-        Swal.fire({
-            title: 'ContraseÃ±as no coinciden',
-            text: 'Las contraseÃ±as ingresadas no son iguales',
+        await Swal.fire({
+            title: 'Contraseñas no coinciden',
+            text: 'Las contraseñas ingresadas no son iguales. Verifica e inténtalo de nuevo.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
     if (password.length < 6) {
-        Swal.fire({
-            title: 'ContraseÃ±a muy corta',
-            text: 'La contraseÃ±a debe tener al menos 6 caracteres',
+        await Swal.fire({
+            title: 'Contraseña muy corta',
+            text: 'La contraseña debe tener al menos 6 caracteres para mayor seguridad.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
     if (!acceptTerms) {
-        Swal.fire({
-            title: 'TÃ©rminos y condiciones',
-            text: 'Debes aceptar los tÃ©rminos y condiciones para registrarte.',
+        await Swal.fire({
+            title: 'Términos y condiciones',
+            text: 'Debes aceptar los términos y condiciones para registrarte.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        Swal.fire({
-            title: 'Email invÃ¡lido',
-            text: 'Por favor ingresa un correo electrÃ³nico vÃ¡lido',
+        await Swal.fire({
+            title: 'Email inválido',
+            text: 'Por favor ingresa un correo electrónico válido.',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
+    // Mostrar loading
     Swal.fire({
         title: 'Creando cuenta...',
-        text: 'Por favor espera',
+        text: 'Por favor espera un momento.',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -137,22 +155,33 @@ async function handleRegister(e) {
                 }
             }));
 
-            // ðŸ”¥ MENSAJE CON VERIFICACIÃ“N DE EMAIL
+            // 🔥 MENSAJE DE REGISTRO EXITOSO CON VERIFICACIÓN
             await Swal.fire({
-                title: 'Â¡Registro exitoso!',
-                html: `${result.message}<br><br>
-                       <strong>ðŸ“§ Revisa tu correo electrÃ³nico</strong><br>
-                       <small>Hemos enviado un enlace de verificaciÃ³n a ${email}.<br>
-                       Debes verificarlo antes de iniciar sesiÃ³n.</small>`,
+                title: '🎉 ¡Registro exitoso!',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.1rem; margin: 5px 0;">${result.message}</p>
+                        <div style="margin: 15px 0; padding: 12px; background: rgba(77,184,255,0.1); border-radius: 12px; border: 1px solid rgba(77,184,255,0.2);">
+                            <strong style="color: #4db8ff;">📧 Revisa tu correo electrónico</strong><br>
+                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 5px 0;">
+                                Hemos enviado un enlace de verificación a:<br>
+                                <span style="color: #4db8ff; font-weight: 600;">${email}</span>
+                            </p>
+                            <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin: 5px 0;">
+                                Debes verificarlo antes de iniciar sesión.
+                            </p>
+                        </div>
+                    </div>
+                `,
                 icon: 'success',
-                confirmButtonText: 'Entendido'
+                confirmButtonText: 'Ir a Iniciar Sesión'
             });
 
-            redirectTo('/login');
+            navigateTo('/login');
         } else {
-            Swal.fire({
-                title: 'Error',
-                text: result.error,
+            await Swal.fire({
+                title: 'Error al registrarse',
+                text: result.error || 'Ocurrió un error al crear tu cuenta.',
                 icon: 'error',
                 confirmButtonText: 'Intentar de nuevo'
             });
@@ -160,22 +189,34 @@ async function handleRegister(e) {
     } catch (error) {
         Swal.close();
         console.error('Error en registro:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'OcurriÃ³ un error al registrar el usuario',
+        
+        let mensaje = 'Ocurrió un error al registrar el usuario.';
+        if (error.code === 'auth/email-already-in-use') {
+            mensaje = 'Este correo electrónico ya está registrado. Intenta iniciar sesión.';
+        } else if (error.code === 'auth/weak-password') {
+            mensaje = 'La contraseña es demasiado débil. Usa al menos 6 caracteres.';
+        } else if (error.code === 'auth/invalid-email') {
+            mensaje = 'El correo electrónico no es válido.';
+        } else if (error.message) {
+            mensaje = error.message;
+        }
+        
+        await Swal.fire({
+            title: 'Error al registrarse',
+            text: mensaje,
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
     }
 }
 
 // ============================================
-// ðŸ” REGISTRO CON GOOGLE (desde Ã­cono)
+// 🔐 REGISTRO CON GOOGLE
 // ============================================
 async function handleGoogleRegister() {
     Swal.fire({
-        title: 'Registrando con Google...',
-        text: 'Por favor espera',
+        title: 'Conectando con Google...',
+        text: 'Por favor espera un momento.',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -195,19 +236,34 @@ async function handleGoogleRegister() {
                 }
             }));
 
+            const roleNames = {
+                'sysadmin': 'Administrador',
+                'host': 'Host',
+                'user': 'Usuario'
+            };
+            const roleDisplay = roleNames[result.role] || 'Usuario';
+
             await Swal.fire({
-                title: 'Â¡Registro exitoso!',
-                text: `âœ… ${result.message}`,
+                title: '🎉 ¡Registro exitoso!',
+                html: `
+                    <div style="text-align: center;">
+                        <i class="fas fa-google" style="color: #ea4335; font-size: 3rem; margin-bottom: 10px;"></i>
+                        <p style="font-size: 1.1rem; margin: 5px 0;">${result.message}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin: 0;">
+                            <i class="fas fa-user-tag"></i> Rol: ${roleDisplay}
+                        </p>
+                    </div>
+                `,
                 icon: 'success',
                 confirmButtonText: 'Continuar'
             });
 
             const redirectPath = getRedirectPathByRole(result.role);
-            redirectTo(redirectPath);
+            navigateTo(redirectPath);
         } else {
-            Swal.fire({
-                title: 'Error',
-                text: result.error,
+            await Swal.fire({
+                title: 'Error con Google',
+                text: result.error || 'No se pudo completar el registro con Google.',
                 icon: 'error',
                 confirmButtonText: 'Intentar de nuevo'
             });
@@ -215,19 +271,13 @@ async function handleGoogleRegister() {
     } catch (error) {
         Swal.close();
         console.error('Error en Google register:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'OcurriÃ³ un error al registrar con Google',
+        await Swal.fire({
+            title: 'Error con Google',
+            text: 'Ocurrió un error al registrar con Google. Intenta de nuevo.',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
     }
 }
 
-function redirectTo(path) {
-    if (typeof window.navigateTo === 'function') {
-        window.navigateTo(path);
-    } else {
-        window.go(path);
-    }
-}
+export default registerController;

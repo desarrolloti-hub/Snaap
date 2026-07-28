@@ -188,14 +188,15 @@
     margin-top: var(--snaap-spacing-lg);
 }
 
-/* 🔥 BOTONES - TRANSPARENTES CON BORDE AZUL */
+/* ========================================== */
+/* 🔥 BOTÓN REGISTRAR - AZUL CON TEXTO BLANCO */
+/* ========================================== */
 .btn-register {
     flex: 1;
     padding: 15px 25px;
     border-radius: var(--snaap-radius-pill);
     background: transparent;
-    backdrop-filter: blur(5px);
-    border: var(--snaap-border-neon);
+    border: 2px solid var(--snaap-azul-claro);
     color: var(--snaap-text-white);
     font-family: var(--snaap-font-family);
     font-weight: 700;
@@ -205,10 +206,9 @@
     justify-content: center;
     cursor: pointer;
     transition: var(--snaap-transition-slow);
-    box-shadow: var(--snaap-shadow-neon);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
     user-select: none;
     gap: 10px;
-    animation: neonPulse 2.5s infinite alternate;
 }
 
 .btn-register i {
@@ -217,46 +217,39 @@
     font-size: 0.9rem;
 }
 
-/* 🔥 HOVER - ROSA CON BORDE ROSA */
 .btn-register:hover {
     border-color: var(--snaap-rosa);
     background: transparent;
     color: var(--snaap-text-white);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    transform: translateY(-5px) scale(1.05);
-    animation: none;
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4);
+    transform: translateY(-3px);
 }
 
 .btn-register:hover i {
     color: var(--snaap-rosa);
-    filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
-@keyframes neonPulse {
-    from { box-shadow: 0 0 5px var(--snaap-azul); border-color: var(--snaap-azul); }
-    to { box-shadow: 0 0 15px var(--snaap-azul), inset 0 0 2px var(--snaap-azul); border-color: var(--snaap-azul-claro); }
-}
-
-/* 🔥 BOTÓN OUTLINE - TRANSPARENTE CON BORDE AZUL */
+/* ========================================== */
+/* 🔥 BOTÓN VOLVER AL LOGIN - AZUL CON TEXTO BLANCO */
+/* ========================================== */
 .btn-register-outline {
     flex: 1;
     padding: 15px 25px;
     border-radius: var(--snaap-radius-pill);
     background: transparent;
-    border: var(--snaap-border-neon);
+    border: 2px solid var(--snaap-azul-claro);
     color: var(--snaap-text-white);
     font-family: var(--snaap-font-family);
-    font-weight: 600;
+    font-weight: 700;
     font-size: var(--snaap-font-size-md);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: var(--snaap-transition-slow);
-    box-shadow: var(--snaap-shadow-neon);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
     user-select: none;
     gap: 10px;
-    animation: neonPulse 2.5s infinite alternate;
 }
 
 .btn-register-outline i {
@@ -269,24 +262,23 @@
     border-color: var(--snaap-rosa);
     background: transparent;
     color: var(--snaap-text-white);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    transform: translateY(-5px) scale(1.05);
-    animation: none;
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4);
+    transform: translateY(-3px);
 }
 
 .btn-register-outline:hover i {
     color: var(--snaap-rosa);
-    filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
-/* 🔥 BOTÓN GOOGLE - TRANSPARENTE CON BORDE AZUL */
+/* ========================================== */
+/* 🔥 BOTÓN GOOGLE - AZUL CON TEXTO BLANCO */
+/* ========================================== */
 .btn-google {
     flex: 1;
     padding: 15px 25px;
     border-radius: var(--snaap-radius-pill);
     background: transparent;
-    backdrop-filter: blur(5px);
-    border: var(--snaap-border-neon);
+    border: 2px solid var(--snaap-azul-claro);
     color: var(--snaap-text-white);
     font-family: var(--snaap-font-family);
     font-weight: 700;
@@ -296,10 +288,9 @@
     justify-content: center;
     cursor: pointer;
     transition: var(--snaap-transition-slow);
-    box-shadow: var(--snaap-shadow-neon);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
     user-select: none;
     gap: 10px;
-    animation: neonPulse 2.5s infinite alternate;
 }
 
 .btn-google i {
@@ -312,14 +303,12 @@
     border-color: var(--snaap-rosa);
     background: transparent;
     color: var(--snaap-text-white);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    transform: translateY(-5px) scale(1.05);
-    animation: none;
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4);
+    transform: translateY(-3px);
 }
 
 .btn-google:hover i {
     color: var(--snaap-rosa);
-    filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
 .login-link {
@@ -340,7 +329,9 @@
     text-shadow: 0 0 5px var(--snaap-rosa);
 }
 
-/* 🔥 ICONOS SOCIALES - TRANSPARENTES CON BORDE AZUL */
+/* ========================================== */
+/* 🔥 ICONOS SOCIALES - AZULES CON HOVER ROSA */
+/* ========================================== */
 .social-login {
     margin-top: 35px;
     display: flex;
@@ -356,24 +347,21 @@
     background: transparent;
     padding: 10px;
     border-radius: 50%;
-    border: var(--snaap-border-neon);
+    border: 2px solid var(--snaap-azul-claro);
     width: 50px;
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--snaap-shadow-neon);
-    animation: neonPulse 2.5s infinite alternate;
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
 }
 
-/* 🔥 ICONOS SOCIALES HOVER - ROSA */
 .social-icon:hover {
     color: var(--snaap-rosa);
     border-color: var(--snaap-rosa);
     background: transparent;
     transform: translateY(-5px);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    animation: none;
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4);
 }
 
 @media (max-width: 900px) {
