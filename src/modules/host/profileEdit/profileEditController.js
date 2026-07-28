@@ -3,45 +3,48 @@ import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
 // ============================================
-// ðŸ“¥ CARGAR DATOS DEL USUARIO DESDE FIRESTORE
+// 📥 CARGAR DATOS DEL USUARIO DESDE FIRESTORE
 // ============================================
 const loadUserData = async () => {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            console.warn('âš ï¸ No hay usuario autenticado');
+            console.warn('⚠️ No hay usuario autenticado');
             return null;
         }
 
         const userData = await userRepository.getByUid(user.uid);
         if (!userData) {
-            console.warn('âš ï¸ Usuario no encontrado en Firestore');
+            console.warn('⚠️ Usuario no encontrado en Firestore');
             return null;
         }
 
-        console.log('ðŸ“¥ Datos del usuario para editar:', userData);
+        console.log('📥 Datos del usuario para editar:', userData);
         return userData;
     } catch (error) {
-        console.error('âŒ Error al cargar datos:', error);
+        console.error('❌ Error al cargar datos:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ–¼ï¸ RENDERIZAR FORMULARIO
+// 🖼️ RENDERIZAR FORMULARIO
 // ============================================
 const renderForm = (userData) => {
     if (!userData) return;
 
-    document.getElementById('fullName').value = userData.username || '';
-    document.getElementById('email').value = userData.email || '';
-    document.getElementById('phone').value = userData.phone || '';
-    document.getElementById('company').value = userData.company || '';
-    document.getElementById('bio').value = userData.bio || '';
-    document.getElementById('website').value = userData.website || '';
-    document.getElementById('specialty').value = userData.specialty || '';
-    document.getElementById('experience').value = userData.experience || 0;
-    document.getElementById('eventsCompleted').value = userData.eventsCreated || 0;
+    // 🔥 VERIFICAR QUE CADA ELEMENTO EXISTA ANTES DE ASIGNAR VALOR
+    const fullNameEl = document.getElementById('fullName');
+    if (fullNameEl) fullNameEl.value = userData.username || '';
+
+    const emailEl = document.getElementById('email');
+    if (emailEl) emailEl.value = userData.email || '';
+
+    const phoneEl = document.getElementById('phone');
+    if (phoneEl) phoneEl.value = userData.phone || '';
+
+    const bioEl = document.getElementById('bio');
+    if (bioEl) bioEl.value = userData.bio || '';
 
     // Actualizar nombre en el header
     const profileName = document.getElementById('profileName');
@@ -60,50 +63,49 @@ const renderForm = (userData) => {
         }
     }
 
-    // EstadÃ­sticas
+    // Estadísticas
     const stored = localStorage.getItem('eventos');
     let totalEvents = 0;
     let totalGuests = 0;
-    let totalPhotos = 0;
-    
+
     if (stored) {
-        const eventos = JSON.parse(stored);
-        totalEvents = eventos.length;
-        totalGuests = eventos.reduce((sum, e) => sum + (e.attendees || 0), 0);
-        totalPhotos = eventos.reduce((sum, e) => sum + (e.uploadedPhotos || 0), 0);
+        try {
+            const eventos = JSON.parse(stored);
+            totalEvents = eventos.length;
+            totalGuests = eventos.reduce((sum, e) => sum + (e.attendees || 0), 0);
+        } catch (e) {
+            console.warn('Error al parsear eventos:', e);
+        }
     }
 
-    document.getElementById('totalEvents').textContent = totalEvents;
-    document.getElementById('totalGuests').textContent = totalGuests.toLocaleString();
-    document.getElementById('totalPhotos').textContent = totalPhotos.toLocaleString();
+    const totalEventsEl = document.getElementById('totalEvents');
+    if (totalEventsEl) totalEventsEl.textContent = totalEvents;
 
-    const memberSince = document.getElementById('memberSince');
-    if (memberSince && userData.createdAt) {
+    const totalGuestsEl = document.getElementById('totalGuests');
+    if (totalGuestsEl) totalGuestsEl.textContent = totalGuests.toLocaleString();
+
+    const memberSinceEl = document.getElementById('memberSince');
+    if (memberSinceEl && userData.createdAt) {
         const date = new Date(userData.createdAt);
-        memberSince.textContent = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+        memberSinceEl.textContent = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
     }
 
-    console.log('âœ… Formulario renderizado');
+    console.log('✅ Formulario renderizado correctamente');
 };
 
 // ============================================
-// ðŸ’¾ GUARDAR CAMBIOS EN FIRESTORE
+// 💾 GUARDAR CAMBIOS EN FIRESTORE
 // ============================================
 const saveChanges = async () => {
-    const fullName = document.getElementById('fullName')?.value.trim();
-    const email = document.getElementById('email')?.value.trim();
-    const phone = document.getElementById('phone')?.value.trim();
-    const company = document.getElementById('company')?.value.trim();
-    const bio = document.getElementById('bio')?.value.trim();
-    const website = document.getElementById('website')?.value.trim();
-    const specialty = document.getElementById('specialty')?.value;
-    const experience = parseInt(document.getElementById('experience')?.value) || 0;
-    const eventsCompleted = parseInt(document.getElementById('eventsCompleted')?.value) || 0;
+    const fullName = document.getElementById('fullName')?.value?.trim() || '';
+    const email = document.getElementById('email')?.value?.trim() || '';
+    const phone = document.getElementById('phone')?.value?.trim() || '';
+    const bio = document.getElementById('bio')?.value?.trim() || '';
 
     // Validaciones
     if (!fullName || fullName.length < 3) {
         await Swal.fire({
-            title: 'Nombre invÃ¡lido',
+            title: 'Nombre inválido',
             text: 'El nombre debe tener al menos 3 caracteres',
             icon: 'warning',
             confirmButtonText: 'OK'
@@ -113,8 +115,8 @@ const saveChanges = async () => {
 
     if (!email || !userService.isValidEmail(email)) {
         await Swal.fire({
-            title: 'Email invÃ¡lido',
-            text: 'Por favor ingresa un correo electrÃ³nico vÃ¡lido',
+            title: 'Email inválido',
+            text: 'Por favor ingresa un correo electrónico válido',
             icon: 'warning',
             confirmButtonText: 'OK'
         });
@@ -136,12 +138,7 @@ const saveChanges = async () => {
             username: fullName,
             email: email,
             phone: phone || '',
-            company: company || '',
-            bio: bio || '',
-            website: website || '',
-            specialty: specialty || '',
-            experience: experience,
-            eventsCreated: eventsCompleted
+            bio: bio || ''
         };
 
         const result = await userService.actualizarPerfil(updateData);
@@ -157,13 +154,13 @@ const saveChanges = async () => {
             }));
 
             await Swal.fire({
-                title: 'Â¡Perfil actualizado!',
+                title: '¡Perfil actualizado!',
                 text: 'Tus datos han sido guardados correctamente',
                 icon: 'success',
                 confirmButtonText: 'Ver perfil'
             });
 
-            window.go('');
+            navigateTo('/host/profile');
         } else {
             await Swal.fire({
                 title: 'Error',
@@ -174,10 +171,10 @@ const saveChanges = async () => {
         }
     } catch (error) {
         Swal.close();
-        console.error('âŒ Error al guardar:', error);
+        console.error('❌ Error al guardar:', error);
         await Swal.fire({
             title: 'Error',
-            text: 'OcurriÃ³ un error al guardar los cambios',
+            text: 'Ocurrió un error al guardar los cambios',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -185,7 +182,51 @@ const saveChanges = async () => {
 };
 
 // ============================================
-// ðŸ–¼ï¸ SUBIR AVATAR
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 🔙 CANCELAR Y VOLVER
+// ============================================
+const cancelChanges = () => {
+    Swal.fire({
+        title: 'Cancelar Edición',
+        text: '¿Estás seguro de que quieres cancelar? Los cambios no se guardarán.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cancelar',
+        cancelButtonText: 'Continuar editando'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            navigateTo('/host/profile');
+        }
+    });
+};
+
+const goBack = () => {
+    Swal.fire({
+        title: 'Salir sin guardar',
+        text: 'Tienes cambios sin guardar. ¿Estás seguro de que quieres salir?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, salir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            navigateTo('/host/profile');
+        }
+    });
+};
+
+// ============================================
+// 🖼️ SUBIR AVATAR
 // ============================================
 const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -214,7 +255,7 @@ const setupAvatarUpload = () => {
             if (file.size > 5 * 1024 * 1024) {
                 await Swal.fire({
                     title: 'Error',
-                    text: 'La imagen es demasiado grande. MÃ¡ximo 5MB',
+                    text: 'La imagen es demasiado grande. Máximo 5MB',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -235,20 +276,18 @@ const setupAvatarUpload = () => {
             try {
                 const base64 = await convertImageToBase64(file);
 
-                // Actualizar vista previa
                 const avatarImg = document.getElementById('profileAvatar');
                 if (avatarImg) {
                     avatarImg.src = base64;
                 }
 
-                // Guardar avatar en Firestore
                 const result = await userService.actualizarPerfil({
                     photoURL: base64
                 });
 
                 if (result.success) {
                     await Swal.fire({
-                        title: 'Â¡Avatar actualizado!',
+                        title: '¡Avatar actualizado!',
                         text: 'Tu foto de perfil ha sido actualizada',
                         icon: 'success',
                         confirmButtonText: 'OK'
@@ -268,95 +307,14 @@ const setupAvatarUpload = () => {
 };
 
 // ============================================
-// ðŸ”™ CANCELAR Y VOLVER
-// ============================================
-const cancelChanges = () => {
-    Swal.fire({
-        title: 'Cancelar EdiciÃ³n',
-        text: 'Â¿EstÃ¡s seguro de que quieres cancelar? Los cambios no se guardarÃ¡n.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'SÃ­, cancelar',
-        cancelButtonText: 'Continuar editando'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.go('');
-        }
-    });
-};
-
-const goBack = () => {
-    Swal.fire({
-        title: 'Salir sin guardar',
-        text: 'Tienes cambios sin guardar. Â¿EstÃ¡s seguro de que quieres salir?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'SÃ­, salir',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.go('');
-        }
-    });
-};
-
-// ============================================
-// ðŸ—‘ï¸ ELIMINAR CUENTA
-// ============================================
-const deleteAccount = () => {
-    Swal.fire({
-        title: 'Eliminar Cuenta',
-        html: 'Â¿EstÃ¡s seguro de que deseas eliminar tu cuenta?<br>Esta acciÃ³n no se puede deshacer y todos tus eventos serÃ¡n eliminados.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'SÃ­, eliminar',
-        cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                localStorage.removeItem('eventos');
-                localStorage.removeItem('hostProfile');
-                localStorage.removeItem('snaap_events');
-                localStorage.removeItem('snaap_current_event');
-
-                const user = userService.getCurrentUser();
-                if (user && user.id) {
-                    await userRepository.delete(user.id);
-                    console.log('ðŸ—‘ï¸ Usuario eliminado de Firestore');
-                }
-
-                await userService.logout();
-
-                await Swal.fire({
-                    title: 'Cuenta Eliminada',
-                    text: 'Tu cuenta ha sido eliminada. SerÃ¡s redirigido al inicio.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-
-                window.go('');
-            } catch (error) {
-                console.error('âŒ Error al eliminar cuenta:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: 'OcurriÃ³ un error al eliminar la cuenta',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
-        }
-    });
-};
-
-// ============================================
-// ðŸš€ CONTROLADOR PRINCIPAL
+// 🚀 CONTROLADOR PRINCIPAL
 // ============================================
 export async function profileEditController() {
-    console.log('ðŸ”¥ Controlador profileEditController iniciado');
+    console.log('🔥 Controlador profileEditController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        navigateTo('/login');
         return;
     }
 
@@ -368,7 +326,7 @@ export async function profileEditController() {
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/host/profile');
         });
         return;
     }
@@ -394,11 +352,6 @@ export async function profileEditController() {
         btnVolver.addEventListener('click', goBack);
     }
 
-    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-    if (deleteAccountBtn) {
-        deleteAccountBtn.addEventListener('click', deleteAccount);
-    }
-
     // Vista previa del avatar al cambiar el nombre
     const fullNameInput = document.getElementById('fullName');
     if (fullNameInput) {
@@ -416,7 +369,7 @@ export async function profileEditController() {
         });
     }
 
-    console.log('âœ… Controlador profileEditController finalizado');
+    console.log('✅ Controlador profileEditController finalizado');
 }
 
 export default profileEditController;
