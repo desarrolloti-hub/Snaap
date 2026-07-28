@@ -8,7 +8,18 @@ let currentQrImage = null;
 let currentEventId = null;
 
 // ============================================
-// ðŸ“¥ CARGAR EVENTO DESDE FIRESTORE
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 📥 CARGAR EVENTO DESDE FIRESTORE
 // ============================================
 const loadEventFromFirestore = async (id) => {
     try {
@@ -20,13 +31,13 @@ const loadEventFromFirestore = async (id) => {
             return null;
         }
     } catch (error) {
-        console.error('âŒ Error al cargar evento:', error);
+        console.error('❌ Error al cargar evento:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ“¥ CARGAR QR DEL EVENTO
+// 📥 CARGAR QR DEL EVENTO
 // ============================================
 const loadQrFromFirestore = async (eventoId) => {
     try {
@@ -36,13 +47,13 @@ const loadQrFromFirestore = async (eventoId) => {
         }
         return null;
     } catch (error) {
-        console.error('âŒ Error al cargar QR:', error);
+        console.error('❌ Error al cargar QR:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ“¤ GENERAR QR
+// 📤 GENERAR QR
 // ============================================
 const generateQR = async (eventoId, evento) => {
     try {
@@ -51,7 +62,8 @@ const generateQR = async (eventoId, evento) => {
             eventName: evento.nombre || 'Evento',
             eventDate: evento.fechaEvento || new Date().toISOString(),
             hostName: user?.displayName || user?.email || 'Host',
-            package: evento.paquete || 'basico'
+            package: evento.paquete || 'basico',
+            redirectUrl: `${window.location.origin}/user/home?eventId=${eventoId}`
         };
 
         const result = await qrService.generarQr(eventoId, qrData);
@@ -60,13 +72,13 @@ const generateQR = async (eventoId, evento) => {
         }
         return null;
     } catch (error) {
-        console.error('âŒ Error al generar QR:', error);
+        console.error('❌ Error al generar QR:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ–¼ï¸ RENDERIZAR DETALLES DEL EVENTO (CON QR)
+// 🖼️ RENDERIZAR DETALLES DEL EVENTO
 // ============================================
 const renderEventDetails = (evento, qrImage) => {
     if (!evento) return;
@@ -85,7 +97,6 @@ const renderEventDetails = (evento, qrImage) => {
     const codigoEl = document.getElementById('eventCodigo');
     const estadoEl = document.getElementById('eventEstado');
     
-    // ðŸ”¥ USAR CAMPOS DE FIRESTORE
     const nombre = evento.nombre || 'Evento sin nombre';
     
     let fecha = 'No especificada';
@@ -100,15 +111,15 @@ const renderEventDetails = (evento, qrImage) => {
     const ubicacion = evento.ubicacion || 'No especificada';
     const attendees = evento.attendees || evento.invitados?.length || 0;
     const photos = evento.uploadedPhotos || 0;
-    const descripcion = evento.descripcion || 'Sin descripciÃ³n';
+    const descripcion = evento.descripcion || 'Sin descripción';
     const paquete = evento.paquete || 'No especificado';
     const codigoAcceso = evento.codigoAcceso || 'No generado';
     
     const estadoMap = {
-        'active': 'âœ… Activo',
-        'pending': 'â³ Pendiente',
-        'completed': 'ðŸ“Œ Completado',
-        'cancelled': 'âŒ Cancelado'
+        'active': '✅ Activo',
+        'pending': '⏳ Pendiente',
+        'completed': '📌 Completado',
+        'cancelled': '❌ Cancelado'
     };
     const estado = estadoMap[evento.estado] || evento.estado || 'Desconocido';
     
@@ -132,12 +143,11 @@ const renderEventDetails = (evento, qrImage) => {
         };
     }
 
-    // ðŸ”¥ RENDERIZAR QR EN LA SECCIÃ“N
     renderQrSection(qrImage, evento);
 };
 
 // ============================================
-// ðŸŽ¨ RENDERIZAR SECCIÃ“N QR
+// 🎨 RENDERIZAR SECCIÓN QR
 // ============================================
 const renderQrSection = (qrImage, evento) => {
     const qrContainer = document.getElementById('qrContainer');
@@ -148,18 +158,23 @@ const renderQrSection = (qrImage, evento) => {
     if (qrImage) {
         qrContainer.innerHTML = `
             <div class="qr-display">
-                <img src="${qrImage}" alt="CÃ³digo QR del evento" class="qr-image-large">
+                <img src="${qrImage}" alt="Código QR del evento" class="qr-image-large" id="qrImageDisplay">
                 <div class="qr-actions">
-                    <button class="btn-snaap-small" id="downloadQrBtn">ðŸ“¥ Descargar QR</button>
-                    <button class="btn-snaap-small" id="shareQrBtn">ðŸ”— Compartir QR</button>
-                    <button class="btn-snaap-small" id="regenerateQrBtn">ðŸ”„ Regenerar</button>
+                    <button class="btn-qr btn-qr-download" id="downloadQrBtn">
+                        <i class="fas fa-download"></i> Descargar
+                    </button>
+                    <button class="btn-qr btn-qr-share" id="shareQrBtn">
+                        <i class="fas fa-share-alt"></i> Compartir
+                    </button>
                 </div>
             </div>
             <div class="qr-link-box">
-                <p class="qr-link-label">ðŸ”— Enlace directo al evento:</p>
+                <p class="qr-link-label"><i class="fas fa-link"></i> Enlace directo al evento:</p>
                 <div class="qr-link-wrapper">
                     <input type="text" id="eventLink" class="qr-link-input" value="${eventLink}" readonly>
-                    <button class="btn-copy" id="copyLinkBtn">ðŸ“‹ Copiar</button>
+                    <button class="btn-copy" id="copyLinkBtn">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
                 </div>
             </div>
         `;
@@ -167,19 +182,27 @@ const renderQrSection = (qrImage, evento) => {
         qrContainer.innerHTML = `
             <div class="qr-loading">
                 <div class="spinner"></div>
-                <p>Generando cÃ³digo QR...</p>
+                <p>Generando código QR...</p>
             </div>
         `;
     }
 
-    // ðŸ”¥ CONFIGURAR EVENTOS DEL QR
     setupQrEvents(qrImage, evento);
 };
 
 // ============================================
-// ðŸŽ¯ CONFIGURAR EVENTOS DEL QR
+// 🎯 CONFIGURAR EVENTOS DEL QR
 // ============================================
 const setupQrEvents = (qrImage, evento) => {
+    // 🔥 QR CLICKABLE - REDIRIGE A /user/home?eventId=xxx
+    const qrImageDisplay = document.getElementById('qrImageDisplay');
+    if (qrImageDisplay) {
+        qrImageDisplay.style.cursor = 'pointer';
+        qrImageDisplay.addEventListener('click', () => {
+            navigateTo(`/user/home?eventId=${evento.id}`);
+        });
+    }
+
     // Descargar QR
     const downloadBtn = document.getElementById('downloadQrBtn');
     if (downloadBtn) {
@@ -194,7 +217,7 @@ const setupQrEvents = (qrImage, evento) => {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            Swal.fire('Ã‰xito', 'QR descargado exitosamente', 'success');
+            Swal.fire('¡Éxito!', 'QR descargado exitosamente', 'success');
         });
     }
 
@@ -211,7 +234,7 @@ const setupQrEvents = (qrImage, evento) => {
                 const blob = await response.blob();
                 const shareData = {
                     title: `QR para ${evento.nombre || 'Evento'}`,
-                    text: `Â¡Escanea este QR para acceder al evento ${evento.nombre || 'Evento'}!`,
+                    text: `¡Escanea este QR para acceder al evento ${evento.nombre || 'Evento'}!`,
                     files: [new File([blob], `qr-${evento.nombre || 'evento'}.png`, { type: 'image/png' })]
                 };
                 if (navigator.share && navigator.canShare(shareData)) {
@@ -219,40 +242,12 @@ const setupQrEvents = (qrImage, evento) => {
                 } else {
                     const url = `${window.location.origin}/user/home?eventId=${evento.id}`;
                     await navigator.clipboard.writeText(url);
-                    Swal.fire('Ã‰xito', `âœ… Enlace copiado: ${url}`, 'success');
+                    Swal.fire('¡Éxito!', `✅ Enlace copiado: ${url}`, 'success');
                 }
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     Swal.fire('Error', 'Error al compartir el QR', 'error');
                 }
-            }
-        });
-    }
-
-    // Regenerar QR
-    const regenerateBtn = document.getElementById('regenerateQrBtn');
-    if (regenerateBtn) {
-        regenerateBtn.addEventListener('click', async () => {
-            Swal.fire({
-                title: 'Regenerando QR...',
-                text: 'Por favor espera',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-            try {
-                const newQr = await generateQR(evento.id, evento);
-                if (newQr) {
-                    currentQrImage = newQr;
-                    renderQrSection(newQr, evento);
-                    Swal.close();
-                    Swal.fire('Ã‰xito', 'QR regenerado exitosamente', 'success');
-                } else {
-                    Swal.close();
-                    Swal.fire('Error', 'Error al regenerar el QR', 'error');
-                }
-            } catch (error) {
-                Swal.close();
-                Swal.fire('Error', 'Error al regenerar el QR', 'error');
             }
         });
     }
@@ -265,48 +260,46 @@ const setupQrEvents = (qrImage, evento) => {
             if (!input) return;
             try {
                 await navigator.clipboard.writeText(input.value);
-                Swal.fire('Ã‰xito', 'âœ… Enlace copiado al portapapeles', 'success');
+                Swal.fire('¡Éxito!', '✅ Enlace copiado al portapapeles', 'success');
             } catch {
                 input.select();
                 document.execCommand('copy');
-                Swal.fire('Ã‰xito', 'âœ… Enlace copiado al portapapeles', 'success');
+                Swal.fire('¡Éxito!', '✅ Enlace copiado al portapapeles', 'success');
             }
         });
     }
 };
 
 // ============================================
-// ðŸ”€ REDIRECCIONES
+// 🔀 REDIRECCIONES
 // ============================================
 const goBack = () => {
-    window.go('');
+    navigateTo('/host/event-crud');
 };
 
+// 🔥 REDIRIGE A LA VISTA DE EDITAR EVENTO
 const goToEdit = () => {
     if (currentEvent) {
         localStorage.setItem('eventoParaEditar', currentEvent.id);
-        window.go(`/host/event-edit?id=${currentEvent.id}`);
+        navigateTo(`/host/event-edit?id=${currentEvent.id}`);
     }
 };
 
-// ============================================
-// ðŸ“º IR A EVENTO EN VIVO (NUEVO)
-// ============================================
 const goToLiveEvent = () => {
     if (currentEvent) {
-        window.go(`/host/live-event?id=${currentEvent.id}`);
+        navigateTo(`/host/live-event?id=${currentEvent.id}`);
     }
 };
 
 // ============================================
-// ðŸš€ CONTROLADOR PRINCIPAL
+// 🚀 CONTROLADOR PRINCIPAL
 // ============================================
 export async function eventDetailsController() {
-    console.log('ðŸ”¥ Controlador eventDetailsController iniciado');
+    console.log('🔥 Controlador eventDetailsController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        navigateTo('/login');
         return;
     }
 
@@ -317,11 +310,11 @@ export async function eventDetailsController() {
     if (!eventId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se especificÃ³ quÃ© evento ver',
+            text: 'No se especificó qué evento ver',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/host/event-crud');
         });
         return;
     }
@@ -336,7 +329,6 @@ export async function eventDetailsController() {
     });
     
     try {
-        // ðŸ”¥ CARGAR EVENTO
         const evento = await loadEventFromFirestore(eventId);
         if (!evento) {
             Swal.close();
@@ -346,51 +338,47 @@ export async function eventDetailsController() {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.go('');
+                navigateTo('/host/event-crud');
             });
             return;
         }
 
-        // ðŸ”¥ CARGAR QR
         let qrImage = await loadQrFromFirestore(eventId);
         if (!qrImage) {
-            // Si no hay QR, generarlo
             qrImage = await generateQR(eventId, evento);
         }
         
         Swal.close();
         
-        // ðŸ”¥ RENDERIZAR
         renderEventDetails(evento, qrImage);
         
-        // ðŸ”¥ CONFIGURAR EVENTOS DE NAVEGACIÃ“N
         const btnVolver = document.getElementById('btnVolver');
         if (btnVolver) {
             btnVolver.addEventListener('click', goBack);
         }
         
+        // 🔥 BOTÓN EDITAR - REDIRIGE A /host/event-edit
         const btnEditar = document.getElementById('btnEditar');
         if (btnEditar) {
             btnEditar.addEventListener('click', goToEdit);
         }
 
-        // ðŸ”¥ NUEVO: CONFIGURAR BOTÃ“N DE EVENTO EN VIVO
         const btnLiveEvent = document.getElementById('btnLiveEvent');
         if (btnLiveEvent) {
             btnLiveEvent.addEventListener('click', goToLiveEvent);
         }
         
-        console.log('âœ… EventDetails Controller finalizado');
+        console.log('✅ EventDetails Controller finalizado');
     } catch (error) {
         Swal.close();
-        console.error('âŒ Error al cargar evento:', error);
+        console.error('❌ Error al cargar evento:', error);
         Swal.fire({
             title: 'Error',
-            text: 'OcurriÃ³ un error al cargar el evento',
+            text: 'Ocurrió un error al cargar el evento',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/host/event-crud');
         });
     }
 }

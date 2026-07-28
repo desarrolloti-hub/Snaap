@@ -26,12 +26,15 @@
     flex-wrap: wrap;
 }
 
+/* ========================================== */
+/* BOTÓN VOLVER - TEXTO BLANCO SIEMPRE */
+/* ========================================== */
 .btn-back {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
     padding: 8px 20px;
-    color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1) !important;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
@@ -40,6 +43,7 @@
     align-items: center;
     gap: 8px;
     box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+    font-size: 0.85rem;
 }
 
 .btn-back i {
@@ -52,6 +56,7 @@
     border-color: rgba(255, 0, 122, 1);
     transform: translateX(-5px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+    color: rgba(255, 255, 255, 1) !important;
 }
 
 .btn-back:hover i {
@@ -141,78 +146,84 @@
     gap: 15px;
 }
 
+/* ========================================== */
+/* BOTONES DE ACCIÓN - CORREGIDOS */
+/* ========================================== */
 .details-actions {
     margin-top: 10px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
-.btn-edit {
+.btn-action {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
-    padding: 12px 28px;
-    color: rgba(255, 255, 255, 1);
+    padding: 10px 24px;
+    color: rgba(255, 255, 255, 1) !important;
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    min-width: 140px;
 }
 
-.btn-edit i {
+.btn-action i {
     color: rgba(77, 184, 255, 1);
     transition: all 0.3s ease;
+    font-size: 0.95rem;
 }
 
-.btn-edit:hover {
+.btn-action:hover {
     background: rgba(255, 0, 122, 0.1);
     border-color: rgba(255, 0, 122, 1);
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+    color: rgba(255, 255, 255, 1) !important;
+}
+
+.btn-action:hover i {
+    color: rgba(255, 0, 122, 1);
+}
+
+.btn-edit {
+    border-color: rgba(77, 184, 255, 1);
+}
+
+.btn-edit i {
+    color: rgba(77, 184, 255, 1);
+}
+
+.btn-edit:hover {
+    border-color: rgba(255, 0, 122, 1);
 }
 
 .btn-edit:hover i {
     color: rgba(255, 0, 122, 1);
 }
 
-/* ========================================== */
-/* 🔥 BOTÓN "VER EN VIVO" - NUEVO */
-/* ========================================== */
 .btn-live {
-    background: transparent;
-    border: 2px solid #ff007a;
-    border-radius: 50px;
-    padding: 12px 28px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 5px rgba(255, 0, 122, 0.5);
+    border-color: rgba(77, 184, 255, 1);
 }
 
 .btn-live i {
-    color: #ff007a;
-    transition: all 0.3s ease;
+    color: rgba(77, 184, 255, 1);
 }
 
 .btn-live:hover {
-    background: rgba(255, 0, 122, 0.15);
-    border-color: #ff007a;
-    transform: translateY(-2px);
-    box-shadow: 0 0 20px rgba(255, 0, 122, 0.6);
+    border-color: rgba(255, 0, 122, 1);
 }
 
 .btn-live:hover i {
-    color: #ff007a;
+    color: rgba(255, 0, 122, 1);
 }
 
 /* ========================================== */
@@ -257,6 +268,9 @@
     gap: 20px;
 }
 
+/* ========================================== */
+/* QR DISPLAY */
+/* ========================================== */
 .qr-display {
     display: flex;
     flex-direction: column;
@@ -271,8 +285,17 @@
     background: #ffffff;
     padding: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
+.qr-image-large:hover {
+    transform: scale(1.05);
+}
+
+/* ========================================== */
+/* BOTONES QR - AZULES CON HOVER ROSA */
+/* ========================================== */
 .qr-actions {
     display: flex;
     gap: 10px;
@@ -280,23 +303,45 @@
     justify-content: center;
 }
 
-.btn-snaap-small {
+.btn-qr {
     background: transparent;
-    border: 1.5px solid #4db8ff;
+    border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
-    padding: 8px 20px;
-    color: #ffffff;
+    padding: 10px 22px;
+    color: #ffffff !important;
     font-size: 0.85rem;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s ease;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
+    white-space: nowrap;
 }
 
-.btn-snaap-small:hover {
+.btn-qr i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-qr:hover {
     border-color: #ff007a;
     background: rgba(255, 0, 122, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.4);
+    color: #ffffff !important;
 }
 
+.btn-qr:hover i {
+    color: #ff007a;
+}
+
+/* ========================================== */
+/* LINK BOX */
+/* ========================================== */
 .qr-link-box {
     width: 100%;
     max-width: 500px;
@@ -310,6 +355,11 @@
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.85rem;
     margin: 0 0 8px 0;
+}
+
+.qr-link-label i {
+    color: rgba(77, 184, 255, 1);
+    margin-right: 6px;
 }
 
 .qr-link-wrapper {
@@ -337,22 +387,40 @@
 
 .btn-copy {
     background: transparent;
-    border: 1.5px solid #4db8ff;
-    border-radius: 8px;
-    padding: 8px 16px;
-    color: #ffffff;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 8px 18px;
+    color: #ffffff !important;
     font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-copy i {
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
 }
 
 .btn-copy:hover {
     border-color: #ff007a;
     background: rgba(255, 0, 122, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.4);
+    color: #ffffff !important;
 }
 
+.btn-copy:hover i {
+    color: #ff007a;
+}
+
+/* ========================================== */
+/* LOADING */
+/* ========================================== */
 .qr-loading {
     text-align: center;
     padding: 30px;
@@ -373,6 +441,23 @@
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* ========================================== */
+/* ANIMACIÓN PARA BOTONES QR */
+/* ========================================== */
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(77, 184, 255, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(77, 184, 255, 0.5); }
+    100% { box-shadow: 0 0 5px rgba(77, 184, 255, 0.2); }
+}
+
+.btn-qr {
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.btn-qr:hover {
+    animation: none;
 }
 
 /* ========================================== */
@@ -425,6 +510,7 @@
 
     .btn-copy {
         width: 100%;
+        justify-content: center;
     }
 
     .qr-actions {
@@ -432,8 +518,9 @@
         align-items: stretch;
     }
 
-    .qr-actions .btn-snaap-small {
+    .qr-actions .btn-qr {
         width: 100%;
+        justify-content: center;
     }
 
     .details-actions {
@@ -441,8 +528,7 @@
         align-items: stretch;
     }
 
-    .details-actions .btn-edit,
-    .details-actions .btn-live {
+    .details-actions .btn-action {
         width: 100%;
         justify-content: center;
     }
