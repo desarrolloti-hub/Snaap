@@ -5,25 +5,25 @@ import { qrService } from '../../../services/qrService.js';
 
 const packagesDetails = {
     basico: {
-        nombre: "Paquete BÃ¡sico",
+        nombre: "Paquete Básico",
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 50 invitados",
             "Capacidad de almacenamiento para 200 fotos",
             "Solo puedes subir fotos, dibujos y notas",
-            "DuraciÃ³n: 24 horas despuÃ©s del evento",
+            "Duración: 24 horas después del evento",
         ]
     },
     estandar: {
-        nombre: "Paquete EstÃ¡ndar",
+        nombre: "Paquete Estándar",
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 100 invitados",
-            "GalerÃ­a de fotos premium",
-            "MÃºsica en vivo (1 hora)",
+            "Galería de fotos premium",
+            "Música en vivo (1 hora)",
             "Soporte prioritario",
-            "DuraciÃ³n: 48 horas despuÃ©s del evento",
-            "Video streaming bÃ¡sico"
+            "Duración: 48 horas después del evento",
+            "Video streaming básico"
         ]
     },
     premium: {
@@ -31,12 +31,12 @@ const packagesDetails = {
         precio: "$00 MXN",
         caracteristicas: [
             "Capacidad para 150 invitados",
-            "GalerÃ­a de fotos + video",
-            "MÃºsica en vivo (2 horas)",
+            "Galería de fotos + video",
+            "Música en vivo (2 horas)",
             "Soporte 24/7",
-            "DuraciÃ³n: 72 horas despuÃ©s del evento",
+            "Duración: 72 horas después del evento",
             "Video streaming HD",
-            "FotÃ³grafo profesional"
+            "Fotógrafo profesional"
         ]
     },
     empresarial: {
@@ -46,13 +46,27 @@ const packagesDetails = {
             "Capacidad para 200 invitados",
             "Cobertura multimedia completa",
             "Soporte dedicado",
-            "DuraciÃ³n: 7 dÃ­as despuÃ©s del evento",
+            "Duración: 7 días después del evento",
             "Streaming 4K",
             "Marca personalizada"
         ]
     }
 };
 
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 🚀 INICIALIZAR CREAR EVENTO
+// ============================================
 export function initCreateEvent() {
     const form = document.getElementById('createEventForm');
     const packageSelect = document.getElementById('packageSelect');
@@ -62,20 +76,20 @@ export function initCreateEvent() {
 
     if (!form) return;
 
-    // ðŸ”¥ Verificar autenticaciÃ³n
+    // 🔥 Verificar autenticación
     if (!userService.isAuthenticated()) {
         Swal.fire({
             title: 'Acceso Denegado',
-            text: 'Debes iniciar sesiÃ³n para crear un evento',
+            text: 'Debes iniciar sesión para crear un evento',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/login');
         });
         return;
     }
 
-    // ðŸ”¥ Obtener usuario actual y configurar servicios
+    // 🔥 Obtener usuario actual y configurar servicios
     const user = userService.getCurrentUser();
     if (user) {
         qrService.setUsuarioActual(user);
@@ -85,6 +99,9 @@ export function initCreateEvent() {
     // Mostrar eventos existentes en localStorage (solo para compatibilidad)
     mostrarEventosGuardados();
 
+    // ============================================
+    // 📦 MOSTRAR DETALLES DEL PAQUETE
+    // ============================================
     packageSelect.addEventListener('change', function() {
         const selectedPackage = this.value;
 
@@ -92,15 +109,15 @@ export function initCreateEvent() {
             const details = packagesDetails[selectedPackage];
 
             let html = `
-                <p><strong>ðŸ“¦ ${details.nombre}</strong></p>
-                <p><strong>ðŸ’° Precio:</strong> ${details.precio}</p>
+                <p><strong>📦 ${details.nombre}</strong></p>
+                <p><strong>💰 Precio:</strong> ${details.precio}</p>
                 <div>
-                    <strong>âœ¨ CaracterÃ­sticas incluidas:</strong>
+                    <strong>✨ Características incluidas:</strong>
                     <ul>
             `;
 
             details.caracteristicas.forEach(feature => {
-                html += `<li>âœ“ ${feature}</li>`;
+                html += `<li>✓ ${feature}</li>`;
             });
 
             html += `
@@ -115,16 +132,19 @@ export function initCreateEvent() {
         }
     });
 
+    // ============================================
+    // 📤 ENVIAR FORMULARIO
+    // ============================================
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const eventName = document.getElementById('eventName').value.trim();
         const selectedPackage = packageSelect.value;
         const descripcion = document.getElementById('eventDescription')?.value?.trim() || '';
-        const ubicacion = document.getElementById('eventLocation')?.value?.trim() || '';
 
+        // Validaciones
         if (!eventName) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Campo Requerido',
                 text: 'Por favor, ingresa el nombre del evento',
                 icon: 'warning',
@@ -134,7 +154,7 @@ export function initCreateEvent() {
         }
 
         if (eventName.length < 3) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Nombre muy corto',
                 text: 'El nombre del evento debe tener al menos 3 caracteres',
                 icon: 'warning',
@@ -144,7 +164,7 @@ export function initCreateEvent() {
         }
 
         if (!selectedPackage) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Campo Requerido',
                 text: 'Por favor, selecciona un paquete',
                 icon: 'warning',
@@ -153,12 +173,11 @@ export function initCreateEvent() {
             return;
         }
 
-        // ðŸ”¥ Obtener usuario actual
         const user = userService.getCurrentUser();
         if (!user) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Error',
-                text: 'No se pudo obtener la informaciÃ³n del usuario',
+                text: 'No se pudo obtener la información del usuario',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -176,18 +195,23 @@ export function initCreateEvent() {
         });
 
         try {
-            // ðŸ”¥ Establecer el usuario actual en el servicio
+            // Establecer el usuario actual en el servicio
             eventService.setUsuarioActual(user);
             qrService.setUsuarioActual(user);
 
-            // ðŸ”¥ Crear evento con datos del host
+            // 🔥 Crear evento con fecha de expiración (24 horas)
+            const fechaEvento = new Date();
+            const fechaLimite = new Date(fechaEvento);
+            fechaLimite.setDate(fechaLimite.getDate() + 1); // +1 día
+
             const result = await eventService.crearEvento({
                 nombre: eventName,
                 paquete: selectedPackage,
                 paqueteDetalles: packagesDetails[selectedPackage],
                 descripcion: descripcion,
-                ubicacion: ubicacion,
-                fechaEvento: new Date(),
+                ubicacion: '', // Vacío porque eliminamos el campo
+                fechaEvento: fechaEvento,
+                fechaLimite: fechaLimite,
                 estado: 'active',
                 attendees: 0,
                 uploadedPhotos: 0,
@@ -200,21 +224,23 @@ export function initCreateEvent() {
                 const evento = result.evento;
                 const eventoId = evento.id;
 
-                console.log(`âœ… Evento creado con ID: ${eventoId}`);
+                console.log(`✅ Evento creado con ID: ${eventoId}`);
+                console.log(`📅 Fecha de expiración: ${fechaLimite.toLocaleDateString()}`);
 
-                // ðŸ”¥ 2. GENERAR QR AUTOMÃTICAMENTE
+                // 🔥 Generar QR automáticamente
                 await generarQrAutomatico(eventoId, evento, user);
 
-                // Guardar tambiÃ©n en localStorage para compatibilidad
+                // Guardar también en localStorage para compatibilidad
                 guardarEventoLocal(evento);
 
-                // ðŸ”¥ MOSTRAR Ã‰XITO CON OPCIÃ“N A VER QR
+                // 🔥 Mostrar éxito con opción a ver QR
                 Swal.fire({
-                    title: 'Â¡Evento creado!',
+                    title: '¡Evento creado!',
                     html: `
                         El evento <strong>${evento.nombre}</strong> ha sido creado exitosamente.<br><br>
                         <i class="fas fa-qrcode" style="color: #4db8ff; font-size: 2rem;"></i><br>
-                        <small>Se ha generado automÃ¡ticamente el cÃ³digo QR para este evento.</small>
+                        <small>Se ha generado automáticamente el código QR para este evento.</small><br>
+                        <small style="color: rgba(255,255,255,0.4);">⏰ El evento expirará en <strong style="color: #4db8ff;">24 horas</strong>.</small>
                     `,
                     icon: 'success',
                     confirmButtonText: 'Ver QR',
@@ -224,17 +250,9 @@ export function initCreateEvent() {
                     cancelButtonColor: '#ff007a'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        if (typeof window.navigateTo === 'function') {
-                            window.navigateTo(`/host/qr-generator?id=${eventoId}`);
-                        } else {
-                            window.go(`/host/qr-generator?id=${eventoId}`);
-                        }
+                        navigateTo(`/host/qr-generator?id=${eventoId}`);
                     } else {
-                        if (typeof window.navigateTo === 'function') {
-                            window.navigateTo('/host/event-crud');
-                        } else {
-                            window.go('');
-                        }
+                        navigateTo('/host/event-crud');
                     }
                 });
 
@@ -242,7 +260,7 @@ export function initCreateEvent() {
                 packageDetailsDiv.classList.add('hidden');
 
             } else {
-                Swal.fire({
+                await Swal.fire({
                     title: 'Error',
                     text: result.error || 'Error al crear el evento',
                     icon: 'error',
@@ -251,24 +269,27 @@ export function initCreateEvent() {
             }
         } catch (error) {
             Swal.close();
-            console.error('Error en creaciÃ³n de evento:', error);
-            Swal.fire({
+            console.error('Error en creación de evento:', error);
+            await Swal.fire({
                 title: 'Error',
-                text: 'OcurriÃ³ un error al crear el evento',
+                text: 'Ocurrió un error al crear el evento',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
         }
     });
 
+    // ============================================
+    // 🔙 CANCELAR
+    // ============================================
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
             Swal.fire({
-                title: 'Â¿Cancelar creaciÃ³n?',
-                text: 'Â¿EstÃ¡s seguro de que quieres cancelar? Los datos no guardados se perderÃ¡n.',
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'SÃ­, cancelar',
+                confirmButtonText: 'Sí, cancelar',
                 cancelButtonText: 'Continuar'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -281,11 +302,11 @@ export function initCreateEvent() {
 }
 
 // ============================================
-// ðŸ“¤ GENERAR QR AUTOMÃTICAMENTE
+// 📤 GENERAR QR AUTOMÁTICAMENTE
 // ============================================
 async function generarQrAutomatico(eventoId, evento, user) {
     try {
-        console.log(`ðŸ“¤ Generando QR automÃ¡tico para evento: ${eventoId}`);
+        console.log(`📤 Generando QR automático para evento: ${eventoId}`);
 
         const qrData = {
             eventName: evento.nombre || 'Evento',
@@ -297,21 +318,23 @@ async function generarQrAutomatico(eventoId, evento, user) {
         const result = await qrService.generarQr(eventoId, qrData);
 
         if (result.success) {
-            console.log(`âœ… QR generado automÃ¡ticamente para: ${evento.nombre}`);
-            console.log(`   ðŸ“Š Token: ${result.qrCode?.token || 'N/A'}`);
+            console.log(`✅ QR generado automáticamente para: ${evento.nombre}`);
+            console.log(`   📊 Token: ${result.qrCode?.token || 'N/A'}`);
         } else {
-            console.error(`âŒ Error al generar QR automÃ¡tico:`, result.error);
+            console.error(`❌ Error al generar QR automático:`, result.error);
         }
 
         return result;
 
     } catch (error) {
-        console.error('âŒ Error en generarQrAutomatico:', error);
+        console.error('❌ Error en generarQrAutomatico:', error);
         return { success: false, error: error.message };
     }
 }
 
-// FunciÃ³n para guardar evento en localStorage (compatibilidad)
+// ============================================
+// 💾 GUARDAR EVENTO EN LOCALSTORAGE (compatibilidad)
+// ============================================
 function guardarEventoLocal(evento) {
     try {
         let eventos = JSON.parse(localStorage.getItem('snaap_events') || '[]');
@@ -322,7 +345,8 @@ function guardarEventoLocal(evento) {
             packageDetails: evento.paqueteDetalles,
             createdAt: evento.createdAt,
             status: evento.estado,
-            codigoAcceso: evento.codigoAcceso
+            codigoAcceso: evento.codigoAcceso,
+            expiraEn: '24 horas'
         });
         localStorage.setItem('snaap_events', JSON.stringify(eventos));
         localStorage.setItem('snaap_current_event', JSON.stringify(evento));
@@ -331,12 +355,14 @@ function guardarEventoLocal(evento) {
     }
 }
 
-// FunciÃ³n para mostrar eventos guardados (solo para referencia)
+// ============================================
+// 📊 MOSTRAR EVENTOS GUARDADOS (solo para referencia)
+// ============================================
 function mostrarEventosGuardados() {
     try {
         const eventos = JSON.parse(localStorage.getItem('snaap_events') || '[]');
         if (eventos.length > 0) {
-            console.log(`ðŸ“Š ${eventos.length} eventos guardados localmente`);
+            console.log(`📊 ${eventos.length} eventos guardados localmente`);
         }
     } catch (error) {
         // Ignorar errores

@@ -4,15 +4,15 @@
 :root {
     --snaap-font-family: 'Poppins', sans-serif;
     --snaap-text-white: #ffffff;
-    --snaap-azul-claro: #00a3ff;
+    --snaap-azul-claro: #4db8ff;
     --snaap-azul: #0055ff;
-    --snaap-rosa: #ff00aa;
+    --snaap-rosa: #ff007a;
     --snaap-text-gray: #b0b0b0;
     --snaap-text-muted: rgba(255, 255, 255, 0.6);
     --snaap-glass-bg: rgba(0, 0, 0, 0.3);
     --snaap-input-bg: rgba(20, 20, 30, 0.8);
     --snaap-border-glass: 1px solid rgba(255, 255, 255, 0.1);
-    --snaap-border-neon: 1.5px solid rgba(0, 163, 255, 0.5);
+    --snaap-border-neon: 1.5px solid rgba(77, 184, 255, 0.5);
     --snaap-radius-xl: 30px;
     --snaap-radius-pill: 50px;
     --snaap-radius-lg: 20px;
@@ -25,7 +25,7 @@
     --snaap-transition: all 0.3s ease;
     --snaap-transition-fast: 0.2s ease;
     --snaap-transition-slow: 0.4s ease;
-    --snaap-shadow-neon: 0 0 5px rgba(0, 71, 171, 0.3);
+    --snaap-shadow-neon: 0 0 10px rgba(77, 184, 255, 0.2);
     --snaap-z-base: 1;
 }
 
@@ -123,6 +123,12 @@ body {
     color: var(--snaap-azul-claro);
 }
 
+.optional-text {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
 .snaap-input {
     width: 100%;
     background: var(--snaap-input-bg);
@@ -149,29 +155,43 @@ body {
     background: rgba(30, 30, 40, 1);
 }
 
+textarea.snaap-input {
+    border-radius: 20px;
+    resize: vertical;
+    min-height: 80px;
+}
+
 select.snaap-input {
     cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%234db8ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
 }
 
 select.snaap-input option {
     background: #1a1a2e;
     color: white;
+    padding: 8px;
 }
 
-.input-hint {
+.form-hint {
     display: block;
     margin-top: 8px;
     font-size: 0.75rem;
     color: var(--snaap-text-muted);
 }
 
+/* ========================================== */
+/* DETALLES DEL PAQUETE */
+/* ========================================== */
 .package-details {
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(10px);
     border-radius: var(--snaap-radius-lg);
     padding: 20px;
     margin-top: 10px;
-    border: 1px solid rgba(0, 163, 255, 0.3);
+    border: 1px solid rgba(77, 184, 255, 0.3);
     animation: fadeIn 0.3s ease-out;
 }
 
@@ -196,7 +216,7 @@ select.snaap-input option {
     gap: 10px;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 163, 255, 0.3);
+    border-bottom: 1px solid rgba(77, 184, 255, 0.3);
 }
 
 .details-header i {
@@ -233,6 +253,36 @@ select.snaap-input option {
     margin: 5px 0;
 }
 
+/* ========================================== */
+/* INFORMACIÓN DE EXPIRACIÓN */
+/* ========================================== */
+.expiration-info {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid rgba(77, 184, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.expiration-info i {
+    color: var(--snaap-azul-claro);
+    font-size: 1rem;
+}
+
+.expiration-info span {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+}
+
+.expiration-info strong {
+    color: var(--snaap-azul-claro);
+}
+
+/* ========================================== */
+/* BOTONES - TEXTO BLANCO SIEMPRE */
+/* ========================================== */
 .form-actions {
     display: flex;
     gap: 20px;
@@ -244,10 +294,9 @@ select.snaap-input option {
     flex: 1;
     padding: 12px 25px;
     border-radius: var(--snaap-radius-pill);
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(5px);
-    border: var(--snaap-border-neon);
-    color: var(--snaap-azul-claro);
+    background: transparent;
+    border: 2px solid var(--snaap-azul-claro);
+    color: var(--snaap-text-white);
     font-family: var(--snaap-font-family);
     font-weight: 700;
     font-size: var(--snaap-font-size-md);
@@ -257,40 +306,31 @@ select.snaap-input option {
     gap: 10px;
     cursor: pointer;
     transition: var(--snaap-transition-slow);
-    box-shadow: var(--snaap-shadow-neon);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
+}
+
+.btn-cancel i,
+.btn-submit i {
+    color: var(--snaap-azul-claro);
+    transition: color var(--snaap-transition-fast);
 }
 
 .btn-cancel:hover,
 .btn-submit:hover {
     border-color: var(--snaap-rosa);
-    color: var(--snaap-rosa);
-    box-shadow: 0 0 25px rgba(255, 0, 122, 0.6), inset 0 0 5px rgba(255, 0, 122, 0.2);
+    color: var(--snaap-text-white);
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4), inset 0 0 5px rgba(255, 0, 122, 0.1);
     transform: translateY(-3px);
 }
 
-@media (max-width: 768px) {
-    .snaap-create-event-section {
-        padding: var(--snaap-spacing-lg);
-        width: 90%;
-        margin: 60px auto;
-    }
-    
-    .create-event-card {
-        padding: 40px 25px;
-    }
-    
-    .create-event-header h2 {
-        font-size: 1.5rem;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-        gap: 15px;
-    }
+.btn-cancel:hover i,
+.btn-submit:hover i {
+    color: var(--snaap-rosa);
 }
-/* ============================================ */
-/* MODAL PERSONALIZADO - Mismos estilos que CRUD */
-/* ============================================ */
+
+/* ========================================== */
+/* MODAL PERSONALIZADO */
+/* ========================================== */
 
 .custom-modal {
     display: none;
@@ -313,8 +353,8 @@ select.snaap-input option {
     width: 90%;
     max-width: 450px;
     animation: modalFadeIn 0.3s ease;
-    border: 1px solid rgba(0, 163, 255, 0.4);
-    box-shadow: 0 0 50px rgba(0, 163, 255, 0.3);
+    border: 1px solid rgba(77, 184, 255, 0.4);
+    box-shadow: 0 0 50px rgba(77, 184, 255, 0.3);
 }
 
 @keyframes modalFadeIn {
@@ -330,7 +370,7 @@ select.snaap-input option {
 
 .custom-modal-header {
     padding: 20px 25px;
-    border-bottom: 1px solid rgba(0, 163, 255, 0.3);
+    border-bottom: 1px solid rgba(77, 184, 255, 0.3);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -342,10 +382,12 @@ select.snaap-input option {
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--snaap-text-white);
 }
 
 .custom-modal-header h3 i {
     font-size: 1.3rem;
+    color: var(--snaap-azul-claro);
 }
 
 .custom-modal-close {
@@ -358,14 +400,14 @@ select.snaap-input option {
 }
 
 .custom-modal-close:hover {
-    color: rgba(255, 68, 68, 1);
+    color: var(--snaap-rosa);
     transform: scale(1.1);
 }
 
 .custom-modal-body {
     padding: 30px 25px;
     text-align: center;
-    color: rgba(255, 255, 255, 1);
+    color: var(--snaap-text-white);
 }
 
 .custom-modal-body p {
@@ -376,82 +418,102 @@ select.snaap-input option {
 
 .custom-modal-footer {
     padding: 20px 25px;
-    border-top: 1px solid rgba(0, 163, 255, 0.3);
+    border-top: 1px solid rgba(77, 184, 255, 0.3);
     display: flex;
     gap: 15px;
     justify-content: flex-end;
 }
 
-/* Botón Confirmar */
+/* BOTONES DEL MODAL - BLANCOS CON HOVER ROSA */
 .custom-btn-confirm {
     background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
+    border: 2px solid var(--snaap-azul-claro);
     border-radius: 50px;
     padding: 10px 28px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
-    color: rgba(255, 255, 255, 1);
+    color: var(--snaap-text-white);
     font-size: 0.9rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
 }
 
 .custom-btn-confirm i {
-    color: rgba(77, 184, 255, 1);
+    color: var(--snaap-azul-claro);
     transition: all 0.3s ease;
 }
 
 .custom-btn-confirm:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
-    color: rgba(255, 255, 255, 1);
+    border-color: var(--snaap-rosa);
+    color: var(--snaap-text-white);
     transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.4);
 }
 
 .custom-btn-confirm:hover i {
-    color: rgba(255, 0, 122, 1);
+    color: var(--snaap-rosa);
 }
 
-/* Botón Cancelar */
 .custom-btn-cancel {
     background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
+    border: 2px solid var(--snaap-azul-claro);
     border-radius: 50px;
     padding: 10px 28px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
-    color: rgba(255, 255, 255, 1);
+    color: var(--snaap-text-white);
     font-size: 0.9rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5), 0 0 10px rgba(77, 184, 255, 0.3);
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
 }
 
 .custom-btn-cancel i {
-    color: rgba(77, 184, 255, 1);
+    color: var(--snaap-azul-claro);
     transition: all 0.3s ease;
 }
 
 .custom-btn-cancel:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: rgba(255, 0, 122, 1);
+    border-color: var(--snaap-rosa);
+    color: var(--snaap-text-white);
     transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6), 0 0 25px rgba(255, 0, 122, 0.4);
+    box-shadow: 0 0 20px rgba(255, 0, 122, 0.4);
 }
 
 .custom-btn-cancel:hover i {
-    color: rgba(255, 0, 122, 1);
+    color: var(--snaap-rosa);
 }
 
+/* ========================================== */
+/* RESPONSIVE */
+/* ========================================== */
 @media (max-width: 768px) {
+    .snaap-create-event-section {
+        padding: var(--snaap-spacing-lg);
+        width: 90%;
+        margin: 60px auto;
+    }
+    
+    .create-event-card {
+        padding: 40px 25px;
+    }
+    
+    .create-event-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
     .custom-modal-footer {
         flex-direction: column;
         gap: 10px;

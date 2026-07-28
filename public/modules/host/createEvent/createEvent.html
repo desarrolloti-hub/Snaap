@@ -18,10 +18,13 @@
             </div>
 
             <form id="createEventForm" class="create-event-form">
+                <!-- ========================================== -->
+                <!-- NOMBRE DEL EVENTO -->
+                <!-- ========================================== -->
                 <div class="form-group">
                     <label for="eventName">
                         <i class="fas fa-tag"></i>
-                        Ingresa el nombre del Evento
+                        Nombre del Evento
                     </label>
                     <input type="text" 
                            id="eventName" 
@@ -32,10 +35,13 @@
                     <small class="form-hint">Mínimo 3 caracteres</small>
                 </div>
 
+                <!-- ========================================== -->
+                <!-- DESCRIPCIÓN DEL EVENTO -->
+                <!-- ========================================== -->
                 <div class="form-group">
                     <label for="eventDescription">
                         <i class="fas fa-align-left"></i>
-                        Descripción del Evento (Opcional)
+                        Descripción del Evento <span class="optional-text">(Opcional)</span>
                     </label>
                     <textarea 
                         id="eventDescription" 
@@ -46,22 +52,17 @@
                     ></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="eventLocation">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Ubicación (Opcional)
-                    </label>
-                    <input type="text" 
-                           id="eventLocation" 
-                           name="eventLocation" 
-                           class="snaap-input"
-                           placeholder="Dirección o lugar del evento">
-                </div>
+                <!-- ========================================== -->
+                <!-- ❌ ELIMINADO: Ubicación -->
+                <!-- ========================================== -->
 
+                <!-- ========================================== -->
+                <!-- PAQUETE -->
+                <!-- ========================================== -->
                 <div class="form-group">
                     <label for="packageSelect">
                         <i class="fas fa-box"></i>
-                        Seleccione su Paquete
+                        Selecciona tu Paquete
                     </label>
                     <select id="packageSelect" name="packageSelect" class="snaap-input" required>
                         <option value="">-- Selecciona un paquete --</option>
@@ -72,6 +73,9 @@
                     </select>
                 </div>
 
+                <!-- ========================================== -->
+                <!-- DETALLES DEL PAQUETE -->
+                <!-- ========================================== -->
                 <div id="packageDetails" class="package-details hidden">
                     <div class="details-header">
                         <i class="fas fa-info-circle"></i>
@@ -80,6 +84,17 @@
                     <div id="packageInfo" class="package-info"></div>
                 </div>
 
+                <!-- ========================================== -->
+                <!-- FECHA DE EXPIRACIÓN (INFORMATIVA) -->
+                <!-- ========================================== -->
+                <div class="expiration-info">
+                    <i class="fas fa-clock"></i>
+                    <span>El evento expirará automáticamente en <strong>24 horas</strong> después de su creación.</span>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- BOTONES -->
+                <!-- ========================================== -->
                 <div class="form-actions">
                     <button type="button" class="btn-cancel" id="cancelBtn">
                         <i class="fas fa-times"></i>
@@ -94,7 +109,9 @@
         </div>
     </div>
 
-    <!-- Modal de confirmación personalizado -->
+    <!-- ========================================== -->
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <!-- ========================================== -->
     <div id="customModal" class="custom-modal">
         <div class="custom-modal-content">
             <div class="custom-modal-header">
@@ -110,125 +127,6 @@
             </div>
         </div>
     </div>
-
-    <style>
-        /* Estilos adicionales para el modal */
-        .custom-modal {
-            display: none;
-            position: fixed;
-            z-index: 10000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s;
-        }
-
-        .custom-modal-content {
-            background-color: #fff;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s;
-        }
-
-        .custom-modal-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .custom-modal-header h3 {
-            margin: 0;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .custom-modal-close {
-            font-size: 28px;
-            cursor: pointer;
-            color: #999;
-            transition: color 0.3s;
-        }
-
-        .custom-modal-close:hover {
-            color: #333;
-        }
-
-        .custom-modal-body {
-            padding: 24px;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .custom-modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .custom-btn-confirm {
-            padding: 10px 24px;
-            background: linear-gradient(135deg, #00d4ff, #007bff);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .custom-btn-confirm:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
-        }
-
-        .custom-btn-cancel {
-            padding: 10px 24px;
-            background: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .custom-btn-cancel:hover {
-            background: #eee;
-        }
-
-        .form-hint {
-            display: block;
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-    </style>
 
     <script type="module">
         import { initCreateEvent } from './createEventController.js';
