@@ -145,55 +145,9 @@
     font-size: 0.8rem;
 }
 
-/* Chart Section */
-.chart-section {
-    margin-bottom: 30px;
-    background: rgba(10, 10, 20, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 25px 30px;
-    border: 1px solid rgba(0, 163, 255, 0.2);
-}
-
-.chart-section h2 {
-    color: white;
-    font-size: 1.6rem;
-    margin-bottom: 15px;
-}
-
-.chart-section h2 i {
-    color: #00a3ff;
-    margin-right: 10px;
-}
-
-.chart-container {
-    max-width: 100%;
-    height: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.chart-placeholder {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.chart-placeholder i {
-    font-size: 3.5rem;
-    color: #00a3ff;
-    margin-bottom: 10px;
-}
-
-.chart-placeholder p {
-    font-size: 1rem;
-}
-
-.chart-placeholder small {
-    color: rgba(255, 255, 255, 0.3);
-}
-
-/* Recent Events */
+/* ========================================== */
+/* RECENT EVENTS - BOTONES Y ESTADOS MEJORADOS */
+/* ========================================== */
 .recent-events {
     background: rgba(10, 10, 20, 0.6);
     backdrop-filter: blur(10px);
@@ -258,6 +212,9 @@
     margin-right: 5px;
 }
 
+/* ========================================== */
+/* ESTADOS DEL EVENTO - REALES */
+/* ========================================== */
 .event-status {
     display: flex;
     gap: 12px;
@@ -265,56 +222,76 @@
 }
 
 .status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 4px 14px;
+    border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 600;
+    text-transform: capitalize;
+    border: 1px solid transparent;
 }
 
+/* Estado Activo */
 .status-badge.activo {
     background: rgba(0, 163, 255, 0.2);
     color: #00a3ff;
-    border: 1px solid rgba(0, 163, 255, 0.3);
+    border-color: rgba(0, 163, 255, 0.3);
 }
 
+/* Estado Completado */
 .status-badge.completado {
     background: rgba(0, 255, 136, 0.15);
     color: #00ff88;
-    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.2);
 }
 
+/* Estado Pendiente */
 .status-badge.pendiente {
     background: rgba(255, 193, 7, 0.15);
     color: #ffc107;
-    border: 1px solid rgba(255, 193, 7, 0.2);
+    border-color: rgba(255, 193, 7, 0.2);
 }
 
+/* Estado Cancelado */
 .status-badge.cancelado {
     background: rgba(255, 0, 0, 0.15);
     color: #ff4444;
-    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-color: rgba(255, 0, 0, 0.2);
 }
 
+/* ========================================== */
+/* BOTÓN VER - ESTILO COMO LOS DEMÁS */
+/* ========================================== */
 .btn-view-event {
     background: transparent;
-    border: 1px solid rgba(0, 163, 255, 0.3);
-    padding: 6px 14px;
-    border-radius: 8px;
-    color: #00a3ff;
+    border: 2px solid rgba(77, 184, 255, 1);
+    border-radius: 50px;
+    padding: 8px 20px;
+    color: rgba(255, 255, 255, 1);
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 0.8rem;
     font-family: 'Poppins', sans-serif;
-}
-
-.btn-view-event:hover {
-    background: rgba(0, 163, 255, 0.1);
-    border-color: #00a3ff;
-    transform: scale(1.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 0 5px rgba(77, 184, 255, 0.3);
 }
 
 .btn-view-event i {
-    margin-right: 5px;
+    color: rgba(77, 184, 255, 1);
+    transition: all 0.3s ease;
+}
+
+.btn-view-event:hover {
+    background: rgba(255, 0, 122, 0.1);
+    border-color: rgba(255, 0, 122, 1);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 0 15px rgba(255, 0, 122, 0.4);
+    color: rgba(255, 255, 255, 1);
+}
+
+.btn-view-event:hover i {
+    color: rgba(255, 0, 122, 1);
 }
 
 /* No Events */
@@ -340,9 +317,9 @@
     font-size: 0.85rem;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
 @media (max-width: 768px) {
     .host-dashboard {
         padding-top: 70px;
@@ -401,17 +378,8 @@
         gap: 4px;
     }
 
-    .chart-section,
     .recent-events {
         padding: 20px;
-    }
-
-    .chart-container {
-        height: 180px;
-    }
-
-    .chart-placeholder i {
-        font-size: 2.5rem;
     }
 }
 
@@ -442,8 +410,12 @@
     }
 
     .quick-actions h2,
-    .chart-section h2,
     .recent-events h2 {
         font-size: 1.2rem;
+    }
+
+    .btn-view-event {
+        width: 100%;
+        justify-content: center;
     }
 }

@@ -6,18 +6,29 @@ import { carroucelEventsController } from '../carroucelEvents/carroucelEventsCon
 
 let carouselLoaded = false;
 
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
 export async function homeHostController() {
-    console.log('ðŸ”¥ Home Host Controller cargado');
+    console.log('🔥 Home Host Controller cargado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        navigateTo('/login');
         return;
     }
 
     const user = userService.getCurrentUser();
     if (!user) {
-        console.warn('âš ï¸ No se pudo obtener el usuario');
+        console.warn('⚠️ No se pudo obtener el usuario');
         return;
     }
 
@@ -26,14 +37,14 @@ export async function homeHostController() {
     if (!carouselLoaded) {
         await carroucelEventsController();
         carouselLoaded = true;
-        console.log('âœ… Carrusel cargado correctamente');
+        console.log('✅ Carrusel cargado correctamente');
     }
 
     await loadStats(user.uid);
     await loadRecentEvents(user.uid);
     setupQuickActions();
 
-    console.log('âœ… Home Host Controller finalizado');
+    console.log('✅ Home Host Controller finalizado');
 }
 
 const updateWelcomeMessage = (user) => {
@@ -47,6 +58,9 @@ const updateWelcomeMessage = (user) => {
     }
 };
 
+// ============================================
+// 📊 CARGAR ESTADÍSTICAS
+// ============================================
 const loadStats = async (uid) => {
     try {
         const result = await eventService.obtenerEstadisticasPerfil(uid);
@@ -54,12 +68,11 @@ const loadStats = async (uid) => {
         if (result.success) {
             const { estadisticas } = result;
 
-            console.log('ðŸ“Š EstadÃ­sticas recibidas:', estadisticas);
+            console.log('📊 Estadísticas recibidas:', estadisticas);
 
             const totalEventsEl = document.getElementById('totalEvents');
             if (totalEventsEl) {
                 totalEventsEl.textContent = estadisticas.totalEventos || 0;
-                console.log(`ðŸ“Š Total eventos: ${estadisticas.totalEventos}`);
             }
 
             const totalPhotosEl = document.getElementById('totalPhotos');
@@ -72,23 +85,12 @@ const loadStats = async (uid) => {
                 activeEventsEl.textContent = estadisticas.eventosActivos || 0;
             }
 
-            const user = userService.getCurrentUser();
-            if (user) {
-                const userData = await userRepository.getByUid(user.uid);
-                if (userData) {
-                    const eventsCompletedEl = document.querySelector('.stat-card .events-completed');
-                    if (eventsCompletedEl) {
-                        eventsCompletedEl.textContent = userData.eventsCreated || 0;
-                    }
-                }
-            }
-
         } else {
-            console.error('Error al cargar estadÃ­sticas:', result.error);
+            console.error('Error al cargar estadísticas:', result.error);
             loadStatsFromLocalStorage();
         }
     } catch (error) {
-        console.error('âŒ Error al cargar estadÃ­sticas:', error);
+        console.error('❌ Error al cargar estadísticas:', error);
         loadStatsFromLocalStorage();
     }
 };
@@ -114,9 +116,12 @@ const loadStatsFromLocalStorage = () => {
     if (totalPhotosEl) totalPhotosEl.textContent = totalPhotos;
     if (activeEventsEl) activeEventsEl.textContent = activeEvents;
 
-    console.log(`ðŸ“Š Fallback - Total eventos: ${totalEvents}`);
+    console.log(`📊 Fallback - Total eventos: ${totalEvents}`);
 };
 
+// ============================================
+// 📋 CARGAR EVENTOS RECIENTES CON ESTADOS REALES
+// ============================================
 const loadRecentEvents = async (uid) => {
     const container = document.getElementById('recentEventsList');
     if (!container) return;
@@ -127,6 +132,7 @@ const loadRecentEvents = async (uid) => {
         if (result.success) {
             const eventos = result.eventos;
 
+            // 🔥 ORDENAR POR FECHA DE CREACIÓN (MÁS RECIENTES PRIMERO)
             const sortedEvents = eventos.sort((a, b) => {
                 const dateA = new Date(a.createdAt);
                 const dateB = new Date(b.createdAt);
@@ -139,7 +145,7 @@ const loadRecentEvents = async (uid) => {
                 container.innerHTML = `
                     <div class="no-events">
                         <i class="fas fa-calendar-plus"></i>
-                        <p>No tienes eventos aÃºn</p>
+                        <p>No tienes eventos aún</p>
                         <small>Crea tu primer evento</small>
                     </div>
                 `;
@@ -147,13 +153,38 @@ const loadRecentEvents = async (uid) => {
             }
 
             container.innerHTML = recentEvents.map(event => {
-                const statusText = event.estado === 'active' ? 'Activo' : 
-                                  event.estado === 'completed' ? 'Completado' : 
-                                  event.estado === 'cancelled' ? 'Cancelado' : 'Pendiente';
+                // 🔥 DETERMINAR ESTADO REAL DEL EVENTO
+                let statusText = 'Pendiente';
+                let statusClass = 'pendiente';
                 
-                const statusClass = event.estado === 'active' ? 'activo' : 
-                                   event.estado === 'completed' ? 'completado' : 
-                                   event.estado === 'cancelled' ? 'cancelado' : 'pendiente';
+                // Verificar si el evento tiene fecha de expiración
+                if (event.fechaLimite) {
+                    const fechaLimite = new Date(event.fechaLimite);
+                    const ahora = new Date();
+                    
+                    // Si la fecha límite ya pasó, está completado
+                    if (ahora > fechaLimite) {
+                        statusText = 'Completado';
+                        statusClass = 'completado';
+                    } else if (event.estado === 'active') {
+                        statusText = 'Activo';
+                        statusClass = 'activo';
+                    } else if (event.estado === 'cancelled') {
+                        statusText = 'Cancelado';
+                        statusClass = 'cancelado';
+                    }
+                } else {
+                    // Si no tiene fecha límite, usar el estado del evento
+                    const estadoMap = {
+                        'active': { text: 'Activo', class: 'activo' },
+                        'completed': { text: 'Completado', class: 'completado' },
+                        'cancelled': { text: 'Cancelado', class: 'cancelado' },
+                        'pending': { text: 'Pendiente', class: 'pendiente' }
+                    };
+                    const estadoInfo = estadoMap[event.estado] || estadoMap['pending'];
+                    statusText = estadoInfo.text;
+                    statusClass = estadoInfo.class;
+                }
 
                 const fecha = event.fechaEvento ? new Date(event.fechaEvento).toLocaleDateString('es-ES', {
                     day: 'numeric',
@@ -184,16 +215,13 @@ const loadRecentEvents = async (uid) => {
                 `;
             }).join('');
 
+            // 🔥 EVENTOS DE LOS BOTONES "VER"
             document.querySelectorAll('.btn-view-event').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const id = btn.dataset.id;
-                    console.log(`ðŸ” Ver evento ${id}`);
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo(`/host/event-details?id=${id}`);
-                    } else {
-                        window.go(`/host/event-details?id=${id}`);
-                    }
+                    console.log(`🔍 Ver evento ${id}`);
+                    navigateTo(`/host/event-details?id=${id}`);
                 });
             });
 
@@ -202,7 +230,7 @@ const loadRecentEvents = async (uid) => {
             loadRecentEventsFromLocalStorage();
         }
     } catch (error) {
-        console.error('âŒ Error al cargar eventos recientes:', error);
+        console.error('❌ Error al cargar eventos recientes:', error);
         loadRecentEventsFromLocalStorage();
     }
 };
@@ -222,7 +250,7 @@ const loadRecentEventsFromLocalStorage = () => {
         container.innerHTML = `
             <div class="no-events">
                 <i class="fas fa-calendar-plus"></i>
-                <p>No tienes eventos aÃºn</p>
+                <p>No tienes eventos aún</p>
                 <small>Crea tu primer evento</small>
             </div>
         `;
@@ -230,38 +258,55 @@ const loadRecentEventsFromLocalStorage = () => {
     }
 
     const recentEvents = eventos.slice(0, 5);
-    container.innerHTML = recentEvents.map(event => `
-        <div class="recent-event-card" data-id="${event.id}">
-            <div class="event-info">
-                <h4>${event.name || 'Evento sin nombre'}</h4>
-                <div class="event-details">
-                    <span><i class="fas fa-calendar-day"></i> ${event.date || 'Fecha no definida'}</span>
-                    <span><i class="fas fa-users"></i> ${event.attendees || 0} invitados</span>
-                    <span><i class="fas fa-camera"></i> ${event.photos || 0} fotos</span>
+    container.innerHTML = recentEvents.map(event => {
+        // 🔥 DETERMINAR ESTADO REAL
+        let statusText = 'Pendiente';
+        let statusClass = 'pendiente';
+        
+        if (event.fechaLimite) {
+            const fechaLimite = new Date(event.fechaLimite);
+            const ahora = new Date();
+            if (ahora > fechaLimite) {
+                statusText = 'Completado';
+                statusClass = 'completado';
+            } else if (event.status === 'active' || event.estado === 'active') {
+                statusText = 'Activo';
+                statusClass = 'activo';
+            }
+        }
+
+        return `
+            <div class="recent-event-card" data-id="${event.id}">
+                <div class="event-info">
+                    <h4>${event.name || event.nombre || 'Evento sin nombre'}</h4>
+                    <div class="event-details">
+                        <span><i class="fas fa-calendar-day"></i> ${event.date || 'Fecha no definida'}</span>
+                        <span><i class="fas fa-users"></i> ${event.attendees || 0} invitados</span>
+                        <span><i class="fas fa-camera"></i> ${event.photos || event.uploadedPhotos || 0} fotos</span>
+                    </div>
+                </div>
+                <div class="event-status">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                    <button class="btn-view-event" data-id="${event.id}">
+                        <i class="fas fa-eye"></i> Ver
+                    </button>
                 </div>
             </div>
-            <div class="event-status">
-                <span class="status-badge ${event.status === 'active' ? 'activo' : 'completado'}">
-                    ${event.status === 'active' ? 'Activo' : 'Completado'}
-                </span>
-                <button class="btn-view-event" data-id="${event.id}">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     document.querySelectorAll('.btn-view-event').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const id = btn.dataset.id;
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo(`/host/event-details?id=${id}`);
-            }
+            navigateTo(`/host/event-details?id=${id}`);
         });
     });
 };
 
+// ============================================
+// ⚡ ACCIONES RÁPIDAS
+// ============================================
 const setupQuickActions = () => {
     const createEventBtn = document.getElementById('createEventBtn');
     const viewEventsBtn = document.getElementById('viewEventsBtn');
@@ -269,31 +314,19 @@ const setupQuickActions = () => {
 
     if (createEventBtn) {
         createEventBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/host/create-event');
-            } else {
-                window.go('');
-            }
+            navigateTo('/host/create-event');
         });
     }
 
     if (viewEventsBtn) {
         viewEventsBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/host/event-crud');
-            } else {
-                window.go('');
-            }
+            navigateTo('/host/event-crud');
         });
     }
 
     if (managePhotosBtn) {
         managePhotosBtn.addEventListener('click', () => {
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/host/event-crud');
-            } else {
-                window.go('');
-            }
+            navigateTo('/host/gallery-management');
         });
     }
 };
