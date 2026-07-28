@@ -6,11 +6,22 @@ let currentEvent = null;
 let selectedImageFile = null;
 
 // ============================================
-// ðŸ“¥ CARGAR EVENTO DESDE FIRESTORE
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 📥 CARGAR EVENTO DESDE FIRESTORE
 // ============================================
 const loadEventFromFirestore = async (id) => {
     try {
-        const result = await eventService.getEventoPorId(id);
+        const result = await eventService.obtenerEventoPorId(id);
         if (result.success) {
             return result.evento;
         } else {
@@ -18,13 +29,13 @@ const loadEventFromFirestore = async (id) => {
             return null;
         }
     } catch (error) {
-        console.error('âŒ Error al cargar evento:', error);
+        console.error('❌ Error al cargar evento:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ–¼ï¸ CARGAR EVENTO EN EL FORMULARIO
+// 🖼️ CARGAR EVENTO EN EL FORMULARIO
 // ============================================
 const loadEventToForm = async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -33,11 +44,11 @@ const loadEventToForm = async () => {
     if (!eventId) {
         Swal.fire({
             title: 'Error',
-            text: 'No se ha seleccionado ningÃºn evento para editar',
+            text: 'No se ha seleccionado ningún evento para editar',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/host/event-crud');
         });
         return;
     }
@@ -62,18 +73,21 @@ const loadEventToForm = async () => {
                 icon: 'error',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.go('');
+                navigateTo('/host/event-crud');
             });
             return;
         }
         
         currentEvent = evento;
         
-        // Llenar formulario
-        document.getElementById('eventoId').value = evento.id;
-        document.getElementById('title').value = evento.nombre || '';
+        // 🔥 LLENAR FORMULARIO - SOLO CAMPOS NECESARIOS
+        const eventoIdEl = document.getElementById('eventoId');
+        if (eventoIdEl) eventoIdEl.value = evento.id;
         
-        // Fecha
+        const titleEl = document.getElementById('title');
+        if (titleEl) titleEl.value = evento.nombre || '';
+        
+        // Fecha (solo lectura)
         let fecha = 'No especificada';
         if (evento.fechaEvento) {
             fecha = new Date(evento.fechaEvento).toLocaleDateString('es-ES', {
@@ -82,17 +96,12 @@ const loadEventToForm = async () => {
                 year: 'numeric'
             });
         }
-        document.getElementById('date').value = fecha;
+        const dateEl = document.getElementById('date');
+        if (dateEl) dateEl.value = fecha;
         
-        // Asistentes
-        const attendees = evento.attendees || evento.invitados?.length || 0;
-        document.getElementById('attendees').value = `${attendees} asistentes`;
-        
-        // Fotos
-        document.getElementById('uploadedPhotos').value = `${evento.uploadedPhotos || 0} fotos`;
-        
-        // CÃ³digo de acceso
-        document.getElementById('codigoAcceso').value = evento.codigoAcceso || 'No generado';
+        // ❌ ELIMINADO: Asistentes (no se edita)
+        // ❌ ELIMINADO: Fotos Subidas (no se edita)
+        // ❌ ELIMINADO: Código de Acceso (no se edita)
         
         // Imagen actual
         const currentImage = document.getElementById('currentImage');
@@ -104,29 +113,29 @@ const loadEventToForm = async () => {
             };
         }
         
-        console.log('âœ… Evento cargado para editar:', evento);
+        console.log('✅ Evento cargado para editar:', evento);
     } catch (error) {
         Swal.close();
-        console.error('âŒ Error al cargar evento:', error);
+        console.error('❌ Error al cargar evento:', error);
         Swal.fire({
             title: 'Error',
-            text: 'OcurriÃ³ un error al cargar el evento',
+            text: 'Ocurrió un error al cargar el evento',
             icon: 'error',
             confirmButtonText: 'OK'
         }).then(() => {
-            window.go('');
+            navigateTo('/host/event-crud');
         });
     }
 };
 
 // ============================================
-// ðŸ’¾ GUARDAR CAMBIOS EN FIRESTORE
+// 💾 GUARDAR CAMBIOS EN FIRESTORE
 // ============================================
 const updateEvento = async (event) => {
     event.preventDefault();
     
-    const id = document.getElementById('eventoId').value;
-    const nombre = document.getElementById('title').value.trim();
+    const id = document.getElementById('eventoId')?.value;
+    const nombre = document.getElementById('title')?.value?.trim();
     
     if (!nombre) {
         Swal.fire({
@@ -152,16 +161,31 @@ const updateEvento = async (event) => {
             nombre: nombre
         };
         
+        // 🔥 SI HAY NUEVA IMAGEN, SUBIR A STORAGE (NO BASE64)
         if (selectedImageFile) {
             try {
-                const base64Image = await convertImageToBase64(selectedImageFile);
-                updateData.imagenUrl = base64Image;
+                const { storageService } = await import('../../../services/storageService.js');
+                const user = userService.getCurrentUser();
+                storageService.setUsuarioActual(user);
+                
+                const result = await storageService.subirImagen(
+                    selectedImageFile,
+                    'eventos',
+                    `evento_${id}_${Date.now()}`
+                );
+                
+                if (result.success) {
+                    updateData.imagenUrl = result.url;
+                    updateData.imagenPath = result.path;
+                } else {
+                    throw new Error(result.error);
+                }
             } catch (error) {
-                console.error('Error al convertir la imagen:', error);
+                console.error('Error al subir imagen:', error);
                 Swal.close();
                 Swal.fire({
                     title: 'Error',
-                    text: 'Error al procesar la imagen',
+                    text: 'Error al procesar la imagen: ' + error.message,
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -174,12 +198,12 @@ const updateEvento = async (event) => {
         
         if (result.success) {
             await Swal.fire({
-                title: 'Â¡Ã‰xito!',
+                title: '¡Éxito!',
                 text: 'Evento actualizado exitosamente',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
-            window.go('');
+            navigateTo('/host/event-crud');
         } else {
             Swal.fire({
                 title: 'Error',
@@ -190,10 +214,10 @@ const updateEvento = async (event) => {
         }
     } catch (error) {
         Swal.close();
-        console.error('âŒ Error al guardar:', error);
+        console.error('❌ Error al guardar:', error);
         Swal.fire({
             title: 'Error',
-            text: 'OcurriÃ³ un error al guardar los cambios',
+            text: 'Ocurrió un error al guardar los cambios',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -201,7 +225,7 @@ const updateEvento = async (event) => {
 };
 
 // ============================================
-// ðŸ–¼ï¸ CONVERTIR IMAGEN A BASE64
+// 🖼️ CONVERTIR IMAGEN A BASE64 (TEMPORAL PARA PREVIEW)
 // ============================================
 const convertImageToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -213,7 +237,7 @@ const convertImageToBase64 = (file) => {
 };
 
 // ============================================
-// ðŸ–¼ï¸ CONFIGURAR VISTA PREVIA DE IMAGEN
+// 🖼️ CONFIGURAR VISTA PREVIA DE IMAGEN
 // ============================================
 const setupImagePreview = () => {
     const imageInput = document.getElementById('eventImage');
@@ -227,7 +251,7 @@ const setupImagePreview = () => {
                 if (file.size > 5 * 1024 * 1024) {
                     Swal.fire({
                         title: 'Error',
-                        text: 'La imagen es demasiado grande. MÃ¡ximo 5MB.',
+                        text: 'La imagen es demasiado grande. Máximo 5MB.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
@@ -264,51 +288,51 @@ const setupImagePreview = () => {
 };
 
 // ============================================
-// ðŸ”™ CANCELAR Y VOLVER
+// 🔙 CANCELAR Y VOLVER
 // ============================================
 const cancelEdit = () => {
     Swal.fire({
-        title: 'Â¿Cancelar ediciÃ³n?',
-        text: 'Â¿EstÃ¡s seguro de que deseas cancelar la ediciÃ³n?',
+        title: '¿Cancelar edición?',
+        text: '¿Estás seguro de que deseas cancelar la edición?',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff007a',
         cancelButtonColor: '#4db8ff',
-        confirmButtonText: 'SÃ­, cancelar',
+        confirmButtonText: 'Sí, cancelar',
         cancelButtonText: 'Continuar editando'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.go('');
+            navigateTo('/host/event-crud');
         }
     });
 };
 
 const goBack = () => {
     Swal.fire({
-        title: 'Â¿Volver atrÃ¡s?',
-        text: 'Â¿EstÃ¡s seguro de que deseas volver? Los cambios no se guardarÃ¡n.',
+        title: '¿Volver atrás?',
+        text: '¿Estás seguro de que deseas volver? Los cambios no se guardarán.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff007a',
         cancelButtonColor: '#4db8ff',
-        confirmButtonText: 'SÃ­, volver',
+        confirmButtonText: 'Sí, volver',
         cancelButtonText: 'Continuar editando'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.go('');
+            navigateTo('/host/event-crud');
         }
     });
 };
 
 // ============================================
-// ðŸš€ CONTROLADOR PRINCIPAL
+// 🚀 CONTROLADOR PRINCIPAL
 // ============================================
 export async function eventEditFormController() {
-    console.log('ðŸ”¥ Controlador eventEditFormController iniciado');
+    console.log('🔥 Controlador eventEditFormController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        navigateTo('/login');
         return;
     }
 
@@ -330,7 +354,7 @@ export async function eventEditFormController() {
         btnVolver.addEventListener('click', goBack);
     }
     
-    console.log('âœ… EventEditForm Controller finalizado');
+    console.log('✅ EventEditForm Controller finalizado');
 }
 
 export default eventEditFormController;

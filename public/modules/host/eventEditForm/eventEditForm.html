@@ -22,7 +22,9 @@
                     <form id="eventoEditForm">
                         <input type="hidden" id="eventoId">
                         
-                        <!-- Imagen Actual -->
+                        <!-- ========================================== -->
+                        <!-- IMAGEN ACTUAL -->
+                        <!-- ========================================== -->
                         <div class="form-group">
                             <label><i class="fas fa-image"></i> Imagen Actual</label>
                             <div class="image-preview">
@@ -30,44 +32,40 @@
                             </div>
                         </div>
                         
-                        <!-- Nombre del Evento (EDITABLE) -->
+                        <!-- ========================================== -->
+                        <!-- NOMBRE DEL EVENTO (EDITABLE) -->
+                        <!-- ========================================== -->
                         <div class="form-group">
                             <label for="title"><i class="fas fa-tag"></i> Nombre del Evento *</label>
                             <input type="text" id="title" required placeholder="Ej: Los XV de Rusi">
                         </div>
                         
-                        <!-- Fecha (Solo lectura) -->
+                        <!-- ========================================== -->
+                        <!-- FECHA (Solo lectura) -->
+                        <!-- ========================================== -->
                         <div class="form-group">
                             <label for="date"><i class="fas fa-calendar-day"></i> Fecha del Evento</label>
                             <input type="text" id="date" readonly disabled class="readonly-field">
                         </div>
                         
-                        <!-- Asistentes (Solo lectura) -->
-                        <div class="form-group">
-                            <label for="attendees"><i class="fas fa-users"></i> Cantidad de Asistentes</label>
-                            <input type="text" id="attendees" readonly disabled class="readonly-field">
-                        </div>
-                        
-                        <!-- Fotos Subidas (Solo lectura) -->
-                        <div class="form-group">
-                            <label for="uploadedPhotos"><i class="fas fa-camera"></i> Fotos Subidas</label>
-                            <input type="text" id="uploadedPhotos" readonly disabled class="readonly-field">
-                        </div>
-                        
-                        <!-- Código de Acceso (Solo lectura) -->
-                        <div class="form-group">
-                            <label for="codigoAcceso"><i class="fas fa-key"></i> Código de Acceso</label>
-                            <input type="text" id="codigoAcceso" readonly disabled class="readonly-field">
-                        </div>
-                        
-                        <!-- Cambiar Imagen -->
+                        <!-- ========================================== -->
+                        <!-- ❌ ELIMINADO: Asistentes (no se edita) -->
+                        <!-- ❌ ELIMINADO: Fotos Subidas (no se edita) -->
+                        <!-- ❌ ELIMINADO: Código de Acceso (no se edita) -->
+                        <!-- ========================================== -->
+
+                        <!-- ========================================== -->
+                        <!-- CAMBIAR IMAGEN -->
+                        <!-- ========================================== -->
                         <div class="form-group">
                             <label for="eventImage"><i class="fas fa-cloud-upload-alt"></i> Cambiar Imagen del Evento</label>
                             <input type="file" id="eventImage" accept="image/jpeg, image/png, image/jpg, image/webp">
                             <small class="form-hint">Formatos permitidos: JPG, PNG, WEBP. Tamaño máximo: 5MB</small>
                         </div>
                         
-                        <!-- Vista previa de la nueva imagen -->
+                        <!-- ========================================== -->
+                        <!-- VISTA PREVIA DE LA NUEVA IMAGEN -->
+                        <!-- ========================================== -->
                         <div class="form-group" id="newImagePreviewGroup" style="display: none;">
                             <label><i class="fas fa-eye"></i> Vista Previa Nueva Imagen</label>
                             <div class="image-preview">
@@ -75,6 +73,9 @@
                             </div>
                         </div>
                         
+                        <!-- ========================================== -->
+                        <!-- BOTONES -->
+                        <!-- ========================================== -->
                         <div class="form-buttons">
                             <button type="submit" class="btn-save">
                                 <i class="fas fa-save"></i> Guardar Cambios
