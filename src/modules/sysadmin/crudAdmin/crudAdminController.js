@@ -2,34 +2,43 @@
 import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 
-// âœ… Variable para evitar ejecuciones mÃºltiples
 let isInitialized = false;
 
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
 export async function crudAdminController() {
-    console.log('ðŸ”¥ CRUD Admin Controller iniciado');
+    console.log('🔥 CRUD Admin Controller iniciado');
 
     if (isInitialized) {
-        console.log('â­ï¸ Controlador ya inicializado');
+        console.log('⏭️ Controlador ya inicializado');
         return;
     }
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado');
-        import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
+        console.warn('⚠️ Usuario no autenticado');
+        navigateTo('/login');
         return;
     }
 
     const user = userService.getCurrentUser();
     
     if (user.role !== 'sysadmin') {
-        Swal.fire({
+        await Swal.fire({
             title: 'Acceso Denegado',
             text: 'No tienes permisos de administrador',
             icon: 'error',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/'));
+            confirmButtonText: 'Entendido'
         });
+        navigateTo('/');
         return;
     }
 
@@ -57,7 +66,7 @@ function loadStyles() {
 }
 
 // ============================================
-// ðŸ“¥ CARGAR ADMINS DESDE FIRESTORE
+// 📥 CARGAR ADMINS DESDE FIRESTORE
 // ============================================
 async function loadAdmins() {
     const tbody = document.getElementById('adminsTableBody');
@@ -78,7 +87,7 @@ async function loadAdmins() {
 }
 
 // ============================================
-// ðŸ–¼ï¸ RENDERIZAR TABLA DE ADMINS
+// 🖼️ RENDERIZAR TABLA DE ADMINS
 // ============================================
 function renderAdminsTable() {
     const searchTerm = document.getElementById('searchAdmin')?.value.toLowerCase() || '';
@@ -126,126 +135,118 @@ function renderAdminsTable() {
 }
 
 // ============================================
-// ðŸ”¥ DELEGACIÃ“N DE EVENTOS PARA BOTONES DE ACCIÃ“N
+// 🔥 DELEGACIÓN DE EVENTOS PARA BOTONES DE ACCIÓN
 // ============================================
 function setupDelegation() {
-    console.log('ðŸ”§ Configurando delegaciÃ³n de eventos...');
+    console.log('🔧 Configurando delegación de eventos...');
     
-    // Remover listener anterior
     document.removeEventListener('click', handleDocumentClick);
     document.addEventListener('click', handleDocumentClick);
     
-    // ðŸ”¥ BUSCADOR
     const searchAdmin = document.getElementById('searchAdmin');
     if (searchAdmin) {
         const newSearch = searchAdmin.cloneNode(true);
         searchAdmin.parentNode.replaceChild(newSearch, searchAdmin);
         newSearch.addEventListener('input', () => renderAdminsTable());
-        console.log('âœ… Event listener agregado al buscador');
+        console.log('✅ Event listener agregado al buscador');
     }
     
-    console.log('âœ… DelegaciÃ³n de eventos configurada');
+    console.log('✅ Delegación de eventos configurada');
 }
 
 // ============================================
-// ðŸ–±ï¸ MANEJADOR DE CLICKS POR DELEGACIÃ“N
+// 🖱️ MANEJADOR DE CLICKS POR DELEGACIÓN
 // ============================================
 function handleDocumentClick(e) {
-    // ðŸ”¥ EL BOTÃ“N DE CREAR AHORA ES UN ENLACE, LO MANEJA EL ROUTER
-    // No necesitamos hacer nada para el enlace, el router lo maneja con data-link
-    
-    // ðŸ” Ver detalles
     const viewBtn = e.target.closest('.view-admin');
     if (viewBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = viewBtn.dataset.id;
-        console.log('ðŸ‘ï¸ Ver admin:', id);
+        console.log('👁️ Ver admin:', id);
         viewAdmin(id);
         return;
     }
     
-    // âœï¸ Editar
     const editBtn = e.target.closest('.edit-admin');
     if (editBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = editBtn.dataset.id;
-        console.log('âœï¸ Editar admin:', id);
+        console.log('✏️ Editar admin:', id);
         editAdmin(id);
         return;
     }
     
-    // ðŸ”„ Habilitar/Inhabilitar
     const toggleBtn = e.target.closest('.toggle-status');
     if (toggleBtn) {
         e.preventDefault();
         e.stopPropagation();
         const id = toggleBtn.dataset.id;
         const status = toggleBtn.dataset.status;
-        console.log('ðŸ”„ Toggle admin:', id, status);
+        console.log('🔄 Toggle admin:', id, status);
         toggleAdminStatus(id, status);
         return;
     }
 }
 
 // ============================================
-// ðŸ‘ï¸ VER ADMIN
+// 👁️ VER ADMIN
 // ============================================
 function viewAdmin(adminId) {
     if (!adminId) {
         Swal.fire({
             title: 'Error',
-            text: 'ID de administrador no vÃ¡lido',
+            text: 'ID de administrador no válido',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
     localStorage.setItem('adminDetailId', adminId);
-    window.go(`/sysadmin/admin-details?id=${adminId}`);
+    navigateTo(`/sysadmin/admin-details?id=${adminId}`);
 }
 
 // ============================================
-// âœï¸ EDITAR ADMIN
+// ✏️ EDITAR ADMIN
 // ============================================
 function editAdmin(adminId) {
-    window.go(`/sysadmin/admins/edit?id=${adminId}`);
+    navigateTo(`/sysadmin/admins/edit?id=${adminId}`);
 }
 
 // ============================================
-// ðŸ”„ HABILITAR/INHABILITAR ADMIN
+// 🔄 HABILITAR/INHABILITAR ADMIN
 // ============================================
 async function toggleAdminStatus(adminId, currentStatus) {
     try {
         if (!adminId) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Error',
-                text: 'ID de administrador no vÃ¡lido',
+                text: 'ID de administrador no válido',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Entendido'
             });
             return;
         }
 
         const admin = await userRepository.getById(adminId);
         if (!admin) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Error',
                 text: 'Administrador no encontrado',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Entendido'
             });
             return;
         }
 
         const currentUser = userService.getCurrentUser();
         if (currentUser && currentUser.id === adminId) {
-            Swal.fire({
-                title: 'AcciÃ³n no permitida',
+            await Swal.fire({
+                title: 'Acción no permitida',
                 text: 'No puedes inhabilitar tu propia cuenta',
                 icon: 'warning',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Entendido'
             });
             return;
         }
@@ -253,22 +254,23 @@ async function toggleAdminStatus(adminId, currentStatus) {
         const isActive = currentStatus === 'active';
         const newStatus = isActive ? 'inactive' : 'active';
         const actionText = isActive ? 'inhabilitar' : 'habilitar';
+        const actionEmoji = isActive ? '🚫' : '✅';
 
         const result = await Swal.fire({
-            title: `${isActive ? 'ðŸš«' : 'âœ…'} Â¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Administrador?`,
-            text: `Â¿EstÃ¡s seguro de ${actionText} al administrador "${admin.username}"?`,
+            title: `${actionEmoji} ¿${actionText.charAt(0).toUpperCase() + actionText.slice(1)} Administrador?`,
+            text: `¿Estás seguro de ${actionText} al administrador "${admin.username}"?`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#ff007a',
-            cancelButtonColor: '#4db8ff',
-            confirmButtonText: `SÃ­, ${actionText}`,
-            cancelButtonText: 'Cancelar'
+            confirmButtonText: `Sí, ${actionText}`,
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#4db8ff',
+            cancelButtonColor: '#ff007a'
         });
 
         if (result.isConfirmed) {
             Swal.fire({
                 title: 'Actualizando...',
-                text: 'Por favor espera',
+                text: 'Por favor espera un momento.',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -282,7 +284,7 @@ async function toggleAdminStatus(adminId, currentStatus) {
             Swal.close();
             
             await Swal.fire({
-                title: 'Â¡Actualizado!',
+                title: '¡Actualizado!',
                 text: `El administrador ha sido ${actionText}do correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
@@ -293,17 +295,17 @@ async function toggleAdminStatus(adminId, currentStatus) {
     } catch (error) {
         Swal.close();
         console.error('Error:', error);
-        Swal.fire({
+        await Swal.fire({
             title: 'Error',
             text: 'No se pudo cambiar el estado: ' + error.message,
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
     }
 }
 
 // ============================================
-// ðŸ”§ UTILIDADES
+// 🔧 UTILIDADES
 // ============================================
 function getStatusText(status) {
     const statuses = {
