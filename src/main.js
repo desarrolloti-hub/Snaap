@@ -10,15 +10,18 @@ if (typeof window !== 'undefined' && !window.go) {
     window.go = navigateOrHref;
 }
 
-// 🔥 Inicializar navbar unificado primero
+// ============================================
+// 🔥 INICIALIZAR NAVBAR
+// ============================================
 initNavbar();
 
-// 🔥 Luego inicializar router
+// ============================================
+// 🔥 INICIALIZAR ROUTER
+// ============================================
 initRouter();
 
 // ============================================
-// 🌐 Interceptor de navegación (fallback global)
-// Redirige asignaciones a location.assign/replace a navigateTo para rutas internas
+// 🌐 INTERCEPTOR DE NAVEGACIÓN (fallback global)
 // ============================================
 if (typeof window !== 'undefined' && window.location) {
     try {
@@ -41,7 +44,6 @@ if (typeof window !== 'undefined' && window.location) {
         window.location.replace = (url) => {
             try {
                 if (typeof url === 'string' && url.startsWith('/') && typeof window.navigateTo === 'function') {
-                    // use navigateTo but replace history entry
                     window.history.replaceState({}, '', url);
                     window.navigateTo(url);
                 } else {
@@ -57,21 +59,69 @@ if (typeof window !== 'undefined' && window.location) {
     }
 }
 
+// ============================================
+// 🔔 INICIALIZAR NOTIFICACIONES PUSH
+// ============================================
+async function initializePushNotifications(user) {
+    try {
+        if (!user) {
+            console.log('ℹ️ No hay usuario autenticado, omitiendo notificaciones push');
+            return;
+        }
 
-// 🔥 Inicializar notificaciones después de autenticación
-document.addEventListener('auth:changed', async () => {
-    const user = userService.getCurrentUser();
-    if (user) {
+        console.log('🔔 Inicializando notificaciones push para usuario:', user.email);
         await initNotification();
+
+    } catch (error) {
+        console.error('❌ Error al inicializar notificaciones push:', error);
+    }
+}
+
+// ============================================
+// 🔔 EVENTO: CAMBIO DE AUTENTICACIÓN
+// ============================================
+document.addEventListener('auth:changed', async (event) => {
+    const detail = event.detail || {};
+    const user = detail.user || userService.getCurrentUser();
+    
+    console.log('🔄 Auth changed event:', { 
+        isAuthenticated: !!user, 
+        user: user?.email || 'No user',
+        role: user?.role || 'No role'
+    });
+
+    if (user) {
+        await initializePushNotifications(user);
     }
 });
 
-// 🔥 También al cargar la página (si ya hay usuario)
+// ============================================
+// 🔔 EVENTO: DOM CARGADO
+// ============================================
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('📄 DOM cargado, verificando usuario...');
+    
     const user = userService.getCurrentUser();
     if (user) {
-        await initNotification();
+        console.log('👤 Usuario encontrado al cargar la página:', user.email);
+        await initializePushNotifications(user);
+    } else {
+        console.log('ℹ️ No hay usuario autenticado al cargar la página');
     }
+});
+
+// ============================================
+// 🔔 EVENTO: TOGGLE MANUAL DE NOTIFICACIONES
+// ============================================
+document.addEventListener('click', async (e) => {
+    const toggleBtn = e.target.closest('#notificationToggleBtn');
+    if (!toggleBtn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const { toggleSubscription } = await import('./modules/shared/notification/notificationController.js');
+    await toggleSubscription();
 });
 
 console.log('🚀 Snaap iniciado correctamente');

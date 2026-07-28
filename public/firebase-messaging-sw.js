@@ -1,8 +1,8 @@
 // public/firebase-messaging-sw.js
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js');
 
-// 🔥 CONFIGURACIÓN DE FIREBASE
+// 🔥 CONFIGURACIÓN DE FIREBASE (TUS DATOS)
 const firebaseConfig = {
   apiKey: "AIzaSyAjOrKIFp_Ml5RssrXduujNZW7ai1XIlRw",
   authDomain: "snaap-mx.firebaseapp.com",
@@ -26,8 +26,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'SNAAP';
   const notificationOptions = {
     body: payload.notification?.body || 'Tienes una nueva notificación',
-    icon: payload.notification?.icon || '/assets/images/Snaap.png',
-    badge: '/assets/images/Snaap.png',
+    icon: payload.notification?.icon || '/assets/imagenes/Snaap.png',
+    badge: '/assets/imagenes/Snaap.png',
     data: payload.data || {},
     vibrate: [200, 100, 200],
     actions: [

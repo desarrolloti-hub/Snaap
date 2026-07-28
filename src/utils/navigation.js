@@ -1,36 +1,26 @@
 // src/utils/navigation.js
-// Helper para redirecciones internas: usa navigateTo (SPA) si está disponible, si no usa window.location.href
-export function navigateTo(path) {
-    if (!path) return false;
-
-    const target = typeof path === 'string' ? path : String(path);
-
-    if (typeof window === 'undefined') {
-        return false;
-    }
-
-    if (typeof window.navigateTo === 'function') {
-        window.navigateTo(target);
-        return true;
-    }
-
-    window.location.href = target;
-    return true;
-}
-
+/**
+ * Navega a una URL usando el router SPA o redirige con href
+ * @param {string} path - Ruta a navegar
+ */
 export function navigateOrHref(path) {
-    try {
-        return navigateTo(path);
-    } catch (error) {
-        console.error('navigateOrHref error:', error);
-        if (typeof window !== 'undefined') {
-            window.location.href = String(path);
-        }
-        return false;
+    if (typeof window === 'undefined') return;
+    
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
     }
 }
 
-if (typeof window !== 'undefined') {
-    window.go = window.go || navigateOrHref;
+/**
+ * Verifica si una ruta es interna (SPA) o externa
+ * @param {string} url - URL a verificar
+ * @returns {boolean}
+ */
+export function isInternalRoute(url) {
+    if (!url) return false;
+    return url.startsWith('/') && !url.startsWith('//') && !url.startsWith('http');
 }
 
+export default { navigateOrHref, isInternalRoute };

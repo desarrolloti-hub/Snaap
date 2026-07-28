@@ -1,76 +1,48 @@
 // src/modules/shared/notification/notificationController.js
 import { userService } from '../../../services/userService.js';
-import { notificationService } from '../../../services/notificationService.js';
+import { simpleNotificationService } from '../../../services/simpleNotificationService.js';
 
 let isInitialized = false;
-let notificationCount = 0;
 
 export async function initNotification() {
     if (isInitialized) return;
     isInitialized = true;
 
-    console.log('🔔 Inicializando sistema de notificaciones');
+    console.log('🔔 Inicializando sistema de notificaciones (Simple)...');
 
     const user = userService.getCurrentUser();
     if (!user) {
-        console.log('ℹ️ Usuario no autenticado, esperando...');
+        console.log('ℹ️ Usuario no autenticado');
         return;
     }
 
-    notificationService.setUsuarioActual(user);
-
-    await updateNotificationUI();
-
-    document.addEventListener('auth:changed', async () => {
-        const newUser = userService.getCurrentUser();
-        if (newUser) {
-            notificationService.setUsuarioActual(newUser);
-            await updateNotificationUI();
-        }
-    });
-
-    console.log('✅ Sistema de notificaciones inicializado');
-}
-
-export async function updateNotificationUI() {
-    try {
-        const user = userService.getCurrentUser();
-        if (!user) return;
-
-        notificationService.setUsuarioActual(user);
-
-        const result = await notificationService.getUserNotifications();
+    // Solicitar permiso automáticamente
+    const result = await simpleNotificationService.requestPermission();
+    
+    if (result.success) {
+        console.log('✅ Notificaciones activadas');
+        updateButtonState(true);
         
-        if (result.success) {
-            const notifications = result.notifications || [];
-            const unreadCount = result.unreadCount || 0;
-            notificationCount = unreadCount;
-
-            updateBadge(unreadCount);
-        }
-    } catch (error) {
-        console.error('Error al actualizar UI de notificaciones:', error);
+        // Notificación de bienvenida
+        simpleNotificationService.sendNotification(
+            '¡Bienvenido a SNAAP!',
+            'Las notificaciones están activadas',
+            '/assets/imagenes/Snaap.png'
+        );
+    } else {
+        console.warn('⚠️ Permiso denegado:', result.permission);
+        updateButtonState(false);
     }
 }
 
-function updateBadge(count) {
-    const badge = document.getElementById('notificationBadge');
-    if (badge) {
-        if (count > 0) {
-            badge.textContent = count > 99 ? '99+' : count;
-            badge.style.display = 'inline-block';
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-}
-
-// 🔥 TOGGLE SUSCRIPCIÓN - CORREGIDO
+// ============================================
+// 🔘 TOGGLE SUSCRIPCIÓN
+// ============================================
 export async function toggleSubscription() {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            Swal.fire({
+            await Swal.fire({
                 title: 'Inicia sesión',
                 text: 'Debes iniciar sesión para activar las notificaciones',
                 icon: 'warning',
@@ -79,89 +51,64 @@ export async function toggleSubscription() {
             return;
         }
 
-        // 🔥 Asegurar que el usuario está configurado
-        notificationService.setUsuarioActual(user);
+        const status = simpleNotificationService.getStatus();
 
-        // 🔥 Verificar estado actual
-        const isSubscribed = notificationService.isSubscribed;
+        if (status.isSubscribed) {
+            const result = await Swal.fire({
+                title: '¿Desactivar notificaciones?',
+                text: 'Ya no recibirás notificaciones',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, desactivar',
+                cancelButtonText: 'Cancelar'
+            });
 
-        if (isSubscribed) {
-            // 🔥 DESUSCRIBIR
-            const result = await notificationService.unsubscribe();
-            if (result.success) {
-                Swal.fire({
-                    title: 'Notificaciones desactivadas',
-                    text: 'Ya no recibirás notificaciones push',
-                    icon: 'info',
-                    confirmButtonText: 'OK',
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-                await updateNotificationUI();
+            if (result.isConfirmed) {
+                simpleNotificationService.isSubscribed = false;
                 updateButtonState(false);
-            } else {
-                Swal.fire({
-                    title: 'Error',
-                    text: result.error || 'No se pudo desactivar las notificaciones',
-                    icon: 'error',
+                await Swal.fire({
+                    title: 'Notificaciones desactivadas',
+                    icon: 'info',
                     confirmButtonText: 'OK'
                 });
             }
         } else {
-            // 🔥 SUSCRIBIR - CON MANEJO DE ERRORES MEJORADO
-            Swal.fire({
-                title: 'Activando notificaciones...',
-                text: 'Por favor espera',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            try {
-                const result = await notificationService.subscribeToNotifications();
-                Swal.close();
-
-                if (result.success) {
-                    Swal.fire({
-                        title: '¡Notificaciones activadas!',
-                        text: 'Recibirás notificaciones push de SNAAP',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        timer: 3000,
-                        timerProgressBar: true
-                    });
-                    await updateNotificationUI();
-                    updateButtonState(true);
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: result.error || 'No se pudo activar las notificaciones',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            } catch (error) {
-                Swal.close();
-                console.error('❌ Error en suscripción:', error);
-                Swal.fire({
-                    title: 'Error',
-                    text: error.message || 'Ocurrió un error al activar las notificaciones',
+            const result = await simpleNotificationService.requestPermission();
+            if (result.success) {
+                updateButtonState(true);
+                simpleNotificationService.sendNotification(
+                    '🔔 Notificaciones activadas',
+                    'Recibirás notificaciones de SNAAP',
+                    '/assets/imagenes/Snaap.png'
+                );
+                await Swal.fire({
+                    title: '¡Notificaciones activadas!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                await Swal.fire({
+                    title: 'Permiso denegado',
+                    text: 'Habilita las notificaciones en tu navegador',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
             }
         }
     } catch (error) {
-        console.error('❌ Error general en toggleSubscription:', error);
-        Swal.fire({
+        console.error('❌ Error:', error);
+        await Swal.fire({
             title: 'Error',
-            text: error.message || 'Ocurrió un error',
+            text: error.message,
             icon: 'error',
             confirmButtonText: 'OK'
         });
     }
 }
 
+// ============================================
+// 🎨 ACTUALIZAR UI
+// ============================================
 function updateButtonState(isSubscribed) {
     const btn = document.getElementById('notificationToggleBtn');
     const statusText = document.getElementById('notificationStatus');
@@ -169,26 +116,16 @@ function updateButtonState(isSubscribed) {
     if (!btn) return;
 
     if (isSubscribed) {
-        if (statusText) statusText.textContent = '✅ Activadas';
+        btn.classList.add('active');
         btn.style.borderColor = '#00ff88';
         btn.style.color = '#00ff88';
-        btn.classList.add('active');
+        if (statusText) statusText.textContent = '✅ Activadas';
     } else {
-        if (statusText) statusText.textContent = '🔔 Activar';
+        btn.classList.remove('active');
         btn.style.borderColor = '#4db8ff';
         btn.style.color = '#ffffff';
-        btn.classList.remove('active');
+        if (statusText) statusText.textContent = '🔔 Activar';
     }
 }
 
-// 🔥 FUNCIÓN PARA MOSTRAR NOTIFICACIÓN EN LA UI
-export function showNotification(title, body, icon = '📢', link = null) {
-    notificationService.showInAppNotification({
-        title,
-        body,
-        icon,
-        link
-    });
-}
-
-export default initNotification;
+export default { initNotification, toggleSubscription };
