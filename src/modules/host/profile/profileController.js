@@ -3,7 +3,7 @@ import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
 
-// Datos del perfil (se cargarÃ¡n desde Firebase)
+// Datos del perfil (se cargarán desde Firebase)
 let profileData = {
     fullName: '',
     email: '',
@@ -20,30 +20,30 @@ let profileData = {
 
 const specialtiesMap = {
     'weddings': 'Bodas',
-    'birthdays': 'CumpleaÃ±os',
+    'birthdays': 'Cumpleaños',
     'corporate': 'Eventos Corporativos',
     'concerts': 'Conciertos',
     'private': 'Fiestas Privadas'
 };
 
 // ============================================
-// ðŸ“¥ CARGAR DATOS DEL USUARIO DESDE FIRESTORE
+// 📥 CARGAR DATOS DEL USUARIO DESDE FIRESTORE
 // ============================================
 const loadUserData = async () => {
     try {
         const user = userService.getCurrentUser();
         if (!user) {
-            console.warn('âš ï¸ No hay usuario autenticado');
+            console.warn('⚠️ No hay usuario autenticado');
             return;
         }
 
         const userData = await userRepository.getByUid(user.uid);
         if (!userData) {
-            console.warn('âš ï¸ Usuario no encontrado en Firestore');
+            console.warn('⚠️ Usuario no encontrado en Firestore');
             return;
         }
 
-        console.log('ðŸ“¥ Datos del usuario desde Firestore:', userData);
+        console.log('📥 Datos del usuario desde Firestore:', userData);
 
         profileData = {
             fullName: userData.username || user.displayName || 'Usuario',
@@ -63,13 +63,13 @@ const loadUserData = async () => {
 
         return profileData;
     } catch (error) {
-        console.error('âŒ Error al cargar datos del usuario:', error);
+        console.error('❌ Error al cargar datos del usuario:', error);
         return null;
     }
 };
 
 // ============================================
-// ðŸ“Š CARGAR ESTADÃSTICAS DE EVENTOS DESDE FIRESTORE
+// 📊 CARGAR ESTADÍSTICAS DE EVENTOS DESDE FIRESTORE
 // ============================================
 const loadEventStats = async (uid) => {
     try {
@@ -80,52 +80,46 @@ const loadEventStats = async (uid) => {
 
             const totalEventsEl = document.getElementById('totalEvents');
             const totalGuestsEl = document.getElementById('totalGuests');
-            const totalPhotosEl = document.getElementById('totalPhotos');
 
             if (totalEventsEl) totalEventsEl.textContent = estadisticas.totalEventos;
             if (totalGuestsEl) totalGuestsEl.textContent = estadisticas.totalInvitados.toLocaleString();
-            if (totalPhotosEl) totalPhotosEl.textContent = estadisticas.totalFotos.toLocaleString();
 
             // Guardar eventos en localStorage para compatibilidad
             localStorage.setItem('eventos', JSON.stringify(eventos));
 
             return estadisticas;
         } else {
-            console.error('Error al cargar estadÃ­sticas:', result.error);
-            // Fallback a localStorage
+            console.error('Error al cargar estadísticas:', result.error);
             loadEventStatsFromLocalStorage();
             return null;
         }
     } catch (error) {
-        console.error('âŒ Error al cargar estadÃ­sticas:', error);
+        console.error('❌ Error al cargar estadísticas:', error);
         loadEventStatsFromLocalStorage();
         return null;
     }
 };
 
 // ============================================
-// ðŸ“Š FALLBACK: CARGAR ESTADÃSTICAS DE LOCALSTORAGE
+// 📊 FALLBACK: CARGAR ESTADÍSTICAS DE LOCALSTORAGE
 // ============================================
 const loadEventStatsFromLocalStorage = () => {
     const stored = localStorage.getItem('eventos');
     let totalEvents = 0;
     let totalGuests = 0;
-    let totalPhotos = 0;
 
     if (stored) {
         const eventos = JSON.parse(stored);
         totalEvents = eventos.length;
         totalGuests = eventos.reduce((sum, e) => sum + (e.attendees || 0), 0);
-        totalPhotos = eventos.reduce((sum, e) => sum + (e.uploadedPhotos || 0), 0);
     }
 
     document.getElementById('totalEvents').textContent = totalEvents;
     document.getElementById('totalGuests').textContent = totalGuests.toLocaleString();
-    document.getElementById('totalPhotos').textContent = totalPhotos.toLocaleString();
 };
 
 // ============================================
-// ðŸ–¼ï¸ RENDERIZAR PERFIL
+// 🖼️ RENDERIZAR PERFIL
 // ============================================
 const renderProfile = () => {
     const avatarImg = document.getElementById('profileAvatar');
@@ -155,26 +149,26 @@ const renderProfile = () => {
     if (viewEmail) viewEmail.textContent = profileData.email || '-';
     if (viewPhone) viewPhone.textContent = profileData.phone || 'No registrado';
     if (viewCompany) viewCompany.textContent = profileData.company || 'No registrada';
-    if (viewBio) viewBio.textContent = profileData.bio || 'Sin descripciÃ³n';
+    if (viewBio) viewBio.textContent = profileData.bio || 'Sin descripción';
     if (viewWebsite) viewWebsite.textContent = profileData.website || 'No registrado';
     if (viewSpecialty) viewSpecialty.textContent = specialtiesMap[profileData.specialty] || 'No especificada';
     if (viewExperience) viewExperience.textContent = profileData.experience || 0;
     if (viewEventsCompleted) viewEventsCompleted.textContent = profileData.eventsCompleted || 0;
     if (memberSinceEl) memberSinceEl.textContent = profileData.memberSince || 'Enero 2024';
 
-    console.log('âœ… Perfil renderizado correctamente');
+    console.log('✅ Perfil renderizado correctamente');
 };
 
 // ============================================
-// ðŸ—‘ï¸ ELIMINAR CUENTA
+// 🗑️ ELIMINAR CUENTA
 // ============================================
 const deleteAccount = () => {
     Swal.fire({
         title: 'Eliminar Cuenta',
-        html: 'Â¿EstÃ¡s seguro de que deseas eliminar tu cuenta?<br>Esta acciÃ³n no se puede deshacer y todos tus eventos serÃ¡n eliminados.',
+        html: '¿Estás seguro de que deseas eliminar tu cuenta?<br>Esta acción no se puede deshacer y todos tus eventos serán eliminados.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'SÃ­, eliminar',
+        confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -187,24 +181,24 @@ const deleteAccount = () => {
                 const user = userService.getCurrentUser();
                 if (user && user.id) {
                     await userRepository.delete(user.id);
-                    console.log('ðŸ—‘ï¸ Usuario eliminado de Firestore');
+                    console.log('🗑️ Usuario eliminado de Firestore');
                 }
 
                 await userService.logout();
 
                 await Swal.fire({
                     title: 'Cuenta Eliminada',
-                    text: 'Tu cuenta ha sido eliminada. SerÃ¡s redirigido al inicio.',
+                    text: 'Tu cuenta ha sido eliminada. Serás redirigido al inicio.',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
 
-                window.go('');
+                navigateTo('/');
             } catch (error) {
-                console.error('âŒ Error al eliminar cuenta:', error);
+                console.error('❌ Error al eliminar cuenta:', error);
                 Swal.fire({
                     title: 'Error',
-                    text: 'OcurriÃ³ un error al eliminar la cuenta',
+                    text: 'Ocurrió un error al eliminar la cuenta',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -214,21 +208,32 @@ const deleteAccount = () => {
 };
 
 // ============================================
-// ðŸ”™ VOLVER ATRÃS
+// 🔙 VOLVER ATRÁS
 // ============================================
 const goBack = () => {
-    window.go('');
+    navigateTo('/host');
 };
 
 // ============================================
-// ðŸš€ CONTROLADOR PRINCIPAL
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 🚀 CONTROLADOR PRINCIPAL
 // ============================================
 export async function profileController() {
-    console.log('ðŸ”¥ Controlador profileController iniciado');
+    console.log('🔥 Controlador profileController iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado, redirigiendo a login');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado, redirigiendo a login');
+        navigateTo('/login');
         return;
     }
 
@@ -237,7 +242,7 @@ export async function profileController() {
     // Cargar datos del usuario desde Firestore
     await loadUserData();
 
-    // ðŸ”¥ Cargar estadÃ­sticas de eventos desde Firestore
+    // Cargar estadísticas de eventos desde Firestore
     if (user && user.uid) {
         await loadEventStats(user.uid);
     } else {
@@ -247,23 +252,32 @@ export async function profileController() {
     // Renderizar perfil
     renderProfile();
 
-    // Event Listeners
+    // ============================================
+    // 🔘 EVENT LISTENERS
+    // ============================================
+
+    // 🔙 Botón Volver
     const btnVolver = document.getElementById('btnVolver');
     if (btnVolver) {
         btnVolver.addEventListener('click', goBack);
     }
 
+    // ✏️ Botón Editar Perfil - REDIRIGE A /host/profile/edit
     const btnEditarPerfil = document.getElementById('btnEditarPerfil');
     if (btnEditarPerfil) {
         btnEditarPerfil.addEventListener('click', () => {
-            window.go('');
+            console.log('✏️ Redirigiendo a editar perfil');
+            navigateTo('/host/profile/edit');
         });
     }
 
+    // 🗑️ Botón Eliminar Cuenta
     const deleteAccountBtn = document.getElementById('deleteAccountBtn');
     if (deleteAccountBtn) {
         deleteAccountBtn.addEventListener('click', deleteAccount);
     }
+
+    console.log('✅ Profile Controller finalizado');
 }
 
 export default profileController;

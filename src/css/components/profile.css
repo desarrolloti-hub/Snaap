@@ -49,11 +49,14 @@ body {
     margin-right: 10px;
 }
 
+/* ========================================== */
+/* BOTÓN VOLVER - TEXTO BLANCO SIEMPRE */
+/* ========================================== */
 .btn-back {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
     border-radius: 50px;
-    color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1) !important;
     padding: 10px 20px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -75,12 +78,17 @@ body {
     border-color: rgba(255, 0, 122, 1);
     transform: translateX(-3px);
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
+    /* ✅ EL TEXTO SE MANTIENE BLANCO */
+    color: rgba(255, 255, 255, 1) !important;
 }
 
 .btn-back:hover i {
     color: rgba(255, 0, 122, 1);
 }
 
+/* ========================================== */
+/* BOTÓN EDITAR PERFIL */
+/* ========================================== */
 .btn-edit-profile {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
@@ -224,9 +232,12 @@ body {
     border: 1px solid rgba(77, 184, 255, 0.1);
 }
 
+/* ========================================== */
+/* ESTADÍSTICAS - GRID 3 COLUMNAS */
+/* ========================================== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
 }
 
@@ -269,6 +280,9 @@ body {
     color: rgba(255, 255, 255, 1);
 }
 
+/* ========================================== */
+/* ZONA DE PELIGRO (SIN CAMBIOS) */
+/* ========================================== */
 .danger-section {
     margin-top: 30px;
     padding: 20px;
@@ -321,6 +335,9 @@ body {
     box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
 }
 
+/* ========================================== */
+/* RESPONSIVE */
+/* ========================================== */
 @media (max-width: 768px) {
     .profile-page {
         padding-top: 60px;
@@ -354,5 +371,20 @@ body {
     
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    
+    .stat-card {
+        padding: 12px;
+    }
+    
+    .stat-value {
+        font-size: 1rem;
     }
 }
