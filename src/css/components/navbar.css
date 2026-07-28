@@ -3,14 +3,16 @@
 
 :root {
     --snaap-z-navbar: 1000;
+    --snaap-z-dropdown: 1001;
     --snaap-border-glass: 1px solid rgba(255, 255, 255, 0.1);
     --snaap-font-family: 'Poppins', sans-serif;
     --snaap-text-white: #ffffff;
-    --snaap-azul-claro: #00a3ff;
+    --snaap-azul-claro: #4db8ff;
     --snaap-azul: #0055ff;
-    --snaap-rosa: #ff00aa;
-    --snaap-border-neon: 1.5px solid rgba(0, 163, 255, 0.5);
+    --snaap-rosa: #ff007a;
+    --snaap-border-neon: 1.5px solid rgba(77, 184, 255, 0.5);
     --snaap-radius-pill: 50px;
+    --snaap-radius-md: 12px;
     --snaap-transition: all 0.3s ease;
     --snaap-transition-fast: 0.2s ease;
     --snaap-spacing-lg: 20px;
@@ -80,48 +82,50 @@
 }
 
 /* ============================================
-   BOTONES
+   BOTONES - ESTILO BASE (AZUL CON TEXTO BLANCO)
    ============================================ */
 .snaap-btn {
     background: transparent;
-    border: var(--snaap-border-neon);
-    padding: 6px 14px;
+    border: 2px solid var(--snaap-azul-claro);
+    padding: 8px 18px;
     min-width: 80px;
     border-radius: var(--snaap-radius-pill);
     color: var(--snaap-text-white);
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
     text-transform: capitalize;
     transition: var(--snaap-transition);
-    box-shadow: 0 0 5px rgba(0, 71, 171, 0.3);
-    animation: neonPulse 2.5s infinite alternate;
+    box-shadow: 0 0 10px rgba(77, 184, 255, 0.2);
     white-space: nowrap;
     cursor: pointer;
     font-family: var(--snaap-font-family);
 }
 
-@keyframes neonPulse {
-    from { box-shadow: 0 0 5px var(--snaap-azul); border-color: var(--snaap-azul); }
-    to { box-shadow: 0 0 15px var(--snaap-azul), inset 0 0 2px var(--snaap-azul); border-color: var(--snaap-azul-claro); }
-}
-
+/* ÍCONOS - SIEMPRE AZUL */
 .snaap-btn i {
     color: var(--snaap-azul-claro);
+    font-size: 0.9rem;
     transition: color var(--snaap-transition-fast);
-    font-size: 0.85rem;
 }
 
+/* LETRAS - SIEMPRE BLANCAS */
+.snaap-btn span {
+    color: var(--snaap-text-white);
+}
+
+/* ============================================
+   HOVER - ROSA
+   ============================================ */
 .snaap-btn:hover {
     border-color: var(--snaap-rosa);
     background: transparent;
     transform: translateY(-3px);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
-    animation: none;
+    box-shadow: 0 0 25px rgba(255, 0, 122, 0.4), inset 0 0 10px rgba(255, 0, 122, 0.1);
     color: var(--snaap-text-white);
 }
 
@@ -130,25 +134,130 @@
     filter: drop-shadow(0 0 5px var(--snaap-rosa));
 }
 
+.snaap-btn:hover span {
+    color: var(--snaap-text-white);
+}
+
 /* ============================================
-   BOTÓN CERRAR SESIÓN (estilo especial)
+   DROPDOWN CONTAINER
    ============================================ */
-#logout-btn {
-    border-color: rgba(255, 0, 170, 0.3);
+.dropdown-container {
+    position: relative;
 }
 
-#logout-btn:hover {
-    border-color: var(--snaap-rosa);
-    box-shadow: 0 0 20px var(--snaap-rosa), inset 0 0 8px var(--snaap-rosa);
+.dropdown-toggle {
+    cursor: pointer;
 }
 
-#logout-btn i {
+.dropdown-arrow {
+    font-size: 0.7rem !important;
+    margin-left: 4px;
+    transition: transform var(--snaap-transition-fast);
+}
+
+.dropdown-container.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+/* ============================================
+   DROPDOWN MENU
+   ============================================ */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    min-width: 200px;
+    background: rgba(10, 10, 20, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(77, 184, 255, 0.3);
+    border-radius: var(--snaap-radius-md);
+    padding: 8px 0;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    z-index: var(--snaap-z-dropdown);
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.dropdown-menu.open {
+    display: block;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ============================================
+   DROPDOWN ITEMS
+   ============================================ */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    color: var(--snaap-text-white);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: var(--snaap-transition-fast);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    font-family: var(--snaap-font-family);
+}
+
+.dropdown-item i {
+    color: var(--snaap-azul-claro);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 0, 122, 0.1);
     color: var(--snaap-rosa);
 }
 
-#logout-btn:hover i {
+.dropdown-item:hover i {
     color: var(--snaap-rosa);
-    filter: drop-shadow(0 0 5px var(--snaap-rosa));
+}
+
+/* Separador en dropdown */
+.dropdown-divider {
+    height: 1px;
+    background: rgba(77, 184, 255, 0.2);
+    margin: 4px 12px;
+}
+
+/* ============================================
+   CERRAR SESIÓN EN DROPDOWN (estilo especial)
+   ============================================ */
+.dropdown-item.danger {
+    color: #ff4444;
+}
+
+.dropdown-item.danger i {
+    color: #ff4444;
+}
+
+.dropdown-item.danger:hover {
+    background: rgba(255, 68, 68, 0.15);
+    color: #ff4444;
+}
+
+.dropdown-item.danger:hover i {
+    color: #ff4444;
 }
 
 /* ============================================
@@ -209,9 +318,35 @@
 
     .snaap-btn {
         font-size: 1rem;
-        padding: 10px 20px;
+        padding: 12px 24px;
         min-width: 200px;
         white-space: nowrap;
+    }
+
+    /* Dropdown en móvil - se comporta como botón normal */
+    .dropdown-container {
+        position: static;
+    }
+
+    .dropdown-menu {
+        position: static;
+        display: none;
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        border-radius: var(--snaap-radius-md);
+        padding: 4px 0;
+        margin-top: 4px;
+        box-shadow: none;
+        animation: none;
+    }
+
+    .dropdown-menu.open {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 10px 30px;
+        justify-content: center;
     }
 
     .snaap-footer-item {
@@ -229,7 +364,7 @@
     .snaap-btn {
         min-width: 160px;
         font-size: 0.9rem;
-        padding: 8px 16px;
+        padding: 10px 18px;
     }
 
     .snaap-logo {

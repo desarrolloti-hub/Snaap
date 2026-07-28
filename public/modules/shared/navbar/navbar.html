@@ -10,69 +10,99 @@
         </div>
 
         <ul class="snaap-menu" id="snaap-nav-list">
-            <!-- PÚBLICO -->
+            <!-- ========================================== -->
+            <!-- PÚBLICO (Todos ven estos) -->
+            <!-- ========================================== -->
             <li data-role="guest,user,host,sysadmin">
-                <a href="/" class="snaap-btn" data-link><i class="fas fa-house"></i> Inicio</a>
+                <a href="/" class="snaap-btn" data-link>
+                    <i class="fas fa-house"></i> <span>Inicio</span>
+                </a>
             </li>
             <li data-role="guest,user,host,sysadmin">
-                <a href="/nosotros" class="snaap-btn" data-link><i class="fas fa-info-circle"></i> Sobre nosotros</a>
+                <a href="/nosotros" class="snaap-btn" data-link>
+                    <i class="fas fa-info-circle"></i> <span>Sobre nosotros</span>
+                </a>
             </li>
             <li data-role="guest,user,host,sysadmin">
-                <a href="/paquetes" class="snaap-btn" data-link><i class="fas fa-boxes"></i> Paquetes</a>
-            </li>
-
-            <!-- INVITADOS -->
-            <li data-role="guest">
-                <a href="/login" class="snaap-btn" data-link><i class="fas fa-user"></i> Inicio de sesión</a>
-            </li>
-
-            <!-- AUTENTICADOS -->
-            <li data-role="user,host,sysadmin">
-                <a href="#" class="snaap-btn" id="profile-link" data-link>
-                    <i class="fas fa-user-circle"></i> 
-                    <span id="profile-name">Perfil</span>
+                <a href="/paquetes" class="snaap-btn" data-link>
+                    <i class="fas fa-boxes"></i> <span>Paquetes</span>
                 </a>
             </li>
 
-            <!-- 🔥 NOTIFICACIONES - BOTÓN PARA TODOS LOS AUTENTICADOS -->
-            <li data-role="user,host,sysadmin">
-                <button class="snaap-btn notification-btn" id="notificationToggleBtn">
-                    <i class="fas fa-bell"></i> 
-                    <span id="notificationStatus">Activar notificaciones</span>
-                    <span id="notificationBadge" class="badge" style="display: none;">0</span>
+            <!-- ========================================== -->
+            <!-- INVITADOS (Solo cuando NO está autenticado) -->
+            <!-- ========================================== -->
+            <li data-role="guest">
+                <a href="/login" class="snaap-btn" data-link>
+                    <i class="fas fa-user"></i> <span>Inicio de sesión</span>
+                </a>
+            </li>
+
+            <!-- ========================================== -->
+            <!-- HOST (SOLO CUANDO EL ROL ES 'host') -->
+            <!-- ========================================== -->
+            <li data-role="host">
+                <a href="/host" class="snaap-btn" data-link>
+                    <i class="fas fa-home"></i> <span>Inicio</span>
+                </a>
+            </li>
+            <li data-role="host">
+                <a href="/host/create-event" class="snaap-btn" data-link>
+                    <i class="fas fa-plus-circle"></i> <span>Crear evento</span>
+                </a>
+            </li>
+            <li data-role="host">
+                <a href="/host/event-crud" class="snaap-btn" data-link>
+                    <i class="fas fa-calendar-alt"></i> <span>Mis Eventos</span>
+                </a>
+            </li>
+
+            <!-- ========================================== -->
+            <!-- SYSADMIN (SOLO CUANDO EL ROL ES 'sysadmin') -->
+            <!-- ========================================== -->
+            <li data-role="sysadmin">
+                <a href="/sysadmin/admins" class="snaap-btn" data-link>
+                    <i class="fas fa-shield-alt"></i> <span>Admins</span>
+                </a>
+            </li>
+            <li data-role="sysadmin">
+                <a href="/sysadmin/hosts" class="snaap-btn" data-link>
+                    <i class="fas fa-users"></i> <span>Hosts</span>
+                </a>
+            </li>
+            <li data-role="sysadmin">
+                <a href="/sysadmin/carousel" class="snaap-btn" data-link>
+                    <i class="fas fa-images"></i> <span>Carrusel</span>
+                </a>
+            </li>
+
+            <!-- ========================================== -->
+            <!-- PERFIL CON DROPDOWN (Todos los autenticados) -->
+            <!-- ========================================== -->
+            <li data-role="user,host,sysadmin" class="dropdown-container">
+                <button class="snaap-btn dropdown-toggle" id="profileDropdownBtn">
+                    <i class="fas fa-user-circle"></i> 
+                    <span id="profile-name">Perfil</span>
+                    <i class="fas fa-chevron-down dropdown-arrow"></i>
                 </button>
+                <ul class="dropdown-menu" id="profileDropdownMenu">
+                    <li>
+                        <a href="#" class="dropdown-item" id="dropdown-profile-link">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                    </li>
+                    <li class="dropdown-divider"></li>
+                    <li>
+                        <button class="dropdown-item danger" id="dropdown-logout-btn">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                        </button>
+                    </li>
+                </ul>
             </li>
 
-            <!-- HOST -->
-            <li data-role="host">
-                <a href="/host" class="snaap-btn" data-link><i class="fas fa-home"></i> Mi Espacio</a>
-            </li>
-            <li data-role="host">
-                <a href="/host/create-event" class="snaap-btn" data-link><i class="fas fa-plus-circle"></i> Crear evento</a>
-            </li>
-            <li data-role="host">
-                <a href="/host/event-crud" class="snaap-btn" data-link><i class="fas fa-calendar-alt"></i> Mis Eventos</a>
-            </li>
-
-            <!-- SYSADMIN -->
-            <li data-role="sysadmin">
-                <a href="/sysadmin/home" class="snaap-btn" data-link><i class="fas fa-tachometer-alt"></i> Panel Admin</a>
-            </li>
-            <li data-role="sysadmin">
-                <a href="/sysadmin/hosts" class="snaap-btn" data-link><i class="fas fa-users"></i> Hosts</a>
-            </li>
-            <li data-role="sysadmin">
-                <a href="/sysadmin/admins" class="snaap-btn" data-link><i class="fas fa-shield-alt"></i> Admins</a>
-            </li>
-            <li data-role="sysadmin">
-                <a href="/sysadmin/carousel" class="snaap-btn" data-link><i class="fas fa-images"></i> Carrusel</a>
-            </li>
-
-            <!-- CERRAR SESIÓN -->
-            <li data-role="user,host,sysadmin">
-                <button class="snaap-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
-            </li>
-
+            <!-- ========================================== -->
+            <!-- FOOTER MÓVIL -->
+            <!-- ========================================== -->
             <li class="snaap-footer-item">
                 <a href="https://rsienterprise.com/" target="_blank" class="snaap-footer-link">
                     desarrollada por rsi enterprise mexico
