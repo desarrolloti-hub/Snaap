@@ -15,69 +15,29 @@ body {
 
 .admin-details-container {
     padding: 120px 40px 40px 40px;
-    max-width: 900px;
+    max-width: 750px;
     margin: 0 auto;
     animation: fadeInUp 0.6s ease-out;
     color: #ffffff;
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ============================================
    HEADER
    ============================================ */
 .details-header {
-    margin-bottom: 30px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.btn-back {
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 8px 20px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-.btn-back i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-.btn-back:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: #ff007a;
-    transform: translateX(-5px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-.btn-back:hover i {
-    color: #ff007a;
+    display: block;
+    width: 100%;
+    margin-bottom: 25px;
 }
 
 .details-header h1 {
     color: #ffffff;
-    font-size: 2rem;
+    font-size: 1.8rem;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -88,16 +48,18 @@ body {
 }
 
 /* ============================================
-   TARJETA DE DETALLES
+   TARJETA DE DETALLES (FORZADA A UNA COLUMNA)
    ============================================ */
 .details-card {
+    display: block; /* CRUCIAL: Evita que los hijos se pongan en columnas */
+    width: 100%;
     background: rgba(10, 10, 20, 0.6);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 20px;
-    padding: 30px;
+    padding: 35px;
     border: 1px solid rgba(77, 184, 255, 0.2);
-    min-height: 400px;
+    min-height: 300px;
 }
 
 .details-loading {
@@ -116,123 +78,140 @@ body {
 }
 
 /* ============================================
-   CONTENIDO DE DETALLES
+   CONTENIDO DE DETALLES (ELIMINADO EL FLEX QUE SEPARABA)
    ============================================ */
-.detail-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.detail-content,
+.profile-header,
+.details-body,
+.detail-actions {
+    display: block; /* Todo es bloque, nada flota a los lados */
+    width: 100%;
 }
 
-.detail-avatar {
-    text-align: center;
-    padding: 20px 0 30px 0;
+/* --- CABECERA --- */
+.profile-header {
+    padding-bottom: 25px;
     border-bottom: 1px solid rgba(77, 184, 255, 0.15);
+    margin-bottom: 25px;
+    text-align: center; /* Centra el nombre y rol */
 }
 
-.detail-avatar i {
-    font-size: 80px;
-    color: rgba(77, 184, 255, 1);
-}
-
-.detail-avatar h2 {
-    margin-top: 10px;
-    font-size: 1.5rem;
+.profile-header .profile-name {
     color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 5px 0;
 }
 
-.detail-avatar .detail-role {
+.profile-header .profile-role {
     color: rgba(77, 184, 255, 1);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.detail-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.detail-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.detail-group.full-width {
-    grid-column: 1 / -1;
-}
-
-.detail-group label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: rgba(77, 184, 255, 1);
-}
-
-.detail-group label i {
-    margin-right: 6px;
-    width: 16px;
-}
-
-.detail-group .detail-value {
     font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    padding: 10px 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    border: 1px solid rgba(77, 184, 255, 0.08);
-    min-height: 42px;
+    font-weight: 500;
+}
+
+.profile-header .profile-role i {
+    margin-right: 5px;
+}
+
+/* --- CUERPO --- */
+.details-body {
+    display: flex; /* Solo el cuerpo usa flex para apilar filas */
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* --- FILAS --- */
+.detail-row {
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Label a la izquierda, Valor a la derecha */
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    border: 1px solid rgba(77, 184, 255, 0.08);
+    transition: all 0.3s ease;
+    width: 100%;
 }
 
-.detail-group .detail-value strong {
+.detail-row:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(77, 184, 255, 0.2);
+}
+
+.detail-row .detail-label {
+    color: rgba(77, 184, 255, 1);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.detail-row .detail-label i {
+    width: 18px;
+    text-align: center;
+}
+
+.detail-row .detail-value {
     color: #ffffff;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: right;
+    margin-left: 20px; /* Espacio mínimo entre label y valor */
 }
 
-.detail-group .detail-value .status-badge {
+/* --- BIOGRAFÍA --- */
+.detail-row.bio-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.detail-row.bio-row .detail-value {
+    text-align: left;
+    width: 100%;
+    margin-left: 0;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* --- BADGE --- */
+.status-badge {
     display: inline-block;
-    padding: 4px 14px;
+    padding: 5px 16px;
     border-radius: 50px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .status-active {
-    background: rgba(0, 255, 136, 0.2);
+    background: rgba(0, 255, 136, 0.15);
     color: #00ff88;
 }
-
 .status-inactive {
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.6);
 }
-
 .status-suspended {
     background: rgba(255, 0, 0, 0.2);
     color: #ff4444;
 }
 
-.detail-bio {
-    white-space: pre-wrap;
-    line-height: 1.6;
-    min-height: 60px;
-}
-
 /* ============================================
-   BOTONES DE ACCIÓN
+   ACCIONES (Botones)
    ============================================ */
 .detail-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 20px;
+    margin-top: 35px;
+    padding-top: 25px;
     border-top: 1px solid rgba(77, 184, 255, 0.15);
-    justify-content: flex-end;
+    text-align: center;
 }
 
+.btn-back-detail,
 .btn-edit-admin {
     background: transparent;
     border: 2px solid rgba(77, 184, 255, 1);
@@ -247,13 +226,16 @@ body {
     align-items: center;
     gap: 8px;
     box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
+    margin: 0 5px 10px 5px;
 }
 
+.btn-back-detail i,
 .btn-edit-admin i {
     color: rgba(77, 184, 255, 1);
     transition: all 0.3s ease;
 }
 
+.btn-back-detail:hover,
 .btn-edit-admin:hover {
     background: rgba(255, 0, 122, 0.1);
     border-color: #ff007a;
@@ -261,6 +243,7 @@ body {
     box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
 }
 
+.btn-back-detail:hover i,
 .btn-edit-admin:hover i {
     color: #ff007a;
 }
@@ -270,125 +253,38 @@ body {
    ============================================ */
 @media (max-width: 768px) {
     .admin-details-container {
-        padding: 100px 20px 20px 20px;
+        padding: 100px 15px 20px 15px;
+        max-width: 100%;
+    }
+    .details-card {
+        padding: 20px;
+    }
+
+    .profile-header .profile-name {
+        font-size: 1.8rem;
     }
     
-    .detail-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .details-header {
+    .detail-row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 8px;
+        padding: 14px 16px;
     }
     
-    .details-header h1 {
-        font-size: 1.5rem;
+    .detail-row .detail-value {
+        text-align: left;
+        width: 100%;
+        margin-left: 0;
     }
-    
-    .detail-avatar i {
-        font-size: 60px;
-    }
-    
+
     .detail-actions {
-        flex-direction: column;
-    }
-    
-    .btn-edit-admin {
-        justify-content: center;
-    }
-}
-/* src/css/components/adminDetails.css */
-/* Agregar al final del archivo */
-
-/* 🔥 BOTÓN VOLVER - Estilo consistente con los demás */
-.btn-back-detail {
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 12px 28px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-.btn-back-detail i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-.btn-back-detail:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: #ff007a;
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-.btn-back-detail:hover i {
-    color: #ff007a;
-}
-
-/* Ajustar contenedor de acciones */
-.detail-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(77, 184, 255, 0.15);
-    justify-content: flex-end;
-    flex-wrap: wrap;
-}
-
-/* Botón Editar (ya existente) */
-.btn-edit-admin {
-    background: transparent;
-    border: 2px solid rgba(77, 184, 255, 1);
-    border-radius: 50px;
-    padding: 12px 28px;
-    color: #ffffff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 0 5px rgba(77, 184, 255, 0.5);
-}
-
-.btn-edit-admin i {
-    color: rgba(77, 184, 255, 1);
-    transition: all 0.3s ease;
-}
-
-.btn-edit-admin:hover {
-    background: rgba(255, 0, 122, 0.1);
-    border-color: #ff007a;
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(255, 0, 122, 0.6);
-}
-
-.btn-edit-admin:hover i {
-    color: #ff007a;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .detail-actions {
-        flex-direction: column;
+        text-align: center;
     }
     
     .btn-back-detail,
     .btn-edit-admin {
         justify-content: center;
         width: 100%;
+        margin: 5px 0;
     }
 }
