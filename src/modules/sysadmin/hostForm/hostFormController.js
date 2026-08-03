@@ -3,13 +3,69 @@ import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { hostService } from '../../../services/hostService.js';
 
-// âœ… EXPORTACIÃ“N CORRECTA
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
+
+// ============================================
+// 🔔 ENVIAR NOTIFICACIÓN A SYSADMINS
+// ============================================
+const sendNotificationToSysadmins = async (hostName, hostEmail) => {
+    try {
+        const { notificationService } = await import('../../../services/notificationService.js');
+        const { userRepository } = await import('../../../repositories/userRepository.js');
+        
+        // 🔥 OBTENER TODOS LOS SYSADMINS
+        const allUsers = await userRepository.getAllUsers();
+        const sysadmins = allUsers.filter(u => u.role === 'sysadmin');
+        
+        if (sysadmins.length === 0) {
+            console.warn('⚠️ No hay sysadmins para notificar');
+            return;
+        }
+        
+        // 🔥 OBTENER UIDS DE SYSADMINS
+        const sysadminUids = sysadmins.map(admin => admin.uid || admin.id).filter(Boolean);
+        
+        if (sysadminUids.length === 0) {
+            console.warn('⚠️ No hay UIDs válidos de sysadmins');
+            return;
+        }
+        
+        console.log(`📤 Enviando notificación a ${sysadminUids.length} sysadmins`);
+        
+        // 🔥 ENVIAR NOTIFICACIÓN A TODOS LOS SYSADMINS
+        await notificationService.sendPushNotification({
+            title: '👤 Nuevo Host registrado',
+            body: `El host "${hostName}" (${hostEmail}) se ha registrado en la plataforma.`,
+            icon: '👤',
+            link: '/sysadmin/hosts',
+            recipients: sysadminUids
+        });
+        
+        console.log(`✅ Notificación enviada a sysadmins`);
+        
+    } catch (error) {
+        console.error('❌ Error al enviar notificación a sysadmins:', error);
+    }
+};
+
+// ============================================
+// 🚀 EXPORTACIÓN CORRECTA
+// ============================================
 export async function hostFormController() {
-    console.log('ðŸ”¥ Host Form Controller iniciado');
+    console.log('🔥 Host Form Controller iniciado');
 
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado');
+        navigateTo('/login');
         return;
     }
 
@@ -20,9 +76,9 @@ export async function hostFormController() {
             title: 'Acceso Denegado',
             text: 'No tienes permisos de administrador',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         }).then(() => {
-            window.go('');
+            navigateTo('/');
         });
         return;
     }
@@ -51,63 +107,53 @@ function setupForm() {
     const cancelBtn = document.getElementById('cancelBtn');
     const hostForm = document.getElementById('hostForm');
     
-    // ðŸ”¥ CONFIRMACIÃ“N PARA VOLVER
+    // 🔥 CONFIRMACIÓN PARA VOLVER
     if (backBtn) {
-        // Eliminar event listeners anteriores clonando el botÃ³n
         const newBackBtn = backBtn.cloneNode(true);
         backBtn.parentNode.replaceChild(newBackBtn, backBtn);
         
         newBackBtn.addEventListener('click', () => {
             Swal.fire({
-                title: 'Â¿Cancelar creaciÃ³n?',
-                text: 'Â¿EstÃ¡s seguro de que quieres salir? Los datos no guardados se perderÃ¡n.',
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres salir? Los datos no guardados se perderán.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#ff007a',
                 cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'SÃ­, salir',
+                confirmButtonText: 'Sí, salir',
                 cancelButtonText: 'Continuar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/hosts');
-                    } else {
-                        window.go('');
-                    }
+                    navigateTo('/sysadmin/hosts');
                 }
             });
         });
     }
     
-    // ðŸ”¥ CONFIRMACIÃ“N PARA CANCELAR
+    // 🔥 CONFIRMACIÓN PARA CANCELAR
     if (cancelBtn) {
         const newCancelBtn = cancelBtn.cloneNode(true);
         cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
         
         newCancelBtn.addEventListener('click', () => {
             Swal.fire({
-                title: 'Â¿Cancelar creaciÃ³n?',
-                text: 'Â¿EstÃ¡s seguro de que quieres cancelar? Los datos no guardados se perderÃ¡n.',
+                title: '¿Cancelar creación?',
+                text: '¿Estás seguro de que quieres cancelar? Los datos no guardados se perderán.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#ff007a',
                 cancelButtonColor: '#4db8ff',
-                confirmButtonText: 'SÃ­, cancelar',
+                confirmButtonText: 'Sí, cancelar',
                 cancelButtonText: 'Continuar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (typeof window.navigateTo === 'function') {
-                        window.navigateTo('/sysadmin/hosts');
-                    } else {
-                        window.go('');
-                    }
+                    navigateTo('/sysadmin/hosts');
                 }
             });
         });
     }
     
     if (hostForm) {
-        // Eliminar event listeners anteriores del formulario
         const newForm = hostForm.cloneNode(true);
         hostForm.parentNode.replaceChild(newForm, hostForm);
         newForm.addEventListener('submit', saveHost);
@@ -130,17 +176,17 @@ async function saveHost(e) {
             title: 'Campos requeridos',
             text: 'Por favor completa el nombre de usuario y email',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
     
     if (!password || password.length < 6) {
         await Swal.fire({
-            title: 'ContraseÃ±a invÃ¡lida',
-            text: 'La contraseÃ±a debe tener al menos 6 caracteres',
+            title: 'Contraseña inválida',
+            text: 'La contraseña debe tener al menos 6 caracteres',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
@@ -149,16 +195,16 @@ async function saveHost(e) {
     if (existingUser) {
         await Swal.fire({
             title: 'Email duplicado',
-            text: 'Ya existe un usuario con este correo electrÃ³nico',
+            text: 'Ya existe un usuario con este correo electrónico',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
         return;
     }
     
     Swal.fire({
         title: 'Creando host...',
-        text: 'Por favor espera',
+        text: 'Por favor espera un momento.',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -179,24 +225,26 @@ async function saveHost(e) {
         Swal.close();
         
         if (result.success) {
+            const hostName = result.host.username;
+            const hostEmail = result.host.email;
+            
+            // 🔥 ENVIAR NOTIFICACIÓN A TODOS LOS SYSADMINS
+            await sendNotificationToSysadmins(hostName, hostEmail);
+            
             await Swal.fire({
-                title: 'Â¡Creado!',
-                text: `El host "${result.host.username}" ha sido creado correctamente`,
+                title: '¡Creado!',
+                text: `El host "${hostName}" ha sido creado correctamente`,
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
             
-            if (typeof window.navigateTo === 'function') {
-                window.navigateTo('/sysadmin/hosts');
-            } else {
-                window.go('');
-            }
+            navigateTo('/sysadmin/hosts');
         } else {
             await Swal.fire({
                 title: 'Error',
                 text: result.error || 'Error al crear el host',
                 icon: 'error',
-                confirmButtonText: 'OK'
+                confirmButtonText: 'Entendido'
             });
         }
     } catch (error) {
@@ -204,9 +252,9 @@ async function saveHost(e) {
         console.error('Error al crear host:', error);
         await Swal.fire({
             title: 'Error',
-            text: 'OcurriÃ³ un error al crear el host',
+            text: 'Ocurrió un error al crear el host',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
     }
 }

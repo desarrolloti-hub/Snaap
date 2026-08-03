@@ -19,6 +19,40 @@ const navigateTo = (path) => {
 };
 
 // ============================================
+// 🔔 ENVIAR RECORDATORIO PUSH
+// ============================================
+const sendReminderNotification = async (evento) => {
+    try {
+        const { notificationService } = await import('../../../services/notificationService.js');
+        
+        if (!evento.fechaEvento) {
+            console.warn('⚠️ Evento sin fecha, no se puede enviar recordatorio');
+            return;
+        }
+
+        const fechaEvento = new Date(evento.fechaEvento);
+        const ahora = new Date();
+        const horasRestantes = Math.floor((fechaEvento - ahora) / (1000 * 60 * 60));
+
+        if (horasRestantes > 24 && horasRestantes < 48) {
+            const mensaje = `⏰ Tu evento "${evento.nombre}" comienza en ${horasRestantes} horas. ¡Prepárate!`;
+            
+            await notificationService.sendPushNotification({
+                title: '⏰ Recordatorio de evento',
+                body: mensaje,
+                icon: '⏰',
+                link: `/host/event-details?id=${evento.id}`,
+                recipients: [evento.creadoPor]
+            });
+
+            console.log(`✅ Recordatorio enviado para "${evento.nombre}" (${horasRestantes}h)`);
+        }
+    } catch (error) {
+        console.warn('⚠️ Error al enviar recordatorio:', error);
+    }
+};
+
+// ============================================
 // 📥 CARGAR EVENTO DESDE FIRESTORE
 // ============================================
 const loadEventFromFirestore = async (id) => {
@@ -144,6 +178,9 @@ const renderEventDetails = (evento, qrImage) => {
     }
 
     renderQrSection(qrImage, evento);
+
+    // 🔥 ENVIAR RECORDATORIO AUTOMÁTICAMENTE AL CARGAR DETALLES
+    sendReminderNotification(evento);
 };
 
 // ============================================

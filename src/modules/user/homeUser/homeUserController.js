@@ -4,7 +4,7 @@ import { eventService } from '../../../services/eventService.js';
 import { userImageService } from '../../../services/userImageService.js';
 
 // ============================================
-// ðŸŽ® CONTROLLER PRINCIPAL
+// 🎮 CONTROLLER PRINCIPAL
 // ============================================
 class HomeUserController {
     constructor() {
@@ -15,7 +15,7 @@ class HomeUserController {
         this.images = [];
         this.previewImages = [];
         
-        // ðŸ”¥ DIBUJO
+        // 🔥 DIBUJO
         this.isDrawing = false;
         this.lastX = 0;
         this.lastY = 0;
@@ -29,7 +29,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸš€ INICIALIZACIÃ“N
+    // 🚀 INICIALIZACIÓN
     // ============================================
     async initialize() {
         try {
@@ -76,7 +76,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ“¥ CARGAR DATOS DEL EVENTO
+    // 📥 CARGAR DATOS DEL EVENTO
     // ============================================
     async loadEventData() {
         try {
@@ -95,7 +95,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ“¥ CARGAR DATOS DEL USUARIO
+    // 📥 CARGAR DATOS DEL USUARIO
     // ============================================
     async loadUserData() {
         try {
@@ -123,7 +123,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ–¼ï¸ ACTUALIZAR HEADER
+    // 🖼️ ACTUALIZAR HEADER
     // ============================================
     updateEventHeader() {
         const headerTitle = document.querySelector('.user-home-header h1');
@@ -138,22 +138,22 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸŽ¯ CONFIGURAR EVENTOS
+    // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // ðŸ”¥ BOTÃ“N 1: TOMAR FOTO
+        // 🔥 BOTÓN 1: TOMAR FOTO
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         if (takePhotoBtn) {
             takePhotoBtn.addEventListener('click', this.handleTakePhoto.bind(this));
         }
 
-        // ðŸ”¥ BOTÃ“N 2: SUBIR DIBUJO
+        // 🔥 BOTÓN 2: SUBIR DIBUJO
         const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
         if (uploadDrawingBtn) {
             uploadDrawingBtn.addEventListener('click', this.openDrawingModal.bind(this));
         }
 
-        // ðŸ”¥ BOTÃ“N 3: MIS FOTOS (GalerÃ­a del dispositivo)
+        // 🔥 BOTÓN 3: MIS FOTOS (Galería del dispositivo)
         const openGalleryBtn = document.getElementById('openGalleryBtn');
         const galleryInput = document.getElementById('galleryFileInput');
         
@@ -167,10 +167,10 @@ class HomeUserController {
             galleryInput.addEventListener('change', this.handleGalleryUpload.bind(this));
         }
 
-        // ðŸ”¥ MODAL DE DIBUJO
+        // 🔥 MODAL DE DIBUJO
         this.setupDrawingEvents();
 
-        // ðŸ”¥ TECLA ESC
+        // 🔥 TECLA ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeDrawingModal();
@@ -179,15 +179,15 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ“¸ TOMAR FOTO
+    // 📸 TOMAR FOTO
     // ============================================
     async handleTakePhoto() {
         const result = await Swal.fire({
-            title: 'ðŸ“¸ Â¿Usar la cÃ¡mara?',
-            text: 'Snaap necesita acceder a tu cÃ¡mara para tomar fotos',
+            title: '📸 ¿Usar la cámara?',
+            text: 'Snaap necesita acceder a tu cámara para tomar fotos',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'SÃ­, permitir',
+            confirmButtonText: 'Sí, permitir',
             cancelButtonText: 'Cancelar'
         });
 
@@ -211,20 +211,20 @@ class HomeUserController {
             input.click();
         } catch (error) {
             console.error('Error accessing camera:', error);
-            this.showError('No se pudo acceder a la cÃ¡mara. Verifica los permisos.');
+            this.showError('No se pudo acceder a la cámara. Verifica los permisos.');
         }
     }
 
     // ============================================
-    // ðŸ–¼ï¸ ABRIR GALERÃA DEL DISPOSITIVO
+    // 🖼️ ABRIR GALERÍA DEL DISPOSITIVO
     // ============================================
     async handleOpenGallery() {
         const result = await Swal.fire({
-            title: 'ðŸ–¼ï¸ Â¿Abrir galerÃ­a?',
-            text: 'Snaap necesita acceder a tu galerÃ­a para seleccionar fotos',
+            title: '🖼️ ¿Abrir galería?',
+            text: 'Snaap necesita acceder a tu galería para seleccionar fotos',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'SÃ­, permitir',
+            confirmButtonText: 'Sí, permitir',
             cancelButtonText: 'Cancelar'
         });
 
@@ -237,13 +237,13 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ–¼ï¸ MANEJAR SUBIDA DESDE GALERÃA
+    // 🖼️ MANEJAR SUBIDA DESDE GALERÍA
     // ============================================
     async handleGalleryUpload(e) {
         const files = e.target.files;
         if (!files || files.length === 0) return;
         
-        this.showLoading('Subiendo imÃ¡genes...');
+        this.showLoading('Subiendo imágenes...');
         
         let successCount = 0;
         let errorCount = 0;
@@ -260,17 +260,41 @@ class HomeUserController {
         this.hideLoading();
         
         if (successCount > 0) {
-            this.showSuccess(`âœ… ${successCount} imagen(es) subida(s) exitosamente`);
+            this.showSuccess(`✅ ${successCount} imagen(es) subida(s) exitosamente`);
         }
         if (errorCount > 0) {
-            this.showError(`âŒ ${errorCount} imagen(es) no pudieron subirse`);
+            this.showError(`❌ ${errorCount} imagen(es) no pudieron subirse`);
         }
         
         e.target.value = '';
     }
 
     // ============================================
-    // ðŸ“¤ SUBIR IMAGEN
+    // 🔔 ENVIAR NOTIFICACIÓN PUSH AL HOST
+    // ============================================
+    async sendNotificationToHost(title, message, icon = '📸', link = null) {
+        try {
+            const { notificationService } = await import('../../../services/notificationService.js');
+            
+            // Obtener el host del evento
+            const hostId = this.eventoData?.creadoPor;
+            const recipients = hostId ? [hostId] : [];
+            
+            await notificationService.sendPushNotification({
+                title: title,
+                body: message,
+                icon: icon,
+                link: link,
+                recipients: recipients
+            });
+            
+        } catch (error) {
+            console.warn('⚠️ Error al enviar notificación al host:', error);
+        }
+    }
+
+    // ============================================
+    // 📤 SUBIR IMAGEN
     // ============================================
     async uploadImage(file, type) {
         try {
@@ -291,19 +315,31 @@ class HomeUserController {
                 throw new Error(result.error);
             }
 
+            // 🔥 RECARGAR IMÁGENES
             await this.loadUserImages();
+
+            // 🔥 ENVIAR NOTIFICACIÓN AL HOST: NUEVA FOTO
+            const nombreUsuario = this.currentUser?.username || this.currentUser?.email?.split('@')[0] || 'Invitado';
+            const nombreEvento = this.eventoData?.nombre || 'Evento';
+            
+            await this.sendNotificationToHost(
+                '📸 Nueva foto subida',
+                `${nombreUsuario} ha subido una foto a tu evento "${nombreEvento}"`,
+                '📸',
+                `/user/gallery?eventId=${this.eventoId}`
+            );
 
             return true;
 
         } catch (error) {
-            console.error('âŒ Error uploading image:', error);
+            console.error('❌ Error uploading image:', error);
             this.showError(error.message || 'Error al subir la imagen');
             return false;
         }
     }
 
     // ============================================
-    // ðŸ“‹ CARGAR IMÃGENES Y VISTA PREVIA
+    // 📋 CARGAR IMÁGENES Y VISTA PREVIA
     // ============================================
     async loadUserImages() {
         try {
@@ -330,7 +366,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸŽ¨ RENDERIZAR VISTA PREVIA
+    // 🎨 RENDERIZAR VISTA PREVIA
     // ============================================
     renderPreview() {
         const previewGrid = document.getElementById('previewGrid');
@@ -346,7 +382,7 @@ class HomeUserController {
             previewGrid.innerHTML = `
                 <div class="empty-preview">
                     <i class="fas fa-camera"></i>
-                    <p>No has subido fotos aÃºn</p>
+                    <p>No has subido fotos aún</p>
                 </div>
             `;
             return;
@@ -356,7 +392,7 @@ class HomeUserController {
             <div class="preview-item" data-index="${index}">
                 <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
                 <span class="preview-type ${image.type}">
-                    ${image.type === 'photo' ? 'ðŸ“¸' : 'ðŸŽ¨'}
+                    ${image.type === 'photo' ? '📸' : '🎨'}
                 </span>
                 ${index === 11 && this.images.length > 12 ? `
                     <div class="preview-more">
@@ -374,25 +410,25 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ–¼ï¸ ABRIR GALERÃA COMPLETA EN MODAL
+    // 🖼️ ABRIR GALERÍA COMPLETA EN MODAL
     // ============================================
     async showFullGallery() {
         const result = await Swal.fire({
-            title: 'ðŸ–¼ï¸ Tus fotos',
+            title: '🖼️ Tus fotos',
             html: this.getGalleryModalHTML(),
             width: '90%',
             maxWidth: '800px',
             confirmButtonText: 'Cerrar',
             showCancelButton: true,
-            cancelButtonText: 'Ver todas en galerÃ­a',
+            cancelButtonText: 'Ver todas en galería',
             preConfirm: () => {
-                window.go(`/user/gallery?eventId=${this.eventoId}`);
+                window.location.href = `/user/gallery?eventId=${this.eventoId}`;
                 return false;
             }
         });
 
         if (result.dismiss === Swal.DismissReason.cancel) {
-            window.go(`/user/gallery?eventId=${this.eventoId}`);
+            window.location.href = `/user/gallery?eventId=${this.eventoId}`;
         }
     }
 
@@ -401,7 +437,7 @@ class HomeUserController {
             return `
                 <div class="empty-preview">
                     <i class="fas fa-camera" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
-                    <p style="color: rgba(255,255,255,0.5);">No has subido fotos aÃºn</p>
+                    <p style="color: rgba(255,255,255,0.5);">No has subido fotos aún</p>
                 </div>
             `;
         }
@@ -430,7 +466,7 @@ class HomeUserController {
                     font-size: 0.7rem;
                     color: #fff;
                 ">
-                    ${image.type === 'photo' ? 'ðŸ“¸' : 'ðŸŽ¨'}
+                    ${image.type === 'photo' ? '📸' : '🎨'}
                 </span>
             </div>
         `).join('');
@@ -452,13 +488,13 @@ class HomeUserController {
                 color: rgba(255,255,255,0.4);
                 font-size: 0.85rem;
             ">
-                ${this.images.length} imÃ¡genes
+                ${this.images.length} imágenes
             </div>
         `;
     }
 
     // ============================================
-    // ðŸŽ¨ DIBUJO
+    // 🎨 DIBUJO
     // ============================================
     openDrawingModal() {
         const modal = document.getElementById('drawingModal');
@@ -623,7 +659,7 @@ class HomeUserController {
             this.closeDrawingModal();
             
         } catch (error) {
-            console.error('âŒ Error al guardar dibujo:', error);
+            console.error('❌ Error al guardar dibujo:', error);
             this.showError('Error al guardar el dibujo');
         }
     }
@@ -636,7 +672,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // ðŸ“¦ SWEETALERT UTILITIES
+    // 📦 SWEETALERT UTILITIES
     // ============================================
     showLoading(message = 'Cargando...') {
         Swal.fire({
@@ -654,7 +690,7 @@ class HomeUserController {
 
     showSuccess(message) {
         Swal.fire({
-            title: 'Â¡Ã‰xito!',
+            title: '¡Éxito!',
             text: message,
             icon: 'success',
             confirmButtonText: 'Aceptar',
@@ -674,7 +710,7 @@ class HomeUserController {
 }
 
 // ============================================
-// âœ… EXPORT
+// ✅ EXPORT
 // ============================================
 export function initHomeUserController() {
     if (window.__homeUserControllerInitialized) return;
@@ -683,9 +719,8 @@ export function initHomeUserController() {
 }
 
 // ============================================
-// ðŸš€ INIT
+// 🚀 INIT
 // ============================================
-// Initialize when DOM is ready, but avoid double-instantiation
 document.addEventListener('DOMContentLoaded', () => {
     initHomeUserController();
 });

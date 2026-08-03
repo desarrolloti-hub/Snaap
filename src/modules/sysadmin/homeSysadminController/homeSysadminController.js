@@ -3,13 +3,24 @@ import { userService } from '../../../services/userService.js';
 import { userRepository } from '../../../repositories/userRepository.js';
 import { eventService } from '../../../services/eventService.js';
 
-export async function homeSysadminController() {
-    console.log('ðŸ”¥ Home Sysadmin Controller iniciado');
+// ============================================
+// 🧭 NAVEGACIÓN
+// ============================================
+const navigateTo = (path) => {
+    if (typeof window.navigateTo === 'function') {
+        window.navigateTo(path);
+    } else {
+        window.location.href = path;
+    }
+};
 
-    // Verificar autenticaciÃ³n
+export async function homeSysadminController() {
+    console.log('🔥 Home Sysadmin Controller iniciado');
+
+    // Verificar autenticación
     if (!userService.isAuthenticated()) {
-        console.warn('âš ï¸ Usuario no autenticado');
-        window.go('');
+        console.warn('⚠️ Usuario no autenticado');
+        navigateTo('/login');
         return;
     }
 
@@ -21,9 +32,9 @@ export async function homeSysadminController() {
             title: 'Acceso Denegado',
             text: 'No tienes permisos de administrador',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         }).then(() => {
-            window.go('');
+            navigateTo('/');
         });
         return;
     }
@@ -34,33 +45,45 @@ export async function homeSysadminController() {
     // Cargar datos desde Firestore
     await loadRecentUsers();
     await loadRolesDistribution();
-}
-
-// Cargar estilos necesarios
-function loadStyles() {
-    const styles = [
-        { href: '/src/css/components/homeSysadmin.css', id: 'home-sysadmin-style' }
-    ];
     
-    styles.forEach(style => {
-        if (!document.querySelector(`link[href="${style.href}"]`)) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = style.href;
-            document.head.appendChild(link);
-        }
-    });
+    // 🔥 ESCUCHAR NOTIFICACIONES EN PRIMER PLANO
+    setupNotificationListener();
 }
 
 // ============================================
-// ðŸ“¥ CARGAR USUARIOS RECIENTES (CUENTAS NUEVAS)
+// 🔔 ESCUCHAR NOTIFICACIONES
+// ============================================
+function setupNotificationListener() {
+    try {
+        import('../../../services/notificationService.js').then(({ notificationService }) => {
+            notificationService.listenForMessages((payload) => {
+                console.log('📨 Notificación recibida en panel admin:', payload);
+                
+                // Si la notificación tiene link, mostrar toast con opción a navegar
+                if (payload?.data?.link) {
+                    const { notificationService } = require('../../../services/notificationService.js');
+                    notificationService.showInAppNotification({
+                        title: payload.notification?.title || 'Nuevo evento',
+                        body: payload.notification?.body || 'Tienes una nueva notificación',
+                        icon: '📢',
+                        link: payload.data.link
+                    });
+                }
+            });
+        });
+    } catch (error) {
+        console.warn('⚠️ Error al configurar listener de notificaciones:', error);
+    }
+}
+
+// ============================================
+// 📥 CARGAR USUARIOS RECIENTES
 // ============================================
 async function loadRecentUsers() {
     const container = document.getElementById('recentUsers');
     if (!container) return;
 
     try {
-        // Obtener todos los usuarios de Firestore
         const users = await userRepository.getAllUsers();
         
         if (!users || users.length === 0) {
@@ -77,14 +100,12 @@ async function loadRecentUsers() {
             return;
         }
 
-        // Ordenar por fecha de creaciÃ³n (mÃ¡s recientes primero)
         const sortedUsers = users.sort((a, b) => {
             const dateA = new Date(a.createdAt);
             const dateB = new Date(b.createdAt);
             return dateB - dateA;
         });
 
-        // Tomar los 8 mÃ¡s recientes
         const recentUsers = sortedUsers.slice(0, 8);
 
         container.innerHTML = recentUsers.map(user => {
@@ -117,7 +138,7 @@ async function loadRecentUsers() {
                             </small>
                         </div>
                         <div class="activity-time">
-                            <i class="fas fa-calendar-alt"></i> Se uniÃ³ el ${fecha}
+                            <i class="fas fa-calendar-alt"></i> Se unió el ${fecha}
                         </div>
                     </div>
                 </div>
@@ -125,7 +146,7 @@ async function loadRecentUsers() {
         }).join('');
 
     } catch (error) {
-        console.error('âŒ Error al cargar usuarios recientes:', error);
+        console.error('❌ Error al cargar usuarios recientes:', error);
         container.innerHTML = `
             <div class="activity-item">
                 <div class="activity-icon">
@@ -142,19 +163,17 @@ async function loadRecentUsers() {
 }
 
 // ============================================
-// ðŸ“Š CARGAR DISTRIBUCIÃ“N DE USUARIOS (SOLO HOSTS Y ADMINS)
+// 📊 CARGAR DISTRIBUCIÓN DE USUARIOS
 // ============================================
 async function loadRolesDistribution() {
     try {
-        // Obtener todos los usuarios
         const users = await userRepository.getAllUsers();
         
         if (!users) {
-            console.warn('âš ï¸ No se pudieron obtener usuarios');
+            console.warn('⚠️ No se pudieron obtener usuarios');
             return;
         }
 
-        // Contar solo admins y hosts
         const adminCount = users.filter(u => u.role === 'sysadmin').length;
         const hostCount = users.filter(u => u.role === 'host').length;
 
@@ -164,15 +183,15 @@ async function loadRolesDistribution() {
         if (adminEl) adminEl.textContent = adminCount;
         if (hostEl) hostEl.textContent = hostCount;
 
-        console.log(`ðŸ“Š Administradores: ${adminCount}, Hosts: ${hostCount}`);
+        console.log(`📊 Administradores: ${adminCount}, Hosts: ${hostCount}`);
 
     } catch (error) {
-        console.error('âŒ Error al cargar distribuciÃ³n de roles:', error);
+        console.error('❌ Error al cargar distribución de roles:', error);
     }
 }
 
 // ============================================
-// ðŸ”§ UTILIDADES
+// 🔧 UTILIDADES
 // ============================================
 function escapeHtml(str) {
     if (!str) return '';

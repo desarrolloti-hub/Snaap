@@ -65,6 +65,29 @@ const navigateTo = (path) => {
 };
 
 // ============================================
+// 🔔 ENVIAR NOTIFICACIÓN PUSH
+// ============================================
+const sendPushNotification = async (title, message, icon = '📅', link = null, userId = null) => {
+    try {
+        const { notificationService } = await import('../../../services/notificationService.js');
+        
+        const user = userId ? { uid: userId } : userService.getCurrentUser();
+        const recipients = user ? [user.uid] : [];
+        
+        await notificationService.sendPushNotification({
+            title: title,
+            body: message,
+            icon: icon,
+            link: link,
+            recipients: recipients
+        });
+        
+    } catch (error) {
+        console.warn('⚠️ Error al enviar notificación push:', error);
+    }
+};
+
+// ============================================
 // 🚀 INICIALIZAR CREAR EVENTO
 // ============================================
 export function initCreateEvent() {
@@ -202,14 +225,14 @@ export function initCreateEvent() {
             // 🔥 Crear evento con fecha de expiración (24 horas)
             const fechaEvento = new Date();
             const fechaLimite = new Date(fechaEvento);
-            fechaLimite.setDate(fechaLimite.getDate() + 1); // +1 día
+            fechaLimite.setDate(fechaLimite.getDate() + 1);
 
             const result = await eventService.crearEvento({
                 nombre: eventName,
                 paquete: selectedPackage,
                 paqueteDetalles: packagesDetails[selectedPackage],
                 descripcion: descripcion,
-                ubicacion: '', // Vacío porque eliminamos el campo
+                ubicacion: '',
                 fechaEvento: fechaEvento,
                 fechaLimite: fechaLimite,
                 estado: 'active',
@@ -227,8 +250,18 @@ export function initCreateEvent() {
                 console.log(`✅ Evento creado con ID: ${eventoId}`);
                 console.log(`📅 Fecha de expiración: ${fechaLimite.toLocaleDateString()}`);
 
-                // 🔥 Generar QR automáticamente
+                // 🔥 GENERAR QR AUTOMÁTICAMENTE
                 await generarQrAutomatico(eventoId, evento, user);
+
+                // 🔥 ENVIAR NOTIFICACIÓN: EVENTO CREADO
+                const nombreUsuario = user.username || user.email?.split('@')[0] || 'Host';
+                await sendPushNotification(
+                    '🎉 Evento creado',
+                    `${nombreUsuario}, tu evento "${evento.nombre}" ha sido creado exitosamente.`,
+                    '📅',
+                    `/host/event-details?id=${eventoId}`,
+                    user.uid
+                );
 
                 // Guardar también en localStorage para compatibilidad
                 guardarEventoLocal(evento);

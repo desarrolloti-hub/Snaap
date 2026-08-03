@@ -2,7 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js');
 
-// 🔥 CONFIGURACIÓN DE FIREBASE (TUS DATOS)
+// 🔥 CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyAjOrKIFp_Ml5RssrXduujNZW7ai1XIlRw",
   authDomain: "snaap-mx.firebaseapp.com",
@@ -21,7 +21,7 @@ const messaging = firebase.messaging();
 
 // 🔥 NOTIFICACIÓN EN SEGUNDO PLANO
 messaging.onBackgroundMessage((payload) => {
-  console.log('📨 Notificación en segundo plano:', payload);
+  console.log('📨 Notificación FCM en segundo plano:', payload);
 
   const notificationTitle = payload.notification?.title || 'SNAAP';
   const notificationOptions = {
@@ -68,5 +68,5 @@ self.addEventListener('notificationclick', (event) => {
 
 // 🔥 NOTIFICACIÓN CERRADA
 self.addEventListener('notificationclose', (event) => {
-  console.log('❌ Notificación cerrada:', event.notification);
+  console.log('❌ Notificación FCM cerrada:', event.notification);
 });
