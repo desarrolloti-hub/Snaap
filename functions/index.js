@@ -4,6 +4,61 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 // ============================================
+// 📱 REGISTRAR DISPOSITIVO CON NOMBRE DE USUARIO (NUEVO)
+// ============================================
+exports.registerDeviceUser = functions.https.onCall(async (data, context) => {
+    const { deviceId, eventId, userName } = data;
+
+    // Validaciones
+    if (!deviceId) {
+        throw new functions.https.HttpsError('invalid-argument', 'Se requiere deviceId');
+    }
+    if (!eventId) {
+        throw new functions.https.HttpsError('invalid-argument', 'Se requiere eventId');
+    }
+    if (!userName || userName.trim().length === 0) {
+        throw new functions.https.HttpsError('invalid-argument', 'Se requiere userName');
+    }
+    if (userName.trim().length > 15) {
+        throw new functions.https.HttpsError('invalid-argument', 'El nombre no puede tener más de 15 caracteres');
+    }
+
+    try {
+        const docId = `${deviceId}_${eventId}`;
+        const docRef = admin.firestore().collection('deviceUsers').doc(docId);
+
+        const docSnap = await docRef.get();
+
+        if (docSnap.exists()) {
+            await docRef.update({
+                userName: userName.trim(),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        } else {
+            await docRef.set({
+                deviceId: deviceId,
+                eventId: eventId,
+                userName: userName.trim(),
+                createdAt: admin.firestore.FieldValue.serverTimestamp(),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+        }
+
+        console.log(`✅ Dispositivo ${deviceId} registrado en evento ${eventId} como ${userName}`);
+
+        return {
+            success: true,
+            message: 'Dispositivo registrado correctamente',
+            userName: userName.trim()
+        };
+
+    } catch (error) {
+        console.error('❌ Error al registrar dispositivo:', error);
+        throw new functions.https.HttpsError('internal', error.message);
+    }
+});
+
+// ============================================
 // 📤 ENVIAR NOTIFICACIÓN FCM A UN USUARIO
 // ============================================
 exports.sendNotificationToUser = functions.https.onCall(async (data, context) => {
@@ -145,12 +200,10 @@ exports.onHostCreated = functions.firestore
     .onCreate(async (snap, context) => {
         const userData = snap.data();
         
-        // Solo si el rol es 'host'
         if (userData.role !== 'host') return;
 
         console.log(`👤 Nuevo host creado: ${userData.username} (${userData.email})`);
 
-        // Obtener todos los sysadmins
         const adminsSnapshot = await admin.firestore()
             .collection('users')
             .where('role', '==', 'sysadmin')
@@ -163,7 +216,6 @@ exports.onHostCreated = functions.firestore
 
         if (adminIds.length === 0) return;
 
-        // Obtener tokens de los sysadmins
         let allTokens = [];
         for (const adminId of adminIds) {
             const tokensSnapshot = await admin.firestore()
@@ -180,7 +232,6 @@ exports.onHostCreated = functions.firestore
 
         if (allTokens.length === 0) return;
 
-        // Enviar notificación
         const message = {
             notification: {
                 title: '👤 Nuevo Host registrado',

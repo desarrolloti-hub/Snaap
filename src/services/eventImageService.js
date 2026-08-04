@@ -45,14 +45,13 @@ class EventImageService {
   }
 
   // ============================================
-  // 📤 SUBIR IMAGEN AL EVENTO
+  // 📤 SUBIR IMAGEN AL EVENTO (ACTUALIZADO)
   // ============================================
-  async uploadImage(file, type, eventoId) {
+  async uploadImage(file, type, eventoId, userName = null, deviceId = null) {
     try {
       const user = this.getUser();
       if (!user) throw new Error('Usuario no autenticado');
 
-      // Validar archivo
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
         throw new Error('Formato no soportado. Usa JPG, PNG, GIF o WebP');
@@ -62,7 +61,6 @@ class EventImageService {
         throw new Error('La imagen debe ser menor a 5MB');
       }
 
-      // 🔥 SUBIR A STORAGE (carpeta organizada por evento)
       const carpeta = `eventos/${eventoId}/users/${user.uid}/${type}`;
       const result = await storageService.subirImagen(file, carpeta);
 
@@ -70,11 +68,19 @@ class EventImageService {
         throw new Error(result.error);
       }
 
-      // 🔥 GUARDAR METADATA EN FIRESTORE (colección eventImages)
+      const finalUserName = userName || 
+                           localStorage.getItem('snaap_user_name') || 
+                           user.username || 
+                           user.email?.split('@')[0] || 
+                           'Invitado';
+
+      const finalDeviceId = deviceId || localStorage.getItem('snaap_device_id') || `device_${Date.now()}`;
+
       const imageData = {
         eventoId: eventoId,
         userId: user.uid,
-        userName: user.username || user.email?.split('@')[0] || 'Invitado',
+        userName: finalUserName,
+        deviceId: finalDeviceId,
         url: result.url,
         path: result.path,
         type: type,
@@ -85,7 +91,6 @@ class EventImageService {
 
       const saved = await eventImageRepository.create(imageData);
 
-      // 🔥 ACTUALIZAR CONTADOR DEL EVENTO (+1)
       await eventService.incrementEventPhotoCount(eventoId, 1);
 
       return {
@@ -101,7 +106,7 @@ class EventImageService {
   }
 
   // ============================================
-  // 📋 OBTENER IMÁGENES DE UN EVENTO (TODAS)
+  // 📋 OBTENER IMÁGENES DE UN EVENTO
   // ============================================
   async getEventImages(eventoId, userId = null) {
     try {
@@ -141,15 +146,12 @@ class EventImageService {
       const user = this.getUser();
       if (!user) throw new Error('Usuario no autenticado');
 
-      // 🔥 ELIMINAR DE STORAGE
       if (storagePath) {
         await storageService.eliminarImagen(storagePath);
       }
 
-      // 🔥 ELIMINAR DE FIRESTORE
       await eventImageRepository.delete(imageId);
 
-      // 🔥 ACTUALIZAR CONTADOR DEL EVENTO (-1)
       await eventService.incrementEventPhotoCount(eventoId, -1);
 
       return { success: true, message: 'Imagen eliminada exitosamente' };

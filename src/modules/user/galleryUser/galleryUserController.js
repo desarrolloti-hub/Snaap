@@ -3,7 +3,7 @@ import { userService } from '../../../services/userService.js';
 import { eventImageService } from '../../../services/eventImageService.js';
 
 // ============================================
-// ðŸŽ® CONTROLADOR DE GALERÃA
+// 🎮 CONTROLADOR DE GALERÍA
 // ============================================
 class GalleryUserController {
     constructor() {
@@ -16,7 +16,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸš€ INICIALIZACIÃ“N
+    // 🚀 INICIALIZACIÓN
     // ============================================
     async initialize() {
         try {
@@ -26,14 +26,13 @@ class GalleryUserController {
                 return;
             }
 
-            // ðŸ”¥ OBTENER EVENTO ID DE LA URL
             const urlParams = new URLSearchParams(window.location.search);
             this.eventoId = urlParams.get('eventId');
 
-            console.log('ðŸ” Evento ID para galerÃ­a:', this.eventoId);
+            console.log('🔍 Evento ID para galería:', this.eventoId);
 
             if (!this.eventoId) {
-                this.showError('No se especificÃ³ un evento');
+                this.showError('No se especificó un evento');
                 return;
             }
 
@@ -43,12 +42,12 @@ class GalleryUserController {
 
         } catch (error) {
             console.error('Error initializing gallery:', error);
-            this.showError('Error al cargar la galerÃ­a');
+            this.showError('Error al cargar la galería');
         }
     }
 
     // ============================================
-    // ðŸ“‹ CARGAR IMÃGENES DEL EVENTO
+    // 📋 CARGAR IMÁGENES DEL EVENTO
     // ============================================
     async loadImages() {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -58,11 +57,10 @@ class GalleryUserController {
             galleryGrid.innerHTML = `
                 <div class="loading-spinner">
                     <div class="spinner"></div>
-                    <p><i class="fas fa-spinner fa-spin"></i> Cargando imÃ¡genes...</p>
+                    <p><i class="fas fa-spinner fa-spin"></i> Cargando imágenes...</p>
                 </div>
             `;
 
-            // ðŸ”¥ OBTENER SOLO LAS IMÁGENES DEL USUARIO ACTUAL EN ESTE EVENTO
             const result = await eventImageService.getEventImages(this.eventoId, this.currentUser?.uid);
             
             if (!result.success) {
@@ -70,19 +68,18 @@ class GalleryUserController {
             }
 
             this.allImages = result.images;
-            console.log(`ðŸ“‹ ${this.allImages.length} imÃ¡genes del evento cargadas`);
+            console.log(`📋 ${this.allImages.length} imágenes cargadas con nombres de usuario`);
 
-            // Aplicar filtro
             this.applyFilter();
 
         } catch (error) {
             console.error('Error loading images:', error);
-            galleryGrid.innerHTML = `<p class="error-message">Error al cargar imÃ¡genes: ${error.message}</p>`;
+            galleryGrid.innerHTML = `<p class="error-message">Error al cargar imágenes: ${error.message}</p>`;
         }
     }
 
     // ============================================
-    // ðŸŽ¨ APLICAR FILTRO
+    // 🎨 APLICAR FILTRO
     // ============================================
     applyFilter() {
         if (this.currentFilter === 'all') {
@@ -96,7 +93,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸŽ¨ RENDERIZAR GALERÃA
+    // 🎨 RENDERIZAR GALERÍA CON NOMBRES
     // ============================================
     renderGallery(images) {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -114,6 +111,9 @@ class GalleryUserController {
                     ${image.type === 'photo' ? '<i class="fas fa-camera"></i>' : '<i class="fas fa-paint-brush"></i>'}
                 </span>
                 <div class="gallery-item-info">
+                    <span class="gallery-item-user">
+                        <i class="fas fa-user-circle"></i> ${image.userName || 'Anónimo'}
+                    </span>
                     <span class="gallery-item-date">
                         <i class="fas fa-calendar-alt"></i> ${this.formatDate(image.date)}
                     </span>
@@ -121,7 +121,6 @@ class GalleryUserController {
             </div>
         `).join('');
 
-        // Eventos para abrir modal
         galleryGrid.querySelectorAll('.gallery-item').forEach((item, index) => {
             item.addEventListener('click', () => {
                 this.openModal(index);
@@ -130,7 +129,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸ–¼ï¸ MODAL
+    // 🖼️ MODAL CON INFORMACIÓN DEL USUARIO
     // ============================================
     openModal(index) {
         const image = this.filteredImages[index];
@@ -139,15 +138,20 @@ class GalleryUserController {
         const modal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const modalDate = document.getElementById('modalDate');
+        const modalUser = document.getElementById('modalUser');
         const modalDeleteBtn = document.getElementById('modalDeleteBtn');
 
         if (modalImage) modalImage.src = image.url;
         
         const dateText = this.formatDate(image.date);
-        const typeText = image.type === 'photo' ? 'ðŸ“¸ Foto' : 'ðŸŽ¨ Dibujo';
+        const typeText = image.type === 'photo' ? '📸 Foto' : '🎨 Dibujo';
         
         if (modalDate) {
             modalDate.innerHTML = `<i class="fas fa-calendar-day"></i> ${dateText} - ${typeText}`;
+        }
+        
+        if (modalUser) {
+            modalUser.innerHTML = `<i class="fas fa-user-circle"></i> Subido por: <strong>${image.userName || 'Anónimo'}</strong>`;
         }
         
         if (modalDeleteBtn) modalDeleteBtn.dataset.index = index;
@@ -160,13 +164,13 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸ—‘ï¸ ELIMINAR IMAGEN
+    // 🗑️ ELIMINAR IMAGEN
     // ============================================
     async handleDeleteImage(e) {
         const index = parseInt(e.target.dataset.index);
         if (isNaN(index)) return;
 
-        const confirmDelete = confirm('âš ï¸ Â¿EstÃ¡s seguro de que quieres eliminar esta imagen?');
+        const confirmDelete = confirm('⚠️ ¿Estás seguro de que quieres eliminar esta imagen?');
         if (!confirmDelete) return;
 
         const imageToDelete = this.filteredImages[index];
@@ -183,7 +187,7 @@ class GalleryUserController {
 
             this.closeModal();
             await this.loadImages();
-            this.showSuccess('âœ… Imagen eliminada exitosamente');
+            this.showSuccess('✅ Imagen eliminada exitosamente');
 
         } catch (error) {
             console.error('Error deleting image:', error);
@@ -192,10 +196,9 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸŽ¯ CONFIGURAR EVENTOS
+    // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // BotÃ³n volver - ðŸ”¥ REDIRIGE AL EVENTO CON EL ID
         const btnBack = document.getElementById('btnBack');
         if (btnBack) {
             btnBack.addEventListener('click', () => {
@@ -203,7 +206,6 @@ class GalleryUserController {
             });
         }
 
-        // Botones de filtro
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -213,7 +215,6 @@ class GalleryUserController {
             });
         });
 
-        // Modal - Cerrar
         const modalCloseBtn = document.getElementById('modalCloseBtn');
         const modalOverlay = document.getElementById('imageModal');
         if (modalCloseBtn) {
@@ -227,13 +228,11 @@ class GalleryUserController {
             });
         }
 
-        // Modal - Eliminar
         const modalDeleteBtn = document.getElementById('modalDeleteBtn');
         if (modalDeleteBtn) {
             modalDeleteBtn.addEventListener('click', this.handleDeleteImage.bind(this));
         }
 
-        // Tecla ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closeModal();
@@ -242,7 +241,7 @@ class GalleryUserController {
     }
 
     // ============================================
-    // ðŸ“Š ACTUALIZAR CONTADOR
+    // 📊 ACTUALIZAR CONTADOR
     // ============================================
     updateCounter() {
         const counter = document.getElementById('imageCounter');
@@ -250,13 +249,13 @@ class GalleryUserController {
             const total = this.allImages.length;
             const filtered = this.filteredImages.length;
             counter.textContent = filtered === total ? 
-                `${total} imÃ¡genes` : 
-                `${filtered} de ${total} imÃ¡genes`;
+                `${total} imágenes` : 
+                `${filtered} de ${total} imágenes`;
         }
     }
 
     // ============================================
-    // ðŸ“¦ UTILIDADES
+    // 📦 UTILIDADES
     // ============================================
     formatDate(date) {
         if (!date) return 'Fecha no disponible';
@@ -287,23 +286,23 @@ class GalleryUserController {
     }
 
     showSuccess(message) {
-        alert('âœ… ' + message);
+        alert('✅ ' + message);
     }
 
     showError(message) {
-        alert('âŒ ' + message);
+        alert('❌ ' + message);
     }
 }
 
 // ============================================
-// âœ… EXPORT
+// ✅ EXPORT
 // ============================================
 export function initGalleryUserController() {
     new GalleryUserController();
 }
 
 // ============================================
-// ðŸš€ INIT
+// 🚀 INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     new GalleryUserController();

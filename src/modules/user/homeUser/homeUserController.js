@@ -2,6 +2,7 @@
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
 import { eventImageService } from '../../../services/eventImageService.js';
+import { deviceService } from '../../../services/deviceService.js';
 import { auth } from '../../../config/firebaseConfig.js';
 
 // ============================================
@@ -15,8 +16,11 @@ class HomeUserController {
         this.eventoData = null;
         this.images = [];
         this.previewImages = [];
+        this.deviceId = null;
+        this.userName = null;
+        this.isDeviceRegistered = false;
         
-        // 🔥 DIBUJO
+        // Dibujo
         this.isDrawing = false;
         this.lastX = 0;
         this.lastY = 0;
@@ -44,6 +48,22 @@ class HomeUserController {
         try {
             console.log('[homeUser] initialize start');
 
+            // 1. Obtener deviceId
+            this.deviceId = deviceService.getDeviceId();
+            console.log('[homeUser] Device ID:', this.deviceId);
+
+            // 2. Obtener eventId de URL
+            const urlParams = new URLSearchParams(window.location.search);
+            this.eventoId = urlParams.get('eventId');
+
+            if (!this.eventoId) {
+                console.warn('[homeUser] Missing eventId in URL');
+                this.eventoId = 'demo-event';
+            }
+
+            console.log('[homeUser] Event ID:', this.eventoId);
+
+            // 3. Obtener usuario actual
             this.currentUser = this.resolveCurrentUser();
             if (!this.currentUser) {
                 console.warn('[homeUser] No current user found');
@@ -55,31 +75,110 @@ class HomeUserController {
                 };
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            this.eventoId = urlParams.get('eventId');
+            // 4. VERIFICAR DISPOSITIVO
+            const deviceData = await deviceService.checkDeviceExists(
+                this.deviceId,
+                this.eventoId
+            );
 
-            console.log('[homeUser] eventId resolved', this.eventoId);
-
-            if (!this.eventoId) {
-                console.warn('[homeUser] Missing eventId in URL');
-                this.eventoId = 'demo-event';
+            if (deviceData) {
+                // ✅ Dispositivo conocido
+                this.isDeviceRegistered = true;
+                this.userName = deviceData.userName;
+                console.log('[homeUser] Dispositivo conocido:', this.userName);
+                await this.loadEventData();
+                await this.loadEventView();
+            } else {
+                // ❌ Dispositivo NUEVO - Mostrar SweetAlert
+                console.log('[homeUser] Dispositivo nuevo, mostrar prompt');
+                await this.showNamePrompt();
             }
 
-            console.log('[homeUser] Setting up listeners...');
-            this.setupEventListeners();
-
-            console.log('[homeUser] Loading event data...');
-            await this.loadEventData();
-            console.log('[homeUser] Loading user data...');
-            await this.loadUserData();
-            console.log('[homeUser] Loading user images...');
-            await this.loadUserImages();
-            console.log('[homeUser] Updating event header...');
-            this.updateEventHeader();
-
         } catch (error) {
-            console.error('[homeUser] Error initializing user home:', error);
+            console.error('[homeUser] Error initializing:', error);
             this.showError('Error al cargar la página');
+        }
+    }
+
+    // ============================================
+    // 👤 MOSTRAR PROMPT DE NOMBRE
+    // ============================================
+    async showNamePrompt() {
+        const result = await Swal.fire({
+            title: '👋 ¡Bienvenido!',
+            html: `
+                <div style="text-align: center; padding: 10px 0;">
+                    <i class="fas fa-user-plus" style="font-size: 3rem; color: #4db8ff; margin-bottom: 15px; display: block;"></i>
+                    <p style="color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 20px;">
+                        Ingresa tu nombre para identificarte en este evento
+                    </p>
+                    <input 
+                        type="text" 
+                        id="deviceUserName" 
+                        class="swal2-input" 
+                        placeholder="Ej: Juan Pérez" 
+                        style="text-align: center; font-size: 1.1rem; max-width: 300px; margin: 0 auto;"
+                        maxlength="15"
+                    >
+                    <p style="color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 8px;">
+                        <i class="fas fa-info-circle"></i> Máximo 15 caracteres
+                    </p>
+                </div>
+            `,
+            confirmButtonText: '✅ Entrar al evento',
+            cancelButtonText: '❌ Cancelar',
+            showCancelButton: true,
+            confirmButtonColor: '#4db8ff',
+            cancelButtonColor: '#ff007a',
+            preConfirm: () => {
+                const nameInput = document.getElementById('deviceUserName');
+                const name = nameInput ? nameInput.value.trim() : '';
+                
+                const validation = deviceService.validateUserName(name);
+                if (!validation.valid) {
+                    Swal.showValidationMessage(validation.error);
+                    return false;
+                }
+                return validation.name;
+            },
+            allowOutsideClick: false,
+            backdrop: 'rgba(0,0,0,0.8)'
+        });
+
+        if (result.isConfirmed && result.value) {
+            // ✅ Usuario ingresó nombre
+            const userName = result.value;
+            
+            // Registrar dispositivo
+            const registerResult = await deviceService.registerDevice(
+                this.deviceId,
+                this.eventoId,
+                userName
+            );
+
+            if (registerResult.success) {
+                this.isDeviceRegistered = true;
+                this.userName = userName;
+                
+                localStorage.setItem('snaap_user_name', userName);
+                
+                await this.loadEventData();
+                await this.loadEventView();
+            } else {
+                this.showError('Error al registrar el dispositivo. Intenta de nuevo.');
+                setTimeout(() => this.showNamePrompt(), 1000);
+            }
+        } else {
+            // ❌ Usuario canceló
+            Swal.fire({
+                title: '⛔ Acceso denegado',
+                text: 'Debes ingresar tu nombre para participar en el evento',
+                icon: 'warning',
+                confirmButtonText: 'Intentar de nuevo',
+                confirmButtonColor: '#4db8ff'
+            }).then(() => {
+                this.showNamePrompt();
+            });
         }
     }
 
@@ -88,9 +187,7 @@ class HomeUserController {
     // ============================================
     async loadEventData() {
         try {
-            console.log('[homeUser] Calling eventService.obtenerEventoPorId with', this.eventoId);
             const result = await eventService.obtenerEventoPorId(this.eventoId);
-            console.log('[homeUser] eventService result', result);
             if (!result.success) {
                 throw new Error(result.error || 'No se pudo obtener el evento');
             }
@@ -103,40 +200,219 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📥 CARGAR DATOS DEL USUARIO
+    // 📋 CARGAR VISTA DEL EVENTO
     // ============================================
-    async loadUserData() {
-        try {
-            if (!this.currentUser?.uid) {
-                this.userData = this.currentUser || { username: 'Invitado', role: 'user' };
-                return;
-            }
+    async loadEventView() {
+        if (!this.userName) {
+            console.warn('[homeUser] No hay nombre de usuario');
+            await this.showNamePrompt();
+            return;
+        }
 
-            console.log('[homeUser] Calling userService.obtenerUsuarioPorUid for', this.currentUser.uid);
-            const result = await userService.obtenerUsuarioPorUid(this.currentUser.uid);
-            console.log('[homeUser] userService profile result', result);
+        console.log('[homeUser] Cargando vista para:', this.userName);
+
+        this.updateEventHeader();
+        this.showUserNameInUI();
+        await this.loadUserImages();
+        this.setupEventListeners();
+    }
+
+    // ============================================
+    // 👤 MOSTRAR NOMBRE EN UI
+    // ============================================
+    showUserNameInUI() {
+        const header = document.querySelector('.user-home-header');
+        if (header && this.userName) {
+            const existingBadge = document.querySelector('.user-name-badge');
+            if (existingBadge) existingBadge.remove();
             
-            if (result.success) {
-                this.userData = result.user;
-            } else {
-                this.userData = this.currentUser;
-            }
+            const badge = document.createElement('div');
+            badge.className = 'user-name-badge';
+            badge.style.cssText = `
+                display: inline-block;
+                background: rgba(77, 184, 255, 0.15);
+                padding: 6px 18px;
+                border-radius: 50px;
+                border: 1px solid rgba(77, 184, 255, 0.3);
+                color: #4db8ff;
+                font-size: 0.85rem;
+                margin-top: 10px;
+            `;
+            badge.innerHTML = `<i class="fas fa-user-circle"></i> Participas como: <strong>${this.userName}</strong>`;
             
-            if (!this.userData.images) {
-                this.userData.images = [];
-            }
-            
-        } catch (error) {
-            console.error('[homeUser] Error loading user data:', error);
-            this.userData = this.currentUser || { username: 'Invitado', role: 'user' };
-            if (!this.userData.images) {
-                this.userData.images = [];
+            const eventInfo = header.querySelector('.event-info');
+            if (eventInfo) {
+                eventInfo.appendChild(badge);
             }
         }
     }
 
     // ============================================
     // 🖼️ ACTUALIZAR HEADER
+    // ============================================
+    updateEventHeader() {
+        const headerTitle = document.querySelector('.user-home-header h1');
+        const eventBadge = document.querySelector('.event-badge');
+        
+        if (headerTitle && this.eventoData) {
+            headerTitle.innerHTML = `<i class="fas fa-calendar-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
+        }
+        if (eventBadge && this.eventoData) {
+            eventBadge.innerHTML = `<i class="fas fa-ticket-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
+        }
+    }
+
+    // ============================================
+    // 📥 CARGAR IMÁGENES DEL USUARIO
+    // ============================================
+    async loadUserImages() {
+        try {
+            const result = await eventImageService.getEventImages(this.eventoId, this.currentUser.uid);
+            
+            if (!result.success) {
+                throw new Error(result.error || 'No se pudieron obtener las imágenes');
+            }
+
+            this.images = result.images || [];
+            this.previewImages = this.images.slice(0, 12);
+            
+            this.renderPreview();
+            
+        } catch (error) {
+            console.error('[homeUser] Error loading images:', error);
+        }
+    }
+
+    // ============================================
+    // 🎨 RENDERIZAR VISTA PREVIA
+    // ============================================
+    renderPreview() {
+        const previewGrid = document.getElementById('previewGrid');
+        const photoCount = document.getElementById('photoCount');
+        
+        if (!previewGrid) return;
+
+        if (photoCount) {
+            photoCount.textContent = this.images.length;
+        }
+
+        if (this.previewImages.length === 0) {
+            previewGrid.innerHTML = `
+                <div class="empty-preview">
+                    <i class="fas fa-camera"></i>
+                    <p>No has subido fotos aún</p>
+                </div>
+            `;
+            return;
+        }
+
+        previewGrid.innerHTML = this.previewImages.map((image, index) => `
+            <div class="preview-item" data-index="${index}">
+                <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
+                <span class="preview-type ${image.type}">
+                    ${image.type === 'photo' ? '📸' : '🎨'}
+                </span>
+                ${index === 11 && this.images.length > 12 ? `
+                    <div class="preview-more">
+                        <span>+${this.images.length - 12}</span>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+
+        previewGrid.querySelectorAll('.preview-item').forEach(item => {
+            item.addEventListener('click', () => {
+                this.showFullGallery();
+            });
+        });
+    }
+
+    // ============================================
+    // 🖼️ ABRIR GALERÍA COMPLETA
+    // ============================================
+    async showFullGallery() {
+        const result = await Swal.fire({
+            title: '🖼️ Tus fotos',
+            html: this.getGalleryModalHTML(),
+            width: '90%',
+            maxWidth: '800px',
+            confirmButtonText: 'Cerrar',
+            showCancelButton: true,
+            cancelButtonText: 'Ver todas en galería',
+            preConfirm: () => {
+                window.location.href = `/user/gallery?eventId=${this.eventoId}`;
+                return false;
+            }
+        });
+
+        if (result.dismiss === Swal.DismissReason.cancel) {
+            window.location.href = `/user/gallery?eventId=${this.eventoId}`;
+        }
+    }
+
+    getGalleryModalHTML() {
+        if (this.images.length === 0) {
+            return `
+                <div class="empty-preview">
+                    <i class="fas fa-camera" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                    <p style="color: rgba(255,255,255,0.5);">No has subido fotos aún</p>
+                </div>
+            `;
+        }
+
+        const grid = this.images.map((image) => `
+            <div style="
+                position: relative;
+                border-radius: 12px;
+                overflow: hidden;
+                aspect-ratio: 1;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(77,184,255,0.1);
+            ">
+                <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy" style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                ">
+                <span style="
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    background: rgba(0,0,0,0.7);
+                    padding: 4px 10px;
+                    border-radius: 20px;
+                    font-size: 0.7rem;
+                    color: #fff;
+                ">
+                    ${image.type === 'photo' ? '📸' : '🎨'}
+                </span>
+            </div>
+        `).join('');
+
+        return `
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                max-height: 60vh;
+                overflow-y: auto;
+                padding: 10px;
+            ">
+                ${grid}
+            </div>
+            <div style="
+                text-align: center;
+                margin-top: 10px;
+                color: rgba(255,255,255,0.4);
+                font-size: 0.85rem;
+            ">
+                ${this.images.length} imágenes
+            </div>
+        `;
+    }
+
+    // ============================================
+    // 👤 RESOLVER USUARIO ACTUAL
     // ============================================
     resolveCurrentUser() {
         const serviceUser = userService.getCurrentUser();
@@ -155,37 +431,22 @@ class HomeUserController {
         return null;
     }
 
-    updateEventHeader() {
-        const headerTitle = document.querySelector('.user-home-header h1');
-        const eventBadge = document.querySelector('.event-badge');
-        
-        if (headerTitle && this.eventoData) {
-            headerTitle.innerHTML = `<i class="fas fa-calendar-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
-        }
-        if (eventBadge && this.eventoData) {
-            eventBadge.innerHTML = `<i class="fas fa-ticket-alt"></i> ${this.eventoData.nombre || 'Evento'}`;
-        }
-    }
-
     // ============================================
     // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // 🔥 BOTÓN 1: TOMAR FOTO
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         if (takePhotoBtn) {
             this.boundTakePhotoHandler = this.handleTakePhoto.bind(this);
             takePhotoBtn.addEventListener('click', this.boundTakePhotoHandler);
         }
 
-        // 🔥 BOTÓN 2: SUBIR DIBUJO
         const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
         if (uploadDrawingBtn) {
             this.boundOpenDrawingModalHandler = this.openDrawingModal.bind(this);
             uploadDrawingBtn.addEventListener('click', this.boundOpenDrawingModalHandler);
         }
 
-        // 🔥 BOTÓN 3: MIS FOTOS (Galería del dispositivo)
         const openGalleryBtn = document.getElementById('openGalleryBtn');
         const galleryInput = document.getElementById('galleryFileInput');
         
@@ -201,10 +462,8 @@ class HomeUserController {
             galleryInput.addEventListener('change', this.boundGalleryChangeHandler);
         }
 
-        // 🔥 MODAL DE DIBUJO
         this.setupDrawingEvents();
 
-        // 🔥 TECLA ESC
         this.boundKeydownHandler = (e) => {
             if (e.key === 'Escape') {
                 this.closeDrawingModal();
@@ -305,7 +564,53 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🔔 ENVIAR NOTIFICACIÓN PUSH AL HOST
+    // 📤 SUBIR IMAGEN (ACTUALIZADO CON NOMBRE)
+    // ============================================
+    async uploadImage(file, type) {
+        try {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                this.showError('Formato no soportado. Usa JPG, PNG, GIF o WebP');
+                return false;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                this.showError('La imagen debe ser menor a 5MB');
+                return false;
+            }
+
+            const result = await eventImageService.uploadImage(
+                file, 
+                type, 
+                this.eventoId,
+                this.userName,
+                this.deviceId
+            );
+
+            if (!result.success) {
+                throw new Error(result.error);
+            }
+
+            await this.loadUserImages();
+
+            await this.sendNotificationToHost(
+                '📸 Nueva foto subida',
+                `${this.userName} ha subido una foto a tu evento "${this.eventoData?.nombre || 'Evento'}"`,
+                '📸',
+                `/user/gallery?eventId=${this.eventoId}`
+            );
+
+            return true;
+
+        } catch (error) {
+            console.error('❌ Error uploading image:', error);
+            this.showError(error.message || 'Error al subir la imagen');
+            return false;
+        }
+    }
+
+    // ============================================
+    // 🔔 ENVIAR NOTIFICACIÓN AL HOST
     // ============================================
     async sendNotificationToHost(title, message, icon = '📸', link = null) {
         try {
@@ -325,207 +630,6 @@ class HomeUserController {
         } catch (error) {
             console.warn('⚠️ Error al enviar notificación al host:', error);
         }
-    }
-
-    // ============================================
-    // 📤 SUBIR IMAGEN (USANDO EVENT-IMAGE-SERVICE)
-    // ============================================
-    async uploadImage(file, type) {
-        try {
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            if (!allowedTypes.includes(file.type)) {
-                this.showError('Formato no soportado. Usa JPG, PNG, GIF o WebP');
-                return false;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                this.showError('La imagen debe ser menor a 5MB');
-                return false;
-            }
-
-            // 🔥 USAR EVENT-IMAGE-SERVICE (guarda en eventImages)
-            const result = await eventImageService.uploadImage(file, type, this.eventoId);
-
-            if (!result.success) {
-                throw new Error(result.error);
-            }
-
-            // 🔥 RECARGAR IMÁGENES
-            await this.loadUserImages();
-
-            // 🔥 ENVIAR NOTIFICACIÓN AL HOST
-            const nombreUsuario = this.currentUser?.username || this.currentUser?.email?.split('@')[0] || 'Invitado';
-            const nombreEvento = this.eventoData?.nombre || 'Evento';
-            
-            await this.sendNotificationToHost(
-                '📸 Nueva foto subida',
-                `${nombreUsuario} ha subido una foto a tu evento "${nombreEvento}"`,
-                '📸',
-                `/user/gallery?eventId=${this.eventoId}`
-            );
-
-            return true;
-
-        } catch (error) {
-            console.error('❌ Error uploading image:', error);
-            this.showError(error.message || 'Error al subir la imagen');
-            return false;
-        }
-    }
-
-    // ============================================
-    // 📋 CARGAR IMÁGENES DESDE eventImages
-    // ============================================
-    async loadUserImages() {
-        try {
-            console.log('[homeUser] Calling eventImageService.getEventImages');
-
-            // 🔥 OBTENER SOLO LAS IMÁGENES QUE SUBIÓ EL USUARIO ACTUAL EN ESTE EVENTO
-            const result = await eventImageService.getEventImages(this.eventoId, this.currentUser.uid);
-            
-            if (!result.success) {
-                throw new Error(result.error || 'No se pudieron obtener las imágenes');
-            }
-
-            const eventImages = result.images || [];
-
-            console.log('[homeUser] images for event', this.eventoId, eventImages.length);
-            this.images = eventImages;
-            this.previewImages = eventImages.slice(0, 12);
-            
-            this.renderPreview();
-            
-        } catch (error) {
-            console.error('[homeUser] Error loading images:', error);
-        }
-    }
-
-    // ============================================
-    // 🎨 RENDERIZAR VISTA PREVIA
-    // ============================================
-    renderPreview() {
-        const previewGrid = document.getElementById('previewGrid');
-        const photoCount = document.getElementById('photoCount');
-        
-        if (!previewGrid) return;
-
-        if (photoCount) {
-            photoCount.textContent = this.images.length;
-        }
-
-        if (this.previewImages.length === 0) {
-            previewGrid.innerHTML = `
-                <div class="empty-preview">
-                    <i class="fas fa-camera"></i>
-                    <p>No has subido fotos aún</p>
-                </div>
-            `;
-            return;
-        }
-
-        previewGrid.innerHTML = this.previewImages.map((image, index) => `
-            <div class="preview-item" data-index="${index}">
-                <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
-                <span class="preview-type ${image.type}">
-                    ${image.type === 'photo' ? '📸' : '🎨'}
-                </span>
-                ${index === 11 && this.images.length > 12 ? `
-                    <div class="preview-more">
-                        <span>+${this.images.length - 12}</span>
-                    </div>
-                ` : ''}
-            </div>
-        `).join('');
-
-        previewGrid.querySelectorAll('.preview-item').forEach(item => {
-            item.addEventListener('click', () => {
-                this.showFullGallery();
-            });
-        });
-    }
-
-    // ============================================
-    // 🖼️ ABRIR GALERÍA COMPLETA EN MODAL
-    // ============================================
-    async showFullGallery() {
-        const result = await Swal.fire({
-            title: '🖼️ Tus fotos',
-            html: this.getGalleryModalHTML(),
-            width: '90%',
-            maxWidth: '800px',
-            confirmButtonText: 'Cerrar',
-            showCancelButton: true,
-            cancelButtonText: 'Ver todas en galería',
-            preConfirm: () => {
-                window.location.href = `/user/gallery?eventId=${this.eventoId}`;
-                return false;
-            }
-        });
-
-        if (result.dismiss === Swal.DismissReason.cancel) {
-            window.location.href = `/user/gallery?eventId=${this.eventoId}`;
-        }
-    }
-
-    getGalleryModalHTML() {
-        if (this.images.length === 0) {
-            return `
-                <div class="empty-preview">
-                    <i class="fas fa-camera" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
-                    <p style="color: rgba(255,255,255,0.5);">No has subido fotos aún</p>
-                </div>
-            `;
-        }
-
-        const grid = this.images.map((image) => `
-            <div style="
-                position: relative;
-                border-radius: 12px;
-                overflow: hidden;
-                aspect-ratio: 1;
-                background: rgba(255,255,255,0.05);
-                border: 1px solid rgba(77,184,255,0.1);
-            ">
-                <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy" style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                ">
-                <span style="
-                    position: absolute;
-                    top: 8px;
-                    right: 8px;
-                    background: rgba(0,0,0,0.7);
-                    padding: 4px 10px;
-                    border-radius: 20px;
-                    font-size: 0.7rem;
-                    color: #fff;
-                ">
-                    ${image.type === 'photo' ? '📸' : '🎨'}
-                </span>
-            </div>
-        `).join('');
-
-        return `
-            <div style="
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-                max-height: 60vh;
-                overflow-y: auto;
-                padding: 10px;
-            ">
-                ${grid}
-            </div>
-            <div style="
-                text-align: center;
-                margin-top: 10px;
-                color: rgba(255,255,255,0.4);
-                font-size: 0.85rem;
-            ">
-                ${this.images.length} imágenes
-            </div>
-        `;
     }
 
     // ============================================
@@ -710,6 +814,9 @@ class HomeUserController {
         }
     }
 
+    // ============================================
+    // 💥 DESTROY
+    // ============================================
     destroy() {
         if (this.boundKeydownHandler) {
             document.removeEventListener('keydown', this.boundKeydownHandler);

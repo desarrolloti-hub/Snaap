@@ -75,6 +75,25 @@ class EventImageRepository {
   }
 
   // ============================================
+  // 📥 OBTENER IMÁGENES POR EVENTO Y DISPOSITIVO (NUEVO)
+  // ============================================
+  async getByEventAndDevice(eventoId, deviceId) {
+    try {
+      const q = query(
+        this.collectionRef,
+        where('eventoId', '==', eventoId),
+        where('deviceId', '==', deviceId)
+      );
+      const snapshot = await getDocs(q);
+      const images = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      return images.sort((a, b) => this.sortByDateDesc(a, b));
+    } catch (error) {
+      console.error('❌ Error al obtener imágenes por dispositivo:', error);
+      return [];
+    }
+  }
+
+  // ============================================
   // 📥 ESCUCHAR IMÁGENES EN TIEMPO REAL
   // ============================================
   listenToEventImages(eventoId, callback) {
