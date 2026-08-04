@@ -20,7 +20,7 @@
 }
 
 /* ============================================ */
-/* CONTENEDOR DE IMAGEN - OCUPA CASI TODO */
+/* CONTENEDOR DE IMAGEN - OCUPA TODO */
 /* ============================================ */
 .projection-slide {
     width: 100%;
@@ -49,6 +49,57 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* ============================================ */
+/* QR EN LA ESQUINA INFERIOR DERECHA */
+/* ============================================ */
+.projection-qr-bottom {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.projection-qr-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    padding: 16px 18px 14px 18px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 150px;
+    max-width: 180px;
+    border: 2px solid rgba(77, 184, 255, 0.3);
+}
+
+.projection-qr-card img {
+    width: 100%;
+    max-width: 130px;
+    height: auto;
+    border-radius: 12px;
+    background: #ffffff;
+    margin-bottom: 10px;
+}
+
+.projection-qr-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0b1f33;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.projection-qr-title i {
+    color: #4db8ff;
+    font-size: 0.9rem;
 }
 
 /* ============================================ */
@@ -163,6 +214,25 @@
     .projection-empty p {
         font-size: 0.95rem;
     }
+
+    .projection-qr-bottom {
+        bottom: 80px;
+        right: 20px;
+    }
+
+    .projection-qr-card {
+        padding: 12px 14px 10px 14px;
+        min-width: 120px;
+        max-width: 150px;
+    }
+
+    .projection-qr-card img {
+        max-width: 100px;
+    }
+
+    .projection-qr-title {
+        font-size: 0.7rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -175,5 +245,24 @@
 
     .projection-empty i {
         font-size: 3rem;
+    }
+
+    .projection-qr-bottom {
+        bottom: 70px;
+        right: 16px;
+    }
+
+    .projection-qr-card {
+        padding: 10px 12px 8px 12px;
+        min-width: 100px;
+        max-width: 130px;
+    }
+
+    .projection-qr-card img {
+        max-width: 80px;
+    }
+
+    .projection-qr-title {
+        font-size: 0.6rem;
     }
 }

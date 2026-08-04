@@ -21,8 +21,17 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- EMPTY STATE -->
+        <!-- QR EN LA ESQUINA INFERIOR DERECHA -->
         <!-- ========================================== -->
+        <div class="projection-qr-bottom" id="qrPanel" style="display:none;">
+            <div class="projection-qr-card">
+                <img id="qrImageDisplay" src="" alt="Código QR del evento">
+                <p class="projection-qr-title">
+                    <i class="fas fa-qrcode"></i> Escanea para entrar
+                </p>
+            </div>
+        </div>
+
         <div class="projection-empty" id="emptyState">
             <i class="fas fa-camera"></i>
             <h2>Esperando fotos...</h2>
@@ -30,9 +39,6 @@
             <div class="spinner"></div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- BOTÓN SALIR -->
-        <!-- ========================================== -->
         <button class="btn-exit" id="exitBtn">
             <i class="fas fa-times"></i> Salir
         </button>
