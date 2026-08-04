@@ -31,6 +31,24 @@ class UserService {
     } else {
       localStorage.removeItem('snaap_current_user');
     }
+
+    if (storageService && typeof storageService.setUsuarioActual === 'function') {
+      storageService.setUsuarioActual(user);
+    }
+
+    this.dispatchAuthChanged(user);
+  }
+
+  dispatchAuthChanged(user) {
+    if (typeof document === 'undefined') return;
+
+    document.dispatchEvent(new CustomEvent('auth:changed', {
+      detail: {
+        user: user,
+        role: user?.role || null,
+        isAuthenticated: !!user
+      }
+    }));
   }
 
   // ============================================
@@ -347,20 +365,75 @@ class UserService {
   // ============================================
   getCurrentUser() {
     if (this.usuarioActual) return this.usuarioActual;
+
     const storedUser = localStorage.getItem('snaap_current_user');
     if (storedUser) {
       try {
         this.usuarioActual = JSON.parse(storedUser);
         return this.usuarioActual;
       } catch (e) {
-        return null;
+        console.warn('⚠️ UserService: localStorage user parse failed', e);
       }
     }
+
     return null;
   }
 
   isAuthenticated() {
     return this.getCurrentUser() !== null;
+  }
+
+  // ============================================
+  // 📡 INICIALIZAR ESTADO DE AUTENTICACIÓN
+  async initializeAuthState() {
+    return new Promise((resolve) => {
+      let resolved = false;
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        try {
+          await this._processAuthState(firebaseUser);
+        } catch (error) {
+          console.error('❌ Error initializing auth state:', error);
+          this.setUsuarioActual(null);
+        } finally {
+          if (!resolved) {
+            resolved = true;
+            resolve();
+          }
+        }
+      });
+
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          console.warn('⚠️ Timeout waiting for initial Firebase auth state');
+          resolve();
+          if (typeof unsubscribe === 'function') unsubscribe();
+        }
+      }, 5000);
+    });
+  }
+
+  async _processAuthState(firebaseUser) {
+    if (firebaseUser) {
+      let user = await userRepository.getByUid(firebaseUser.uid);
+      if (!user) {
+        user = new User({
+          uid: firebaseUser.uid,
+          username: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Usuario',
+          email: firebaseUser.email,
+          role: 'host',
+          status: 'active',
+          photoURL: firebaseUser.photoURL || null,
+          emailVerified: firebaseUser.emailVerified || false
+        });
+        await userRepository.create(user);
+      }
+      this.setUsuarioActual(user);
+      return user;
+    }
+
+    this.setUsuarioActual(null);
+    return null;
   }
 
   // ============================================

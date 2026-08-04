@@ -13,7 +13,8 @@ import {
   orderBy,
   limit,
   Timestamp,
-  addDoc
+  addDoc,
+  increment
 } from 'firebase/firestore';
 import { Evento } from '../classes/eventClass.js';
 
@@ -334,6 +335,25 @@ class EventoRepository {
       return null;
     }
   }
+  
+// ============================================
+// 📊 INCREMENTAR CONTADOR DE FOTOS
+// ============================================
+async incrementPhotoCount(id, delta = 1) {
+    try {
+        if (!id) throw new Error('Se requiere el ID del evento');
+
+        const docRef = doc(this.collectionRef, id);
+        await updateDoc(docRef, {
+            uploadedPhotos: increment(delta),
+            updatedAt: Timestamp.fromDate(new Date())
+        });
+        return true;
+    } catch (error) {
+        console.error('❌ Error al actualizar contador de fotos:', error);
+        throw error;
+    }
+}
 }
 
 export const eventoRepository = new EventoRepository();

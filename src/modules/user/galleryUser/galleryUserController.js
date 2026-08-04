@@ -1,6 +1,6 @@
 ﻿// src/modules/user/galleryUser/galleryUserController.js
 import { userService } from '../../../services/userService.js';
-import { userImageService } from '../../../services/userImageService.js';
+import { eventImageService } from '../../../services/eventImageService.js';
 
 // ============================================
 // ðŸŽ® CONTROLADOR DE GALERÃA
@@ -62,15 +62,14 @@ class GalleryUserController {
                 </div>
             `;
 
-            // ðŸ”¥ OBTENER TODAS LAS IMÃGENES DEL USUARIO
-            const result = await userImageService.getUserImages();
+            // ðŸ”¥ OBTENER SOLO LAS IMÁGENES DEL USUARIO ACTUAL EN ESTE EVENTO
+            const result = await eventImageService.getEventImages(this.eventoId, this.currentUser?.uid);
             
             if (!result.success) {
                 throw new Error(result.error);
             }
 
-            // ðŸ”¥ FILTRAR SOLO LAS DEL EVENTO ACTUAL
-            this.allImages = result.images.filter(img => img.eventoId === this.eventoId);
+            this.allImages = result.images;
             console.log(`ðŸ“‹ ${this.allImages.length} imÃ¡genes del evento cargadas`);
 
             // Aplicar filtro
@@ -170,12 +169,14 @@ class GalleryUserController {
         const confirmDelete = confirm('âš ï¸ Â¿EstÃ¡s seguro de que quieres eliminar esta imagen?');
         if (!confirmDelete) return;
 
-        // ðŸ”¥ Encontrar el Ã­ndice en el array completo de imÃ¡genes del evento
         const imageToDelete = this.filteredImages[index];
-        const globalIndex = this.allImages.findIndex(img => img.url === imageToDelete.url);
+        if (!imageToDelete) {
+            this.showError('No se encontró la imagen a eliminar');
+            return;
+        }
 
         try {
-            const result = await userImageService.deleteImage(globalIndex);
+            const result = await eventImageService.deleteImage(imageToDelete.id, imageToDelete.path, this.eventoId);
             if (!result.success) {
                 throw new Error(result.error);
             }

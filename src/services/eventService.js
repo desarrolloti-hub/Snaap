@@ -303,6 +303,10 @@ class EventoService {
         descripcion: data.descripcion || eventoExistente.descripcion,
         ubicacion: data.ubicacion || eventoExistente.ubicacion,
         fechaEvento: data.fechaEvento || eventoExistente.fechaEvento,
+        estado: data.estado || eventoExistente.estado,
+        attendees: data.attendees !== undefined ? data.attendees : eventoExistente.attendees,
+        uploadedPhotos: data.uploadedPhotos !== undefined ? data.uploadedPhotos : eventoExistente.uploadedPhotos,
+        invitados: data.invitados || eventoExistente.invitados,
         updatedAt: new Date()
       });
 
@@ -434,7 +438,30 @@ class EventoService {
       };
     }
   }
+  async incrementEventPhotoCount(eventoId, delta = 1) {
+    try {
+        if (!eventoId) throw new Error('Se requiere el ID del evento');
+
+        const eventoExistente = await eventoRepository.getById(eventoId);
+        if (!eventoExistente) throw new Error('Evento no encontrado');
+
+        // Verificar permisos (opcional)
+        if (this.usuarioActual && this.usuarioActual.uid) {
+            // Solo el creador puede modificar el contador
+            // O permitir que cualquiera lo modifique (para invitados)
+            // Por ahora permitimos a cualquiera autenticado
+        }
+
+        await eventoRepository.incrementPhotoCount(eventoId, delta);
+
+        return { success: true };
+    } catch (error) {
+        console.error('❌ Error al incrementar contador de fotos:', error);
+        return { success: false, error: error.message };
+    }
 }
+}
+
 
 export const eventService = new EventoService();
 export { EventoService };

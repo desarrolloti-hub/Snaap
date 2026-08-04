@@ -8,7 +8,6 @@ class NotificationService {
         this.usuarioActual = null;
         this.isSubscribed = false;
         this.token = null;
-        // 🔥 VAPID KEY CORRECTA
         this.vapidKey = 'BDdFYK9tTU_ybSjUNwp4--1lgj7ay2VNTtvaNreAZpwfYUF0lJ_HV25-iZUYMDGA3t7VpGgFTlPaWKKVRK7QabM';
         this.isProduction = window.location.hostname !== 'localhost';
     }
@@ -17,9 +16,6 @@ class NotificationService {
         this.usuarioActual = usuario;
     }
 
-    // ============================================
-    // 🔐 OBTENER USUARIO AUTENTICADO DE FIREBASE
-    // ============================================
     getAuthUser() {
         if (this.usuarioActual && this.usuarioActual.uid) {
             return this.usuarioActual;
@@ -43,32 +39,25 @@ class NotificationService {
             console.log('🔔 Iniciando registro de notificaciones FCM...');
             console.log(`📍 Entorno: ${this.isProduction ? 'PRODUCCIÓN' : 'LOCAL'}`);
 
-            // 🔥 ADVERTENCIA EN LOCAL
             if (!this.isProduction) {
-                console.warn('⚠️ FCM NO funciona en local (HTTP). Usa HTTPS.');
-                console.log('💡 Despliega a producción y prueba en: https://snaap-mx.web.app');
+                console.warn('⚠️ FCM NO funciona en local (HTTP)');
                 return { 
                     success: false, 
                     error: 'FCM solo funciona en HTTPS. Despliega a producción.' 
                 };
             }
 
-            // 1. OBTENER USUARIO
             const user = this.getAuthUser();
             if (!user) {
-                console.error('❌ No hay usuario autenticado en Firebase Auth');
                 return { success: false, error: 'Usuario no autenticado' };
             }
 
             console.log('👤 Usuario autenticado:', user.email);
-            console.log('📌 UID:', user.uid);
 
-            // 2. VERIFICAR SOPORTE
             if (!('Notification' in window)) {
                 return { success: false, error: 'Tu navegador no soporta notificaciones' };
             }
 
-            // 3. SOLICITAR PERMISO
             const permission = await Notification.requestPermission();
             console.log('📊 Permiso:', permission);
 
@@ -76,7 +65,6 @@ class NotificationService {
                 return { success: false, error: 'Permiso denegado' };
             }
 
-            // 4. REGISTRAR SERVICE WORKER
             if ('serviceWorker' in navigator) {
                 try {
                     await navigator.serviceWorker.register('/firebase-messaging-sw.js');
@@ -86,10 +74,8 @@ class NotificationService {
                 }
             }
 
-            // 🔥 5. ESPERAR A QUE EL TOKEN DE AUTENTICACIÓN ESTÉ LISTO
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // 🔥 6. OBTENER TOKEN FCM
             try {
                 console.log('📱 Solicitando token FCM...');
                 const token = await getToken(messaging, { 
@@ -103,12 +89,9 @@ class NotificationService {
                 console.log('✅ Token FCM obtenido:', token.substring(0, 30) + '...');
                 this.token = token;
 
-                // 7. GUARDAR EN FIRESTORE
                 await this.saveTokenToFirestore(user.uid, token);
-
                 this.isSubscribed = true;
                 
-                // 8. Mostrar notificación de éxito
                 this.showInAppNotification({
                     title: '🔔 Notificaciones FCM activadas',
                     body: 'Recibirás notificaciones incluso con la página cerrada',
@@ -120,7 +103,6 @@ class NotificationService {
             } catch (tokenError) {
                 console.error('❌ Error al obtener token FCM:', tokenError);
                 
-                // Si falla por autenticación, reintentar
                 if (tokenError.code === 'messaging/token-subscribe-failed') {
                     console.log('🔄 Reintentando (2)...');
                     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -133,13 +115,6 @@ class NotificationService {
                             this.token = tokenRetry;
                             await this.saveTokenToFirestore(user.uid, tokenRetry);
                             this.isSubscribed = true;
-                            
-                            this.showInAppNotification({
-                                title: '🔔 Notificaciones FCM activadas',
-                                body: 'Recibirás notificaciones de SNAAP',
-                                icon: '✅'
-                            });
-                            
                             return { success: true, token: tokenRetry, message: 'Notificaciones FCM activadas' };
                         }
                     } catch (retryError) {
@@ -183,13 +158,13 @@ class NotificationService {
     }
 
     // ============================================
-    // 📤 ENVIAR NOTIFICACIÓN PUSH NATIVA (FCM + TOAST + FIRESTORE)
+    // 📤 ENVIAR NOTIFICACIÓN PUSH (FCM + TOAST)
     // ============================================
     async sendPushNotification({ title, body, icon, link, recipients = [] }) {
         try {
             console.log(`📤 Enviando notificación push: "${title}"`);
 
-            // 1. Mostrar notificación nativa (FCM)
+            // 1. Mostrar notificación nativa
             if (Notification.permission === 'granted') {
                 const notification = new Notification(title, {
                     body: body,
@@ -232,17 +207,16 @@ class NotificationService {
                 });
             }
 
-            console.log('✅ Notificación push enviada correctamente');
             return { success: true };
 
         } catch (error) {
-            console.error('❌ Error al enviar notificación push:', error);
+            console.error('❌ Error al enviar notificación:', error);
             return { success: false, error: error.message };
         }
     }
 
     // ============================================
-    // 💾 GUARDAR NOTIFICACIÓN EN FIRESTORE (HISTORIAL)
+    // 💾 GUARDAR NOTIFICACIÓN EN FIRESTORE
     // ============================================
     async saveNotificationToFirestore({ title, message, type, priority, icon, link, recipients }) {
         try {
@@ -265,7 +239,7 @@ class NotificationService {
             console.log('✅ Notificación guardada en Firestore');
             return true;
         } catch (error) {
-            console.error('❌ Error al guardar notificación en Firestore:', error);
+            console.error('❌ Error al guardar notificación:', error);
             return false;
         }
     }
@@ -300,7 +274,7 @@ class NotificationService {
 
                 if (callback) callback(payload);
             });
-            console.log('✅ Escuchando notificaciones FCM en primer plano');
+            console.log('✅ Escuchando notificaciones FCM');
         } catch (error) {
             console.error('❌ Error al escuchar mensajes:', error);
         }

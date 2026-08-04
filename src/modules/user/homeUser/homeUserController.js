@@ -1,7 +1,8 @@
 ﻿// src/modules/user/homeUser/homeUserController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
-import { userImageService } from '../../../services/userImageService.js';
+import { eventImageService } from '../../../services/eventImageService.js';
+import { auth } from '../../../config/firebaseConfig.js';
 
 // ============================================
 // 🎮 CONTROLLER PRINCIPAL
@@ -24,6 +25,14 @@ class HomeUserController {
         this.drawSize = 5;
         this.canvas = null;
         this.ctx = null;
+        this.boundKeydownHandler = null;
+        this.boundGalleryChangeHandler = null;
+        this.boundTakePhotoHandler = null;
+        this.boundOpenGalleryHandler = null;
+        this.boundDrawingModalCloseHandler = null;
+        this.boundCancelDrawingHandler = null;
+        this.boundOverlayHandler = null;
+        this.boundSaveDrawingHandler = null;
         
         this.initialize();
     }
@@ -33,18 +42,17 @@ class HomeUserController {
     // ============================================
     async initialize() {
         try {
-            console.log('[homeUser] initialize start', {
-                pathname: window.location.pathname,
-                search: window.location.search,
-                hasCurrentUser: !!userService.getCurrentUser(),
-                currentUser: userService.getCurrentUser()
-            });
+            console.log('[homeUser] initialize start');
 
-            this.currentUser = userService.getCurrentUser();
+            this.currentUser = this.resolveCurrentUser();
             if (!this.currentUser) {
-                console.warn('[homeUser] No current user found, redirecting to /login');
-                import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
-                return;
+                console.warn('[homeUser] No current user found');
+                this.currentUser = {
+                    uid: 'guest-user',
+                    email: 'guest@snaap.com',
+                    username: 'Invitado',
+                    role: 'user'
+                };
             }
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -54,16 +62,16 @@ class HomeUserController {
 
             if (!this.eventoId) {
                 console.warn('[homeUser] Missing eventId in URL');
-                this.showError('No se especificó un evento');
-                return;
+                this.eventoId = 'demo-event';
             }
+
+            console.log('[homeUser] Setting up listeners...');
+            this.setupEventListeners();
 
             console.log('[homeUser] Loading event data...');
             await this.loadEventData();
             console.log('[homeUser] Loading user data...');
             await this.loadUserData();
-            console.log('[homeUser] Setting up listeners...');
-            this.setupEventListeners();
             console.log('[homeUser] Loading user images...');
             await this.loadUserImages();
             console.log('[homeUser] Updating event header...');
@@ -90,7 +98,7 @@ class HomeUserController {
             console.log('[homeUser] Evento cargado:', this.eventoData?.nombre);
         } catch (error) {
             console.error('[homeUser] Error loading event data:', error);
-            throw error;
+            this.eventoData = { nombre: 'Evento', id: this.eventoId };
         }
     }
 
@@ -99,6 +107,11 @@ class HomeUserController {
     // ============================================
     async loadUserData() {
         try {
+            if (!this.currentUser?.uid) {
+                this.userData = this.currentUser || { username: 'Invitado', role: 'user' };
+                return;
+            }
+
             console.log('[homeUser] Calling userService.obtenerUsuarioPorUid for', this.currentUser.uid);
             const result = await userService.obtenerUsuarioPorUid(this.currentUser.uid);
             console.log('[homeUser] userService profile result', result);
@@ -115,7 +128,7 @@ class HomeUserController {
             
         } catch (error) {
             console.error('[homeUser] Error loading user data:', error);
-            this.userData = this.currentUser;
+            this.userData = this.currentUser || { username: 'Invitado', role: 'user' };
             if (!this.userData.images) {
                 this.userData.images = [];
             }
@@ -125,6 +138,23 @@ class HomeUserController {
     // ============================================
     // 🖼️ ACTUALIZAR HEADER
     // ============================================
+    resolveCurrentUser() {
+        const serviceUser = userService.getCurrentUser();
+        if (serviceUser) return serviceUser;
+
+        if (auth?.currentUser) {
+            return {
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                username: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || 'Usuario',
+                role: 'user',
+                photoURL: auth.currentUser.photoURL || null
+            };
+        }
+
+        return null;
+    }
+
     updateEventHeader() {
         const headerTitle = document.querySelector('.user-home-header h1');
         const eventBadge = document.querySelector('.event-badge');
@@ -144,13 +174,15 @@ class HomeUserController {
         // 🔥 BOTÓN 1: TOMAR FOTO
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         if (takePhotoBtn) {
-            takePhotoBtn.addEventListener('click', this.handleTakePhoto.bind(this));
+            this.boundTakePhotoHandler = this.handleTakePhoto.bind(this);
+            takePhotoBtn.addEventListener('click', this.boundTakePhotoHandler);
         }
 
         // 🔥 BOTÓN 2: SUBIR DIBUJO
         const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
         if (uploadDrawingBtn) {
-            uploadDrawingBtn.addEventListener('click', this.openDrawingModal.bind(this));
+            this.boundOpenDrawingModalHandler = this.openDrawingModal.bind(this);
+            uploadDrawingBtn.addEventListener('click', this.boundOpenDrawingModalHandler);
         }
 
         // 🔥 BOTÓN 3: MIS FOTOS (Galería del dispositivo)
@@ -158,24 +190,27 @@ class HomeUserController {
         const galleryInput = document.getElementById('galleryFileInput');
         
         if (openGalleryBtn && galleryInput) {
-            openGalleryBtn.addEventListener('click', (e) => {
+            this.boundOpenGalleryHandler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.handleOpenGallery();
-            });
-            
-            galleryInput.addEventListener('change', this.handleGalleryUpload.bind(this));
+            };
+            openGalleryBtn.addEventListener('click', this.boundOpenGalleryHandler);
+
+            this.boundGalleryChangeHandler = this.handleGalleryUpload.bind(this);
+            galleryInput.addEventListener('change', this.boundGalleryChangeHandler);
         }
 
         // 🔥 MODAL DE DIBUJO
         this.setupDrawingEvents();
 
         // 🔥 TECLA ESC
-        document.addEventListener('keydown', (e) => {
+        this.boundKeydownHandler = (e) => {
             if (e.key === 'Escape') {
                 this.closeDrawingModal();
             }
-        });
+        };
+        document.addEventListener('keydown', this.boundKeydownHandler);
     }
 
     // ============================================
@@ -276,7 +311,6 @@ class HomeUserController {
         try {
             const { notificationService } = await import('../../../services/notificationService.js');
             
-            // Obtener el host del evento
             const hostId = this.eventoData?.creadoPor;
             const recipients = hostId ? [hostId] : [];
             
@@ -294,7 +328,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📤 SUBIR IMAGEN
+    // 📤 SUBIR IMAGEN (USANDO EVENT-IMAGE-SERVICE)
     // ============================================
     async uploadImage(file, type) {
         try {
@@ -309,7 +343,8 @@ class HomeUserController {
                 return false;
             }
 
-            const result = await userImageService.uploadImage(file, type, this.eventoId);
+            // 🔥 USAR EVENT-IMAGE-SERVICE (guarda en eventImages)
+            const result = await eventImageService.uploadImage(file, type, this.eventoId);
 
             if (!result.success) {
                 throw new Error(result.error);
@@ -318,7 +353,7 @@ class HomeUserController {
             // 🔥 RECARGAR IMÁGENES
             await this.loadUserImages();
 
-            // 🔥 ENVIAR NOTIFICACIÓN AL HOST: NUEVA FOTO
+            // 🔥 ENVIAR NOTIFICACIÓN AL HOST
             const nombreUsuario = this.currentUser?.username || this.currentUser?.email?.split('@')[0] || 'Invitado';
             const nombreEvento = this.eventoData?.nombre || 'Evento';
             
@@ -339,22 +374,22 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📋 CARGAR IMÁGENES Y VISTA PREVIA
+    // 📋 CARGAR IMÁGENES DESDE eventImages
     // ============================================
     async loadUserImages() {
         try {
-            console.log('[homeUser] Calling userImageService.getUserImages');
-            const result = await userImageService.getUserImages();
-            console.log('[homeUser] userImageService result', result);
+            console.log('[homeUser] Calling eventImageService.getEventImages');
+
+            // 🔥 OBTENER SOLO LAS IMÁGENES QUE SUBIÓ EL USUARIO ACTUAL EN ESTE EVENTO
+            const result = await eventImageService.getEventImages(this.eventoId, this.currentUser.uid);
             
             if (!result.success) {
                 throw new Error(result.error || 'No se pudieron obtener las imágenes');
             }
 
-            const allImages = result.images || [];
-            const eventImages = allImages.filter(img => img.eventoId === this.eventoId);
+            const eventImages = result.images || [];
 
-            console.log('[homeUser] images for event', this.eventoId, eventImages.length, allImages.length);
+            console.log('[homeUser] images for event', this.eventoId, eventImages.length);
             this.images = eventImages;
             this.previewImages = eventImages.slice(0, 12);
             
@@ -589,21 +624,24 @@ class HomeUserController {
     setupDrawingEvents() {
         const closeBtn = document.getElementById('drawingModalClose');
         if (closeBtn) {
-            closeBtn.addEventListener('click', this.closeDrawingModal.bind(this));
+            this.boundDrawingModalCloseHandler = this.closeDrawingModal.bind(this);
+            closeBtn.addEventListener('click', this.boundDrawingModalCloseHandler);
         }
 
         const cancelBtn = document.getElementById('cancelDrawingBtn');
         if (cancelBtn) {
-            cancelBtn.addEventListener('click', this.closeDrawingModal.bind(this));
+            this.boundCancelDrawingHandler = this.closeDrawingModal.bind(this);
+            cancelBtn.addEventListener('click', this.boundCancelDrawingHandler);
         }
 
         const overlay = document.getElementById('drawingModal');
         if (overlay) {
-            overlay.addEventListener('click', (e) => {
+            this.boundOverlayHandler = (e) => {
                 if (e.target === overlay) {
                     this.closeDrawingModal();
                 }
-            });
+            };
+            overlay.addEventListener('click', this.boundOverlayHandler);
         }
 
         document.querySelectorAll('.tool-btn').forEach(btn => {
@@ -636,7 +674,8 @@ class HomeUserController {
 
         const saveBtn = document.getElementById('saveDrawingBtn');
         if (saveBtn) {
-            saveBtn.addEventListener('click', this.saveDrawing.bind(this));
+            this.boundSaveDrawingHandler = this.saveDrawing.bind(this);
+            saveBtn.addEventListener('click', this.boundSaveDrawingHandler);
         }
     }
 
@@ -668,6 +707,61 @@ class HomeUserController {
         const modal = document.getElementById('drawingModal');
         if (modal) {
             modal.style.display = 'none';
+        }
+    }
+
+    destroy() {
+        if (this.boundKeydownHandler) {
+            document.removeEventListener('keydown', this.boundKeydownHandler);
+        }
+
+        const takePhotoBtn = document.getElementById('takePhotoBtn');
+        if (takePhotoBtn && this.boundTakePhotoHandler) {
+            takePhotoBtn.removeEventListener('click', this.boundTakePhotoHandler);
+        }
+
+        const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
+        if (uploadDrawingBtn && this.boundOpenDrawingModalHandler) {
+            uploadDrawingBtn.removeEventListener('click', this.boundOpenDrawingModalHandler);
+        }
+
+        const openGalleryBtn = document.getElementById('openGalleryBtn');
+        const galleryInput = document.getElementById('galleryFileInput');
+        if (openGalleryBtn && this.boundOpenGalleryHandler) {
+            openGalleryBtn.removeEventListener('click', this.boundOpenGalleryHandler);
+        }
+        if (galleryInput && this.boundGalleryChangeHandler) {
+            galleryInput.removeEventListener('change', this.boundGalleryChangeHandler);
+        }
+
+        const closeBtn = document.getElementById('drawingModalClose');
+        if (closeBtn && this.boundDrawingModalCloseHandler) {
+            closeBtn.removeEventListener('click', this.boundDrawingModalCloseHandler);
+        }
+
+        const cancelBtn = document.getElementById('cancelDrawingBtn');
+        if (cancelBtn && this.boundCancelDrawingHandler) {
+            cancelBtn.removeEventListener('click', this.boundCancelDrawingHandler);
+        }
+
+        const overlay = document.getElementById('drawingModal');
+        if (overlay && this.boundOverlayHandler) {
+            overlay.removeEventListener('click', this.boundOverlayHandler);
+        }
+
+        const saveBtn = document.getElementById('saveDrawingBtn');
+        if (saveBtn && this.boundSaveDrawingHandler) {
+            saveBtn.removeEventListener('click', this.boundSaveDrawingHandler);
+        }
+
+        if (this.canvas) {
+            this.canvas.removeEventListener('mousedown', this.startDrawing.bind(this));
+            this.canvas.removeEventListener('mousemove', this.draw.bind(this));
+            this.canvas.removeEventListener('mouseup', this.stopDrawing.bind(this));
+            this.canvas.removeEventListener('mouseleave', this.stopDrawing.bind(this));
+            this.canvas.removeEventListener('touchstart', this.startDrawingTouch.bind(this));
+            this.canvas.removeEventListener('touchmove', this.drawTouch.bind(this));
+            this.canvas.removeEventListener('touchend', this.stopDrawing.bind(this));
         }
     }
 
@@ -713,9 +807,12 @@ class HomeUserController {
 // ✅ EXPORT
 // ============================================
 export function initHomeUserController() {
-    if (window.__homeUserControllerInitialized) return;
-    window.__homeUserControllerInitialized = true;
-    new HomeUserController();
+    if (window.__homeUserControllerInstance && typeof window.__homeUserControllerInstance.destroy === 'function') {
+        window.__homeUserControllerInstance.destroy();
+    }
+
+    window.__homeUserControllerInstance = new HomeUserController();
+    return window.__homeUserControllerInstance;
 }
 
 // ============================================

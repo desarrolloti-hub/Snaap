@@ -5,7 +5,7 @@ import { QrCode } from '../classes/qrClass.js';
 // Librería para generar QR (instalar: npm install qrcode)
 import QRCode from 'qrcode';
 
-class QrService {
+export class QrService {
     constructor() {
         this.usuarioActual = null;
     }
@@ -27,6 +27,9 @@ class QrService {
                 throw new Error('ID del evento es requerido');
             }
 
+            const origin = data.origin || this.getCurrentOrigin();
+            const redirectUrl = data.redirectUrl || this.buildRedirectUrl(eventoId, origin);
+
             // 🔥 DATOS QUE CONTENDRÁ EL QR
             const qrData = {
                 eventoId: eventoId,
@@ -34,14 +37,13 @@ class QrService {
                 hostName: this.usuarioActual.displayName || this.usuarioActual.email,
                 fechaGeneracion: new Date().toISOString(),
                 ...data,
-                // 🔥 URL PARA ACCEDER AL EVENTO - REDIRIGE A user/home CON eventId
-                url: `${window.location.origin}/user/home?eventId=${eventoId}`,
+                redirectUrl,
                 // 🔥 Token único para validación
                 token: this.generateToken()
             };
 
-            // 🔥 GENERAR QR COMO IMAGEN
-            const qrImage = await QRCode.toDataURL(JSON.stringify(qrData), {
+            // 🔥 GENERAR QR COMO IMAGEN CON LA URL DIRECTA DEL EVENTO
+            const qrImage = await QRCode.toDataURL(redirectUrl, {
                 errorCorrectionLevel: 'H',
                 margin: 2,
                 width: 300,
@@ -193,6 +195,26 @@ class QrService {
                 error: error.message || 'Error al desactivar el QR'
             };
         }
+    }
+
+    // ============================================
+    // 🛠️ GENERAR URL DE REDIRECCIÓN PARA EL QR
+    // ============================================
+    buildRedirectUrl(eventoId, origin = this.getCurrentOrigin()) {
+        if (!eventoId) {
+            throw new Error('ID del evento es requerido');
+        }
+
+        const baseOrigin = origin || this.getCurrentOrigin();
+        return `${baseOrigin}/user/home?eventId=${encodeURIComponent(eventoId)}`;
+    }
+
+    getCurrentOrigin() {
+        if (typeof window !== 'undefined' && window.location?.origin) {
+            return window.location.origin;
+        }
+
+        return 'https://snaap.app';
     }
 
     // ============================================

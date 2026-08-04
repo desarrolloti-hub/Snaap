@@ -31,16 +31,26 @@ export function initRouter() {
     handleRoute(currentPath);
 }
 
+function normalizePath(path) {
+    if (!path) return '/';
+    let [pathname, query] = path.split('?');
+    if (!pathname.startsWith('/')) {
+        pathname = '/' + pathname;
+    }
+    if (pathname !== '/' && pathname.endsWith('/')) {
+        pathname = pathname.slice(0, -1);
+    }
+    return query ? `${pathname}?${query}` : pathname;
+}
+
 async function navigateTo(path) {
     if (isNavigating) return;
     isNavigating = true;
-    
-    let cleanPath = path.startsWith('/') ? path : '/' + path;
-    if (cleanPath !== '/' && cleanPath.endsWith('/')) {
-        cleanPath = cleanPath.slice(0, -1);
-    }
-    
-    if (cleanPath === window.location.pathname) {
+
+    const cleanPath = normalizePath(path);
+    const currentFullPath = normalizePath(`${window.location.pathname}${window.location.search}`);
+
+    if (cleanPath === currentFullPath) {
         await handleRoute(cleanPath);
         isNavigating = false;
         return;
@@ -52,8 +62,9 @@ async function navigateTo(path) {
 }
 
 async function handleRoute(path, isPopState = false) {
-    const pathWithoutParams = path.split('?')[0];
-    console.log(`📍 Navegando a: ${path}`);
+    const normalizedPath = normalizePath(path);
+    const pathWithoutParams = normalizedPath.split('?')[0];
+    console.log(`📍 Navegando a: ${normalizedPath}`);
 
     const canAccess = await authGuard(pathWithoutParams, (redirectPath) => {
         let target = redirectPath && redirectPath.startsWith('/') ? redirectPath : ('/' + (redirectPath || ''));
@@ -85,13 +96,18 @@ async function handleRoute(path, isPopState = false) {
             }
         }
     }
-    
+
     if (!route) {
         console.warn(`⚠️ Ruta no encontrada: ${pathWithoutParams}`);
         route = routes['/404'];
         if (pathWithoutParams !== '/404') {
-            window.history.pushState({}, '', '/404');
-            path = '/404';
+            const newPath = '/404';
+            if (!isPopState) {
+                window.history.pushState({}, '', newPath);
+            } else {
+                window.history.replaceState({}, '', newPath);
+            }
+            path = newPath;
         }
     }
 

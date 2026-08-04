@@ -15,10 +15,37 @@ if (typeof window !== 'undefined' && !window.go) {
 // ============================================
 initNavbar();
 
-// ============================================
-// 🔥 INICIALIZAR ROUTER
-// ============================================
-initRouter();
+async function initializeAuthState() {
+    return new Promise((resolve) => {
+        let resolved = false;
+
+        const unsubscribe = userService.onAuthStateChanged(() => {
+            if (resolved) return;
+            resolved = true;
+            console.log('🔐 Estado de autenticación inicializado');
+            resolve();
+        });
+
+        if (typeof unsubscribe === 'function') {
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    console.warn('⚠️ Timeout esperando auth state, continuando con la ruta actual');
+                    resolve();
+                }
+                unsubscribe();
+            }, 5000);
+        }
+    });
+}
+
+async function initApp() {
+    console.log('🚀 Iniciando aplicación Snaap');
+    await initializeAuthState();
+    initRouter();
+}
+
+initApp();
 
 // ============================================
 // 🌐 INTERCEPTOR DE NAVEGACIÓN (fallback global)

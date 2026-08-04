@@ -341,14 +341,15 @@ async function generarQrAutomatico(eventoId, evento, user) {
     try {
         console.log(`📤 Generando QR automático para evento: ${eventoId}`);
 
-        const qrData = {
+        const redirectUrl = `${window.location.origin}/user/home?eventId=${eventoId}`;
+
+        const result = await qrService.generarQr(eventoId, {
             eventName: evento.nombre || 'Evento',
             eventDate: evento.fechaEvento || new Date().toISOString(),
             hostName: user.displayName || user.email || 'Host',
-            package: evento.paquete || 'basico'
-        };
-
-        const result = await qrService.generarQr(eventoId, qrData);
+            package: evento.paquete || 'basico',
+            redirectUrl
+        });
 
         if (result.success) {
             console.log(`✅ QR generado automáticamente para: ${evento.nombre}`);

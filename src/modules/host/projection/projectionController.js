@@ -1,7 +1,8 @@
 ﻿// src/modules/host/projection/projectionController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
-import { userImageService } from '../../../services/userImageService.js';
+import { eventImageService } from '../../../services/eventImageService.js';
+import { qrService } from '../../../services/qrService.js';
 
 // ============================================
 // ðŸŽ® CONTROLADOR DE PROYECCIÃ“N
@@ -10,9 +11,12 @@ class ProjectionController {
     constructor() {
         this.currentUser = null;
         this.eventoId = null;
+        this.eventoData = null;
         this.images = [];
         this.currentIndex = 0;
+        this.qrImage = '';
         this.intervalId = null;
+        this.imagesListener = null;
         this.intervalTime = 5000; // 5 segundos
         this.isPlaying = true;
         this.initialize();
@@ -37,17 +41,15 @@ class ProjectionController {
                 return;
             }
 
+            await this.loadEventData();
+            await this.generateQrForProjection();
             await this.loadImages();
             this.setupEventListeners();
             this.startSlideshow();
+            this.startImageListener();
 
             // ðŸ”¥ ENTRAR EN PANTALLA COMPLETA
             this.enterFullscreen();
-
-            // ðŸ”¥ AUTO-REFRESH CADA 10 SEGUNDOS
-            setInterval(() => {
-                this.refreshImages();
-            }, 10000);
 
         } catch (error) {
             console.error('Error initializing projection:', error);
@@ -56,11 +58,63 @@ class ProjectionController {
     }
 
     // ============================================
-    // ðŸ“‹ CARGAR IMÃGENES
+    // 📥 CARGAR DATOS DEL EVENTO
+    // ============================================
+    async loadEventData() {
+        try {
+            const result = await eventService.obtenerEventoPorId(this.eventoId);
+            if (!result.success) {
+                throw new Error(result.error || 'No se pudo cargar el evento');
+            }
+            this.eventoData = result.evento;
+        } catch (error) {
+            console.error('Error loading event data:', error);
+        }
+    }
+
+    // ============================================
+    // 📲 GENERAR QR PARA LA PROYECCIÓN
+    // ============================================
+    async generateQrForProjection() {
+        try {
+            if (!this.eventoId || !this.currentUser) return;
+
+            qrService.setUsuarioActual(this.currentUser);
+            const redirectUrl = `${window.location.origin}/user/home?eventId=${this.eventoId}`;
+            const result = await qrService.generarQr(this.eventoId, {
+                redirectUrl,
+                eventName: this.eventoData?.nombre || 'Evento'
+            });
+
+            if (result.success) {
+                this.qrImage = result.qrImage;
+                this.renderQrPanel();
+            }
+        } catch (error) {
+            console.error('Error generating projection QR:', error);
+        }
+    }
+
+    renderQrPanel() {
+        const qrImageEl = document.getElementById('qrImageDisplay');
+        const qrPanel = document.getElementById('qrPanel');
+
+        if (qrImageEl && this.qrImage) {
+            qrImageEl.src = this.qrImage;
+            qrImageEl.alt = 'QR del evento';
+        }
+
+        if (qrPanel) {
+            qrPanel.style.display = this.qrImage ? 'flex' : 'none';
+        }
+    }
+
+    // ============================================
+    // 📷 CARGAR IMÁGENES
     // ============================================
     async loadImages() {
         try {
-            const result = await userImageService.getEventImages(this.eventoId);
+            const result = await eventImageService.getEventImages(this.eventoId);
             
             if (!result.success) {
                 throw new Error(result.error);
@@ -174,7 +228,7 @@ class ProjectionController {
     // ============================================
     async refreshImages() {
         try {
-            const result = await userImageService.getEventImages(this.eventoId);
+            const result = await eventImageService.getEventImages(this.eventoId);
             if (!result.success) return;
 
             const newImages = result.images;
@@ -194,6 +248,43 @@ class ProjectionController {
             }
         } catch (error) {
             console.error('Error refreshing images:', error);
+        }
+    }
+
+    // ============================================
+    // ðŸ”„ ESCUCHAR IMÁGENES EN TIEMPO REAL
+    // ============================================
+    startImageListener() {
+        if (!this.eventoId || this.imagesListener) return;
+
+        this.imagesListener = eventImageService.listenToEventImages(this.eventoId, (images) => {
+            const previousLength = this.images.length;
+            this.images = images;
+
+            if (this.images.length === 0) {
+                this.showEmptyState();
+                return;
+            }
+
+            this.hideEmptyState();
+
+            if (previousLength === 0) {
+                this.currentIndex = 0;
+            }
+
+            if (this.currentIndex >= this.images.length) {
+                this.currentIndex = this.images.length - 1;
+            }
+
+            this.showImage();
+            console.log(`📡 Projection: ${images.length} imágenes actualizadas en tiempo real`);
+        });
+    }
+
+    stopImageListener() {
+        if (typeof this.imagesListener === 'function') {
+            this.imagesListener();
+            this.imagesListener = null;
         }
     }
 

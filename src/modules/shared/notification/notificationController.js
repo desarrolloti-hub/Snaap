@@ -4,9 +4,6 @@ import { notificationService } from '../../../services/notificationService.js';
 
 let isInitialized = false;
 
-// ============================================
-// 🚀 INICIALIZAR NOTIFICACIONES FCM
-// ============================================
 export async function initNotification() {
     if (isInitialized) return;
     isInitialized = true;
@@ -21,7 +18,6 @@ export async function initNotification() {
 
     notificationService.setUsuarioActual(user);
 
-    // Verificar si ya está suscrito
     const status = notificationService.getSubscriptionStatus();
     if (status.isSubscribed) {
         console.log('✅ Usuario ya suscrito a FCM');
@@ -29,7 +25,6 @@ export async function initNotification() {
         return;
     }
 
-    // 🔥 SOLO REGISTRAR EN PRODUCCIÓN (HTTPS)
     if (window.location.hostname !== 'localhost') {
         const result = await notificationService.registerPushNotifications();
         
@@ -37,7 +32,6 @@ export async function initNotification() {
             console.log('✅ Notificaciones FCM activadas');
             updateButtonState(true);
             
-            // Escuchar mensajes entrantes
             notificationService.listenForMessages((payload) => {
                 console.log('📨 Notificación FCM recibida:', payload);
             });
@@ -50,7 +44,6 @@ export async function initNotification() {
         console.log('💡 Despliega a producción: firebase deploy --only hosting');
     }
 
-    // Escuchar cambios de autenticación
     document.addEventListener('auth:changed', async (event) => {
         const detail = event.detail || {};
         const user = detail.user || userService.getCurrentUser();
@@ -68,9 +61,6 @@ export async function initNotification() {
     console.log('✅ Sistema de notificaciones FCM inicializado');
 }
 
-// ============================================
-// 🔘 TOGGLE SUSCRIPCIÓN
-// ============================================
 export async function toggleSubscription() {
     try {
         const user = userService.getCurrentUser();
@@ -86,8 +76,17 @@ export async function toggleSubscription() {
 
         notificationService.setUsuarioActual(user);
 
+        if (window.location.hostname === 'localhost') {
+            await Swal.fire({
+                title: '⚠️ HTTPS requerido',
+                text: 'Las notificaciones FCM solo funcionan en producción (HTTPS).\n\nDespliega a: https://snaap-mx.web.app',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
         if (notificationService.isSubscribed) {
-            // Desuscribirse
             const result = await notificationService.unsubscribe();
             if (result.success) {
                 await Swal.fire({
@@ -106,17 +105,6 @@ export async function toggleSubscription() {
                 });
             }
         } else {
-            // Suscribirse - SOLO EN PRODUCCIÓN
-            if (window.location.hostname === 'localhost') {
-                await Swal.fire({
-                    title: '⚠️ HTTPS requerido',
-                    text: 'Las notificaciones FCM solo funcionan en producción (HTTPS).\n\nDespliega a: https://snaap-mx.web.app',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-
             const result = await notificationService.registerPushNotifications();
             if (result.success) {
                 await Swal.fire({
@@ -150,9 +138,6 @@ export async function toggleSubscription() {
     }
 }
 
-// ============================================
-// 🎨 ACTUALIZAR UI
-// ============================================
 export function updateButtonState(isSubscribed) {
     const btn = document.getElementById('notificationToggleBtn');
     const statusText = document.getElementById('notificationStatus');
@@ -178,9 +163,6 @@ export function updateButtonState(isSubscribed) {
     }
 }
 
-// ============================================
-// 📤 CREAR BOTÓN DE NOTIFICACIONES
-// ============================================
 export function createNotificationButton(container) {
     if (!container) return;
     
@@ -227,9 +209,6 @@ export function createNotificationButton(container) {
     updateButtonState(status.isSubscribed);
 }
 
-// ============================================
-// 📨 ENVIAR NOTIFICACIÓN DESDE CUALQUIER LUGAR
-// ============================================
 export function sendNotification(title, body, icon = '/assets/imagenes/Snaap.png', link = null) {
     notificationService.showInAppNotification({ title, body, icon, link });
 }

@@ -17,6 +17,8 @@ export const routePermissions = {
     // ============================================
     // 👤 RUTAS DE USUARIO (USER)
     // ============================================
+    '/user/home': { roles: ['user', 'host', 'sysadmin'], auth: false, guest: true },
+    '/user/gallery': { roles: ['user', 'host', 'sysadmin'], auth: false, guest: true },
     '/dashboard': { roles: ['user'], auth: true },
 
     // ============================================
@@ -28,6 +30,8 @@ export const routePermissions = {
     '/host/event-crud': { roles: ['host', 'sysadmin'], auth: true },
     '/host/event-edit': { roles: ['host', 'sysadmin'], auth: true },
     '/host/event-details': { roles: ['host', 'sysadmin'], auth: true },
+    '/host/live-event': { roles: ['host', 'sysadmin'], auth: true },
+    '/host/projection': { roles: ['host', 'sysadmin'], auth: true },
     '/host/profile': { roles: ['host', 'sysadmin'], auth: true },
     '/host/profile/edit': { roles: ['host', 'sysadmin'], auth: true },
 

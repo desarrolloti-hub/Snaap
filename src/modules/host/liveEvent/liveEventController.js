@@ -1,7 +1,7 @@
 ﻿// src/modules/host/liveEvent/liveEventController.js
 import { userService } from '../../../services/userService.js';
 import { eventService } from '../../../services/eventService.js';
-import { userImageService } from '../../../services/userImageService.js';
+import { eventImageService } from '../../../services/eventImageService.js';
 
 // ============================================
 // ðŸŽ® CONTROLADOR DE EVENTO EN VIVO
@@ -12,6 +12,7 @@ class LiveEventController {
         this.eventoId = null;
         this.eventoData = null;
         this.images = [];
+        this.imagesListener = null;
         this.autoRefresh = true;
         this.refreshInterval = null;
         this.intervalTime = 5000;
@@ -25,8 +26,13 @@ class LiveEventController {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                window.go('');
-                return;
+                console.warn('[liveEvent] No current user found');
+                this.currentUser = {
+                    uid: 'guest-user',
+                    email: 'guest@snaap.com',
+                    username: 'Invitado',
+                    role: 'user'
+                };
             }
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -40,6 +46,7 @@ class LiveEventController {
             await this.loadEventData();
             await this.loadImages();
             this.setupEventListeners();
+            this.startImageListener();
             this.startAutoRefresh();
             this.updateEventHeader();
 
@@ -81,7 +88,7 @@ class LiveEventController {
     // ============================================
     async loadImages() {
         try {
-            const result = await userImageService.getEventImages(this.eventoId);
+            const result = await eventImageService.getEventImages(this.eventoId);
             
             if (!result.success) {
                 throw new Error(result.error);
@@ -254,6 +261,13 @@ class LiveEventController {
             });
         }
 
+        const finishBtn = document.getElementById('finishBtn');
+        if (finishBtn) {
+            finishBtn.addEventListener('click', async () => {
+                await this.finalizarEvento();
+            });
+        }
+
         const modalCloseBtn = document.getElementById('modalCloseBtn');
         const modalOverlay = document.getElementById('imageModal');
         if (modalCloseBtn) {
@@ -283,6 +297,70 @@ class LiveEventController {
                 await this.loadImages();
             }, this.intervalTime);
             console.log(`ðŸ”„ Auto-refresh activado (${this.intervalTime / 1000}s)`);
+        }
+    }
+
+    async startImageListener() {
+        if (!this.eventoId) return;
+        if (this.imagesListener) return;
+
+        this.imagesListener = eventImageService.listenToEventImages(this.eventoId, (images) => {
+            this.images = images;
+            this.renderGallery();
+            this.updateStats();
+            console.log(`📡 LiveEvent: ${images.length} imágenes actualizadas en tiempo real`);
+        });
+    }
+
+    stopImageListener() {
+        if (typeof this.imagesListener === 'function') {
+            this.imagesListener();
+            this.imagesListener = null;
+        }
+    }
+
+    async finalizarEvento() {
+        try {
+            const result = await Swal.fire({
+                title: 'Finalizar evento',
+                text: '¿Deseas cerrar el evento y guardar el total de fotos y asistentes?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, finalizar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            const totalFotos = this.images.length;
+            const uniqueUsers = new Set(this.images.filter(img => img.userId).map(img => img.userId));
+            const totalAsistentes = Math.max(
+                Number(this.eventoData?.attendees || 0),
+                Number(this.eventoData?.invitados?.length || 0),
+                uniqueUsers.size
+            );
+
+            const updateResult = await eventService.actualizarEvento(this.eventoId, {
+                estado: 'completed',
+                uploadedPhotos: totalFotos,
+                attendees: totalAsistentes
+            });
+
+            if (!updateResult.success) {
+                throw new Error(updateResult.error || 'No se pudo finalizar el evento');
+            }
+
+            this.eventoData = {
+                ...this.eventoData,
+                estado: 'completed',
+                uploadedPhotos: totalFotos,
+                attendees: totalAsistentes
+            };
+
+            this.showSuccess('Evento finalizado correctamente');
+        } catch (error) {
+            console.error('Error finalizando evento:', error);
+            this.showError(error.message || 'No se pudo finalizar el evento');
         }
     }
 

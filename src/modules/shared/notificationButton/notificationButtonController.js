@@ -16,17 +16,13 @@ export async function initNotificationButton() {
         return;
     }
 
-    // 🔥 Cargar HTML
     try {
         const response = await fetch('/modules/shared/notificationButton/notificationButton.html');
         if (!response.ok) throw new Error('Error al cargar el componente');
         const html = await response.text();
         container.innerHTML = html;
 
-        // 🔥 Configurar eventos
         setupNotificationButton();
-
-        // 🔥 Verificar estado inicial
         updateButtonState();
 
         console.log('✅ Botón de notificaciones inicializado');
@@ -45,18 +41,28 @@ function setupNotificationButton() {
 async function handleNotificationClick() {
     const user = userService.getCurrentUser();
     if (!user) {
-        Swal.fire({
+        await Swal.fire({
             title: 'Inicia sesión',
             text: 'Debes iniciar sesión para activar las notificaciones',
             icon: 'warning',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+
+    // 🔥 VERIFICAR SI ESTÁ EN PRODUCCIÓN
+    if (window.location.hostname === 'localhost') {
+        await Swal.fire({
+            title: '⚠️ HTTPS requerido',
+            text: 'Las notificaciones FCM solo funcionan en producción (HTTPS).\n\nDespliega a: https://snaap-mx.web.app',
+            icon: 'warning',
+            confirmButtonText: 'Entendido'
         });
         return;
     }
 
     const btn = document.getElementById('notificationBtn');
     const statusText = document.getElementById('notificationStatus');
-    const badge = document.getElementById('notificationBadge');
 
     // 🔥 Mostrar loading
     btn.disabled = true;
@@ -64,14 +70,14 @@ async function handleNotificationClick() {
 
     try {
         notificationService.setUsuarioActual(user);
-        
-        // 🔥 Verificar si ya está suscrito
+
+        // 🔥 VERIFICAR SI YA ESTÁ SUSCRITO
         if (notificationService.isSubscribed) {
             // Desuscribirse
             const result = await notificationService.unsubscribe();
             if (result.success) {
                 updateButtonState();
-                Swal.fire({
+                await Swal.fire({
                     title: 'Notificaciones desactivadas',
                     text: 'Ya no recibirás notificaciones push',
                     icon: 'info',
@@ -79,33 +85,78 @@ async function handleNotificationClick() {
                 });
             }
         } else {
-            // Suscribirse
-            const result = await notificationService.subscribeToNotifications();
-            
-            if (result.success) {
+            // 🔥 MOSTRAR SWEETALERT DE PERMISO
+            const result = await Swal.fire({
+                title: '🔔 Activar notificaciones',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                            ¿Quieres recibir notificaciones de SNAAP?
+                        </p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">
+                            Te mantendremos informado sobre eventos, fotos y novedades.
+                        </p>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                            <span style="background: rgba(77,184,255,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: #4db8ff;">
+                                <i class="fas fa-bell"></i> Notificaciones push
+                            </span>
+                            <span style="background: rgba(0,255,136,0.15); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: #00ff88;">
+                                <i class="fas fa-check-circle"></i> En tiempo real
+                            </span>
+                        </div>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '✅ Sí, activar',
+                cancelButtonText: '❌ No, gracias',
+                confirmButtonColor: '#4db8ff',
+                cancelButtonColor: '#ff007a'
+            });
+
+            if (!result.isConfirmed) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                return;
+            }
+
+            // 🔥 REGISTRAR NOTIFICACIONES
+            const registerResult = await notificationService.registerPushNotifications();
+
+            if (registerResult.success) {
                 updateButtonState();
-                Swal.fire({
-                    title: '¡Notificaciones activadas!',
-                    text: 'Recibirás notificaciones push de SNAAP',
+                await Swal.fire({
+                    title: '✅ ¡Notificaciones activadas!',
+                    html: `
+                        <div style="text-align: center;">
+                            <i class="fas fa-check-circle" style="color: #00ff88; font-size: 3rem; margin-bottom: 10px;"></i>
+                            <p style="font-size: 1.1rem; margin: 5px 0;">
+                                Recibirás notificaciones de SNAAP
+                            </p>
+                            <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem;">
+                                Incluso con la página cerrada 🚀
+                            </p>
+                        </div>
+                    `,
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
             } else {
-                Swal.fire({
+                await Swal.fire({
                     title: 'Error',
-                    text: result.error || 'No se pudo activar las notificaciones',
+                    text: registerResult.error || 'No se pudo activar las notificaciones',
                     icon: 'error',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'Entendido'
                 });
             }
         }
     } catch (error) {
         console.error('❌ Error:', error);
-        Swal.fire({
+        await Swal.fire({
             title: 'Error',
             text: error.message || 'Ocurrió un error',
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'Entendido'
         });
     }
 
@@ -117,7 +168,6 @@ async function handleNotificationClick() {
 function updateButtonState() {
     const btn = document.getElementById('notificationBtn');
     const statusText = document.getElementById('notificationStatus');
-    const badge = document.getElementById('notificationBadge');
 
     if (!btn) return;
 
@@ -126,43 +176,16 @@ function updateButtonState() {
     if (isSubscribed) {
         btn.classList.add('active');
         btn.style.borderColor = '#00ff88';
-        if (statusText) statusText.textContent = 'Notificaciones activas ✅';
+        btn.style.color = '#00ff88';
+        if (statusText) statusText.textContent = '✅ Notificaciones activas';
     } else {
         btn.classList.remove('active');
         btn.style.borderColor = '#4db8ff';
-        if (statusText) statusText.textContent = 'Activar notificaciones';
-    }
-
-    // 🔥 Cargar notificaciones no leídas
-    loadUnreadCount();
-}
-
-async function loadUnreadCount() {
-    const user = userService.getCurrentUser();
-    if (!user) return;
-
-    try {
-        notificationService.setUsuarioActual(user);
-        const result = await notificationService.getUserNotifications();
-        
-        if (result.success) {
-            const unreadCount = result.unreadCount || 0;
-            const badge = document.getElementById('notificationBadge');
-            if (badge) {
-                if (unreadCount > 0) {
-                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
-                    badge.style.display = 'inline-block';
-                } else {
-                    badge.style.display = 'none';
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error al cargar notificaciones no leídas:', error);
+        btn.style.color = '#ffffff';
+        if (statusText) statusText.textContent = '🔔 Activar notificaciones';
     }
 }
 
-// 🔥 Escuchar cambios de autenticación
 document.addEventListener('auth:changed', () => {
     updateButtonState();
 });

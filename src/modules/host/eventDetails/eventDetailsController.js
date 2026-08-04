@@ -92,15 +92,15 @@ const loadQrFromFirestore = async (eventoId) => {
 const generateQR = async (eventoId, evento) => {
     try {
         const user = userService.getCurrentUser();
-        const qrData = {
+        const redirectUrl = `${window.location.origin}/user/home?eventId=${eventoId}`;
+
+        const result = await qrService.generarQr(eventoId, {
             eventName: evento.nombre || 'Evento',
             eventDate: evento.fechaEvento || new Date().toISOString(),
             hostName: user?.displayName || user?.email || 'Host',
             package: evento.paquete || 'basico',
-            redirectUrl: `${window.location.origin}/user/home?eventId=${eventoId}`
-        };
-
-        const result = await qrService.generarQr(eventoId, qrData);
+            redirectUrl
+        });
         if (result.success) {
             return result.qrImage;
         }
@@ -143,7 +143,9 @@ const renderEventDetails = (evento, qrImage) => {
     }
     
     const ubicacion = evento.ubicacion || 'No especificada';
-    const attendees = evento.attendees || evento.invitados?.length || 0;
+    const attendees = Number(evento.attendees) > 0
+        ? Number(evento.attendees)
+        : (evento.invitados?.length || 0);
     const photos = evento.uploadedPhotos || 0;
     const descripcion = evento.descripcion || 'Sin descripción';
     const paquete = evento.paquete || 'No especificado';
