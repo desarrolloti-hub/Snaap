@@ -75,7 +75,7 @@ class EventImageRepository {
   }
 
   // ============================================
-  // 📥 OBTENER IMÁGENES POR EVENTO Y DISPOSITIVO (NUEVO)
+  // 📥 OBTENER IMÁGENES POR EVENTO Y DISPOSITIVO
   // ============================================
   async getByEventAndDevice(eventoId, deviceId) {
     try {

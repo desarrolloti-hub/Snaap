@@ -27,20 +27,20 @@ export async function authGuard(path, redirect) {
     // ============================================
     if (isGuestRoute(path)) {
         if (isAuth) {
-            // Si está autenticado y quiere ir a login/register, redirigir a su dashboard
             console.log(`🔄 Usuario autenticado en ruta de invitado, redirigiendo...`);
             const redirectPath = getRedirectPathByRole(role);
             redirect(redirectPath);
             return false;
         }
-        return true; // Permitir acceso a invitados
+        return true;
     }
 
     // ============================================
-    // 2. RUTAS PÚBLICAS
+    // 2. RUTAS PÚBLICAS (incluyendo /user/*)
     // ============================================
     if (isPublicRoute(path)) {
-        return true; // Permitir acceso a todos
+        console.log(`✅ Ruta pública: ${path}, permitiendo acceso`);
+        return true;
     }
 
     // ============================================

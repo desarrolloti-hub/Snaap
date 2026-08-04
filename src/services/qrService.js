@@ -206,14 +206,38 @@ export class QrService {
         }
 
         const baseOrigin = origin || this.getCurrentOrigin();
-        return `${baseOrigin}/user/home?eventId=${encodeURIComponent(eventoId)}`;
+        
+        // 🔥 OBTENER DEVICE ID PARA INCLUIR EN LA URL
+        let deviceId = '';
+        if (typeof window !== 'undefined' && window.localStorage) {
+            try {
+                deviceId = localStorage.getItem('snaap_device_id') || '';
+            } catch (e) {
+                console.warn('⚠️ No se pudo obtener deviceId:', e);
+            }
+        }
+        
+        // Construir URL base
+        let url = `${baseOrigin}/user/home?eventId=${encodeURIComponent(eventoId)}`;
+        
+        // Si hay deviceId, agregarlo a la URL
+        if (deviceId) {
+            url += `&deviceId=${encodeURIComponent(deviceId)}`;
+        }
+        
+        console.log('🔗 QR redirect URL:', url);
+        return url;
     }
 
+    // ============================================
+    // 🛠️ OBTENER ORIGEN ACTUAL
+    // ============================================
     getCurrentOrigin() {
         if (typeof window !== 'undefined' && window.location?.origin) {
             return window.location.origin;
         }
 
+        // Fallback para entornos sin window
         return 'https://snaap.app';
     }
 

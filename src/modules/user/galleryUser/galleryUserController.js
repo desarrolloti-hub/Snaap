@@ -22,19 +22,34 @@ class GalleryUserController {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                import('../../../utils/navigation.js').then(({ navigateOrHref }) => navigateOrHref('/login'));
-                return;
+                // Usuario invitado - permitir acceso
+                this.currentUser = {
+                    uid: 'guest-user',
+                    email: null,
+                    username: 'Invitado',
+                    role: 'user'
+                };
             }
 
             const urlParams = new URLSearchParams(window.location.search);
             this.eventoId = urlParams.get('eventId');
 
+            if (!this.eventoId) {
+                // Intentar obtener de localStorage
+                this.eventoId = localStorage.getItem('snaap_current_event');
+                if (!this.eventoId) {
+                    this.showError('No se especificó un evento');
+                    return;
+                }
+            }
+
             console.log('🔍 Evento ID para galería:', this.eventoId);
 
-            if (!this.eventoId) {
-                this.showError('No se especificó un evento');
-                return;
-            }
+            // Ocultar navbar en vista de usuario
+            const navbar = document.getElementById('navbar');
+            if (navbar) navbar.style.display = 'none';
+            const navbarContainer = document.getElementById('navbar-container');
+            if (navbarContainer) navbarContainer.style.display = 'none';
 
             await this.loadImages();
             this.setupEventListeners();

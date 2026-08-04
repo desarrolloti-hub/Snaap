@@ -1,5 +1,4 @@
 // src/core/permissions.js
-// 🔥 CORREGIR LA IMPORTACIÓN
 import { userService } from '../services/userService.js';
 
 // 🔐 Configuración de permisos por ruta
@@ -15,14 +14,14 @@ export const routePermissions = {
     '/register': { roles: ['user', 'host', 'sysadmin'], auth: false, guest: true },
 
     // ============================================
-    // 👤 RUTAS DE USUARIO (USER)
+    // 👤 RUTAS DE USUARIO - PÚBLICAS (invitados pueden acceder)
     // ============================================
-    '/user/home': { roles: ['user', 'host', 'sysadmin'], auth: false, guest: true },
-    '/user/gallery': { roles: ['user', 'host', 'sysadmin'], auth: false, guest: true },
+    '/user/home': { roles: ['user', 'host', 'sysadmin'], auth: false, public: true },
+    '/user/gallery': { roles: ['user', 'host', 'sysadmin'], auth: false, public: true },
     '/dashboard': { roles: ['user'], auth: true },
 
     // ============================================
-    // 🎤 RUTAS DE HOST
+    // 🎤 RUTAS DE HOST (REQUIEREN AUTENTICACIÓN)
     // ============================================
     '/host': { roles: ['host', 'sysadmin'], auth: true },
     '/host/create-event': { roles: ['host', 'sysadmin'], auth: true },
@@ -36,7 +35,7 @@ export const routePermissions = {
     '/host/profile/edit': { roles: ['host', 'sysadmin'], auth: true },
 
     // ============================================
-    // 👑 RUTAS DE ADMIN (SYSADMIN)
+    // 👑 RUTAS DE ADMIN (REQUIEREN AUTENTICACIÓN)
     // ============================================
     '/sysadmin/home': { roles: ['sysadmin'], auth: true },
     '/sysadmin/hosts': { roles: ['sysadmin'], auth: true },
@@ -49,6 +48,7 @@ export const routePermissions = {
     '/sysadmin/admin-details': { roles: ['sysadmin'], auth: true },
     '/sysadmin/profile': { roles: ['sysadmin'], auth: true },
     '/sysadmin/profile/edit': { roles: ['sysadmin'], auth: true },
+    '/sysadmin/carousel': { roles: ['sysadmin'], auth: true },
 
     // ============================================
     // 🔴 ERROR
@@ -114,6 +114,10 @@ export function getRedirectPathByRole(role) {
  */
 export function isPublicRoute(path) {
     const permission = routePermissions[path];
+    // Si la ruta tiene public: true, es pública
+    if (permission && permission.public) {
+        return true;
+    }
     return permission ? !permission.auth : true;
 }
 

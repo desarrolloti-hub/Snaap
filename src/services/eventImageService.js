@@ -45,13 +45,14 @@ class EventImageService {
   }
 
   // ============================================
-  // 📤 SUBIR IMAGEN AL EVENTO (ACTUALIZADO)
+  // 📤 SUBIR IMAGEN AL EVENTO
   // ============================================
   async uploadImage(file, type, eventoId, userName = null, deviceId = null) {
     try {
       const user = this.getUser();
       if (!user) throw new Error('Usuario no autenticado');
 
+      // Validar archivo
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
         throw new Error('Formato no soportado. Usa JPG, PNG, GIF o WebP');
@@ -61,6 +62,7 @@ class EventImageService {
         throw new Error('La imagen debe ser menor a 5MB');
       }
 
+      // Subir a Storage
       const carpeta = `eventos/${eventoId}/users/${user.uid}/${type}`;
       const result = await storageService.subirImagen(file, carpeta);
 
@@ -68,6 +70,7 @@ class EventImageService {
         throw new Error(result.error);
       }
 
+      // Determinar nombre de usuario (prioridad: parámetro > localStorage > guest)
       const finalUserName = userName || 
                            localStorage.getItem('snaap_user_name') || 
                            user.username || 
@@ -76,6 +79,7 @@ class EventImageService {
 
       const finalDeviceId = deviceId || localStorage.getItem('snaap_device_id') || `device_${Date.now()}`;
 
+      // Guardar metadata en Firestore
       const imageData = {
         eventoId: eventoId,
         userId: user.uid,
@@ -91,6 +95,7 @@ class EventImageService {
 
       const saved = await eventImageRepository.create(imageData);
 
+      // Actualizar contador del evento
       await eventService.incrementEventPhotoCount(eventoId, 1);
 
       return {
