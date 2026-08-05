@@ -55,7 +55,6 @@ class HomeUserController {
 
             if (!this.eventoId) {
                 console.warn('[homeUser] Missing eventId in URL');
-                // Intentar obtener de localStorage
                 this.eventoId = localStorage.getItem('snaap_current_event');
                 if (!this.eventoId) {
                     this.showError('No se especificó un evento');
@@ -100,7 +99,6 @@ class HomeUserController {
     async resolveUserName() {
         // 🔥 CASO 1: Usuario autenticado (tiene cuenta)
         if (this.isAuthenticated && this.currentUser) {
-            // Obtener nombre del perfil del usuario
             const userData = await this.loadUserProfile();
             if (userData && userData.username) {
                 this.userName = userData.username;
@@ -108,7 +106,6 @@ class HomeUserController {
                 this.isDeviceRegistered = true;
                 return;
             }
-            // Fallback: usar email o displayName
             this.userName = this.currentUser.displayName || 
                            this.currentUser.username ||
                            this.currentUser.email?.split('@')[0] || 
@@ -121,19 +118,16 @@ class HomeUserController {
         // 🔥 CASO 2: Usuario NO autenticado (invitado)
         console.log('[homeUser] Usuario invitado, verificando dispositivo');
 
-        // Verificar si el dispositivo ya está registrado en este evento
         const deviceData = await deviceService.checkDeviceExists(
             this.deviceId,
             this.eventoId
         );
 
         if (deviceData) {
-            // ✅ Dispositivo conocido
             this.isDeviceRegistered = true;
             this.userName = deviceData.userName;
             console.log('[homeUser] Dispositivo conocido:', this.userName);
         } else {
-            // ❌ Dispositivo NUEVO - Mostrar SweetAlert
             console.log('[homeUser] Dispositivo nuevo, mostrar prompt');
             await this.showNamePrompt();
         }
@@ -185,10 +179,8 @@ class HomeUserController {
         });
 
         if (result.isConfirmed && result.value) {
-            // ✅ Usuario ingresó nombre
             const userName = result.value;
             
-            // Registrar dispositivo
             const registerResult = await deviceService.registerDevice(
                 this.deviceId,
                 this.eventoId,
@@ -200,15 +192,12 @@ class HomeUserController {
                 this.userName = userName;
                 localStorage.setItem('snaap_user_name', userName);
                 console.log('[homeUser] Dispositivo registrado:', userName);
-                
-                // Recargar vista con el nombre
                 await this.loadEventView();
             } else {
                 this.showError('Error al registrar el dispositivo. Intenta de nuevo.');
                 setTimeout(() => this.showNamePrompt(), 1000);
             }
         } else {
-            // ❌ Usuario canceló - Mostrar mensaje y bloquear acceso
             await Swal.fire({
                 title: '⛔ Acceso denegado',
                 text: 'Debes ingresar tu nombre para participar en el evento',
@@ -216,7 +205,6 @@ class HomeUserController {
                 confirmButtonText: 'Intentar de nuevo',
                 confirmButtonColor: '#4db8ff'
             });
-            // Reintentar
             await this.showNamePrompt();
         }
     }
@@ -263,7 +251,6 @@ class HomeUserController {
     async loadEventView() {
         if (!this.userName) {
             console.warn('[homeUser] No hay nombre de usuario');
-            // Si es autenticado, intentar cargar de nuevo
             if (this.isAuthenticated) {
                 await this.resolveUserName();
             } else {
@@ -279,11 +266,8 @@ class HomeUserController {
         await this.loadUserImages();
         this.setupEventListeners();
         
-        // Ocultar navbar en vista de usuario
-        const navbar = document.getElementById('navbar');
-        if (navbar) navbar.style.display = 'none';
-        const navbarContainer = document.getElementById('navbar-container');
-        if (navbarContainer) navbarContainer.style.display = 'none';
+        // ✅ EL NAVBAR SE MUESTRA NORMALMENTE - NO LO OCULTAMOS
+        console.log('[homeUser] Vista cargada, navbar visible');
     }
 
     // ============================================
@@ -298,7 +282,6 @@ class HomeUserController {
             const badge = document.createElement('div');
             badge.className = 'user-name-badge';
             
-            // Estilo diferente para autenticados vs invitados
             const isGuest = !this.isAuthenticated;
             const icon = isGuest ? 'fa-user' : 'fa-user-check';
             const color = isGuest ? '#4db8ff' : '#00ff88';
@@ -346,13 +329,11 @@ class HomeUserController {
     // 👤 RESOLVER USUARIO ACTUAL
     // ============================================
     resolveCurrentUser() {
-        // Primero intentar con el servicio
         const serviceUser = userService.getCurrentUser();
         if (serviceUser) {
             return serviceUser;
         }
 
-        // Luego con Firebase Auth directamente
         if (auth?.currentUser) {
             return {
                 uid: auth.currentUser.uid,
@@ -364,7 +345,6 @@ class HomeUserController {
             };
         }
 
-        // Usuario invitado (no autenticado)
         return {
             uid: 'guest-user',
             email: null,
@@ -528,21 +508,18 @@ class HomeUserController {
     // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
-        // 🔥 BOTÓN 1: TOMAR FOTO
         const takePhotoBtn = document.getElementById('takePhotoBtn');
         if (takePhotoBtn) {
             this.boundTakePhotoHandler = this.handleTakePhoto.bind(this);
             takePhotoBtn.addEventListener('click', this.boundTakePhotoHandler);
         }
 
-        // 🔥 BOTÓN 2: SUBIR DIBUJO
         const uploadDrawingBtn = document.getElementById('uploadDrawingBtn');
         if (uploadDrawingBtn) {
             this.boundOpenDrawingModalHandler = this.openDrawingModal.bind(this);
             uploadDrawingBtn.addEventListener('click', this.boundOpenDrawingModalHandler);
         }
 
-        // 🔥 BOTÓN 3: MIS FOTOS (Galería del dispositivo)
         const openGalleryBtn = document.getElementById('openGalleryBtn');
         const galleryInput = document.getElementById('galleryFileInput');
         
@@ -558,10 +535,8 @@ class HomeUserController {
             galleryInput.addEventListener('change', this.boundGalleryChangeHandler);
         }
 
-        // 🔥 MODAL DE DIBUJO
         this.setupDrawingEvents();
 
-        // 🔥 TECLA ESC
         this.boundKeydownHandler = (e) => {
             if (e.key === 'Escape') {
                 this.closeDrawingModal();
@@ -662,7 +637,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 📤 SUBIR IMAGEN (ACTUALIZADO CON NOMBRE)
+    // 📤 SUBIR IMAGEN
     // ============================================
     async uploadImage(file, type) {
         try {
@@ -677,7 +652,6 @@ class HomeUserController {
                 return false;
             }
 
-            // Usar el nombre de usuario (autenticado o invitado)
             const finalUserName = this.userName || 'Anónimo';
             const finalDeviceId = this.deviceId;
 
@@ -695,7 +669,6 @@ class HomeUserController {
 
             await this.loadUserImages();
 
-            // Enviar notificación al host
             await this.sendNotificationToHost(
                 '📸 Nueva foto subida',
                 `${finalUserName} ha subido una foto a tu evento "${this.eventoData?.nombre || 'Evento'}"`,
@@ -736,7 +709,7 @@ class HomeUserController {
     }
 
     // ============================================
-    // 🎨 DIBUJO (todos los métodos de dibujo)
+    // 🎨 DIBUJO
     // ============================================
     openDrawingModal() {
         const modal = document.getElementById('drawingModal');

@@ -8,8 +8,8 @@ let navbarInitialized = false;
 // 🔥 RUTAS DONDE NO SE MUESTRA EL NAVBAR
 // ============================================
 const HIDDEN_NAVBAR_ROUTES = [
-    '/user/home',
-    '/user/gallery',
+    // '/user/home',    // ✅ COMENTADO - NAVBAR VISIBLE
+    // '/user/gallery', // ✅ COMENTADO - NAVBAR VISIBLE
     '/user/scan',
     '/event'
 ];
@@ -20,23 +20,21 @@ const HIDDEN_NAVBAR_ROUTES = [
 function shouldHideNavbar() {
     const currentPath = window.location.pathname;
     
-    if (HIDDEN_NAVBAR_ROUTES.includes(currentPath)) {
-        return true;
-    }
-    
     for (const route of HIDDEN_NAVBAR_ROUTES) {
-        if (route.includes(':')) {
-            const pattern = route.replace(/:\w+/g, '[^/]+');
-            const regex = new RegExp(`^${pattern}$`);
-            if (regex.test(currentPath)) {
+        if (currentPath === route) {
+            console.log(`🔍 Navbar oculto en ruta: ${currentPath}`);
+            return true;
+        }
+        if (currentPath.startsWith(route) && route !== '/') {
+            const basePath = currentPath.split('?')[0];
+            if (basePath === route) {
+                console.log(`🔍 Navbar oculto en ruta: ${currentPath}`);
                 return true;
             }
         }
-        if (currentPath.startsWith(route) && route !== '/') {
-            return true;
-        }
     }
     
+    console.log(`🔍 Navbar visible en ruta: ${currentPath}`);
     return false;
 }
 
@@ -88,7 +86,6 @@ function setupNavbarEvents() {
     const dropdownContainer = document.querySelector('.dropdown-container');
 
     if (dropdownBtn && dropdownMenu) {
-        // Abrir/cerrar dropdown al hacer clic
         dropdownBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -96,7 +93,6 @@ function setupNavbarEvents() {
             dropdownContainer.classList.toggle('active');
         });
 
-        // Cerrar dropdown al hacer clic fuera
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.dropdown-container')) {
                 dropdownMenu.classList.remove('open');
@@ -104,7 +100,6 @@ function setupNavbarEvents() {
             }
         });
 
-        // Cerrar dropdown al hacer clic en un item
         dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
             item.addEventListener('click', () => {
                 dropdownMenu.classList.remove('open');
@@ -162,24 +157,27 @@ function setupNavbarEvents() {
 // 👤 ACTUALIZAR VISIBILIDAD DEL NAVBAR
 // ============================================
 function updateNavbarVisibility() {
-    if (shouldHideNavbar()) {
-        const navbar = document.getElementById('snaapNavbar');
+    const shouldHide = shouldHideNavbar();
+    
+    const navbar = document.getElementById('snaapNavbar');
+    const navbarContainer = document.getElementById('navbar-container');
+    
+    if (shouldHide) {
         if (navbar) navbar.style.display = 'none';
-        const navbarContainer = document.getElementById('navbar-container');
         if (navbarContainer) navbarContainer.style.display = 'none';
-        return;
+        console.log('👻 Navbar oculto');
+    } else {
+        if (navbar) navbar.style.display = '';
+        if (navbarContainer) navbarContainer.style.display = '';
+        console.log('👀 Navbar visible');
     }
 
-    const navbar = document.getElementById('snaapNavbar');
-    if (navbar) navbar.style.display = '';
-    const navbarContainer = document.getElementById('navbar-container');
-    if (navbarContainer) navbarContainer.style.display = '';
+    if (shouldHide) return;
 
     const user = userService.getCurrentUser();
     const isAuthenticated = !!user;
     const role = user ? user.role : null;
 
-    // Mostrar/ocultar elementos según rol
     const items = document.querySelectorAll('[data-role]');
     items.forEach(item => {
         const roles = item.getAttribute('data-role').split(',');
@@ -196,7 +194,6 @@ function updateNavbarVisibility() {
         }
     });
 
-    // Actualizar nombre de perfil
     const profileName = document.getElementById('profile-name');
     if (profileName && user) {
         profileName.textContent = user.username || user.email?.split('@')[0] || 'Perfil';
@@ -204,7 +201,6 @@ function updateNavbarVisibility() {
         profileName.textContent = 'Perfil';
     }
 
-    // Actualizar enlace activo
     updateActiveLink();
 }
 

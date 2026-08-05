@@ -22,7 +22,6 @@ class GalleryUserController {
         try {
             this.currentUser = userService.getCurrentUser();
             if (!this.currentUser) {
-                // Usuario invitado - permitir acceso
                 this.currentUser = {
                     uid: 'guest-user',
                     email: null,
@@ -35,7 +34,6 @@ class GalleryUserController {
             this.eventoId = urlParams.get('eventId');
 
             if (!this.eventoId) {
-                // Intentar obtener de localStorage
                 this.eventoId = localStorage.getItem('snaap_current_event');
                 if (!this.eventoId) {
                     this.showError('No se especificó un evento');
@@ -45,11 +43,7 @@ class GalleryUserController {
 
             console.log('🔍 Evento ID para galería:', this.eventoId);
 
-            // Ocultar navbar en vista de usuario
-            const navbar = document.getElementById('navbar');
-            if (navbar) navbar.style.display = 'none';
-            const navbarContainer = document.getElementById('navbar-container');
-            if (navbarContainer) navbarContainer.style.display = 'none';
+            // ✅ EL NAVBAR SE MUESTRA NORMALMENTE - NO LO OCULTAMOS
 
             await this.loadImages();
             this.setupEventListeners();

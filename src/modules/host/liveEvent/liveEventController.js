@@ -4,7 +4,7 @@ import { eventService } from '../../../services/eventService.js';
 import { eventImageService } from '../../../services/eventImageService.js';
 
 // ============================================
-// ðŸŽ® CONTROLADOR DE EVENTO EN VIVO
+// 🎮 CONTROLADOR DE EVENTO EN VIVO
 // ============================================
 class LiveEventController {
     constructor() {
@@ -20,7 +20,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸš€ INICIALIZACIÃ“N
+    // 🚀 INICIALIZACIÓN
     // ============================================
     async initialize() {
         try {
@@ -39,7 +39,7 @@ class LiveEventController {
             this.eventoId = urlParams.get('id');
 
             if (!this.eventoId) {
-                this.showError('No se especificÃ³ un evento');
+                this.showError('No se especificó un evento');
                 return;
             }
 
@@ -57,7 +57,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸ“¥ CARGAR DATOS DEL EVENTO
+    // 📥 CARGAR DATOS DEL EVENTO
     // ============================================
     async loadEventData() {
         try {
@@ -66,7 +66,7 @@ class LiveEventController {
                 throw new Error(result.error);
             }
             this.eventoData = result.evento;
-            console.log('âœ… Evento cargado:', this.eventoData?.nombre);
+            console.log('✅ Evento cargado:', this.eventoData?.nombre);
         } catch (error) {
             console.error('Error loading event data:', error);
             throw error;
@@ -74,7 +74,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸ–¼ï¸ ACTUALIZAR HEADER
+    // 🖼️ ACTUALIZAR HEADER
     // ============================================
     updateEventHeader() {
         const titleEl = document.getElementById('eventTitle');
@@ -84,30 +84,31 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸ“‹ CARGAR IMÃGENES DEL EVENTO
+    // 📋 CARGAR IMÁGENES DEL EVENTO (TODAS)
     // ============================================
     async loadImages() {
         try {
+            // 🔥 OBTENER TODAS LAS IMÁGENES DEL EVENTO (sin filtrar por usuario)
             const result = await eventImageService.getEventImages(this.eventoId);
             
             if (!result.success) {
                 throw new Error(result.error);
             }
 
-            this.images = result.images;
-            console.log(`ðŸ“‹ ${this.images.length} imÃ¡genes del evento`);
+            this.images = result.images || [];
+            console.log(`📋 ${this.images.length} imágenes del evento cargadas`);
 
             this.renderGallery();
             this.updateStats();
 
         } catch (error) {
             console.error('Error loading images:', error);
-            this.showError('Error al cargar las imÃ¡genes');
+            this.showError('Error al cargar las imágenes');
         }
     }
 
     // ============================================
-    // ðŸŽ¨ RENDERIZAR GALERÃA
+    // 🎨 RENDERIZAR GALERÍA
     // ============================================
     renderGallery() {
         const galleryGrid = document.getElementById('galleryGrid');
@@ -119,6 +120,11 @@ class LiveEventController {
             galleryGrid.style.display = 'none';
             if (emptyState) {
                 emptyState.style.display = 'block';
+                // Mostrar el nombre del evento en el empty state
+                const emptyTitle = emptyState.querySelector('h3');
+                if (emptyTitle && this.eventoData) {
+                    emptyTitle.textContent = `No hay fotos en "${this.eventoData.nombre || 'Evento'}" aún`;
+                }
             }
             return;
         }
@@ -132,9 +138,12 @@ class LiveEventController {
             <div class="gallery-item" data-index="${index}">
                 <img src="${image.url}" alt="${image.fileName || 'Imagen'}" loading="lazy">
                 <span class="gallery-type ${image.type}">
-                    ${image.type === 'photo' ? 'ðŸ“¸' : 'ðŸŽ¨'}
+                    ${image.type === 'photo' ? '📸' : '🎨'}
                 </span>
                 <div class="gallery-item-info">
+                    <span class="gallery-item-user">
+                        <i class="fas fa-user-circle"></i> ${image.userName || 'Anónimo'}
+                    </span>
                     <span class="gallery-item-date">
                         <i class="fas fa-clock"></i> ${this.getTimeAgo(image.date)}
                     </span>
@@ -155,7 +164,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸ“Š ACTUALIZAR ESTADÃSTICAS
+    // 📊 ACTUALIZAR ESTADÍSTICAS
     // ============================================
     updateStats() {
         const photoCount = document.getElementById('photoCount');
@@ -165,20 +174,23 @@ class LiveEventController {
             photoCount.innerHTML = `<i class="fas fa-images"></i> ${this.images.length} fotos`;
         }
 
+        // 🔥 CONTAR USUARIOS ÚNICOS POR userName (incluye invitados)
         const uniqueUsers = new Set();
         this.images.forEach(img => {
-            if (img.userId) {
+            if (img.userName) {
+                uniqueUsers.add(img.userName);
+            } else if (img.userId) {
                 uniqueUsers.add(img.userId);
             }
         });
         
         if (userCount) {
-            userCount.innerHTML = `<i class="fas fa-users"></i> ${uniqueUsers.size || 0} usuarios`;
+            userCount.innerHTML = `<i class="fas fa-users"></i> ${uniqueUsers.size || 0} participantes`;
         }
     }
 
     // ============================================
-    // ðŸ–¼ï¸ MODAL
+    // 🖼️ MODAL
     // ============================================
     openModal(index) {
         const image = this.images[index];
@@ -204,7 +216,7 @@ class LiveEventController {
         }
         
         if (modalUser) {
-            modalUser.innerHTML = `<i class="fas fa-user"></i> ${image.userName || 'Usuario'}`;
+            modalUser.innerHTML = `<i class="fas fa-user-circle"></i> ${image.userName || 'Usuario'}`;
         }
         
         if (modal) modal.style.display = 'flex';
@@ -216,7 +228,7 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸŽ¯ CONFIGURAR EVENTOS
+    // 🎯 CONFIGURAR EVENTOS
     // ============================================
     setupEventListeners() {
         const btnBack = document.getElementById('btnBack');
@@ -234,7 +246,7 @@ class LiveEventController {
                 await this.loadImages();
                 refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
                 refreshBtn.disabled = false;
-                this.showSuccess('âœ… GalerÃ­a actualizada');
+                this.showSuccess('✅ Galería actualizada');
             });
         }
 
@@ -250,7 +262,7 @@ class LiveEventController {
             shareQrBtn.addEventListener('click', () => {
                 const url = `${window.location.origin}/user/home?eventId=${this.eventoId}`;
                 navigator.clipboard.writeText(url);
-                this.showSuccess('âœ… Enlace copiado al portapapeles');
+                this.showSuccess('✅ Enlace copiado al portapapeles');
             });
         }
 
@@ -289,21 +301,25 @@ class LiveEventController {
     }
 
     // ============================================
-    // ðŸ”„ AUTO-REFRESH
+    // 🔄 AUTO-REFRESH
     // ============================================
     startAutoRefresh() {
         if (this.autoRefresh) {
             this.refreshInterval = setInterval(async () => {
                 await this.loadImages();
             }, this.intervalTime);
-            console.log(`ðŸ”„ Auto-refresh activado (${this.intervalTime / 1000}s)`);
+            console.log(`🔄 Auto-refresh activado (${this.intervalTime / 1000}s)`);
         }
     }
 
+    // ============================================
+    // 📡 ESCUCHAR IMÁGENES EN TIEMPO REAL
+    // ============================================
     async startImageListener() {
         if (!this.eventoId) return;
         if (this.imagesListener) return;
 
+        // 🔥 ESCUCHAR TODAS LAS IMÁGENES DEL EVENTO (sin filtrar)
         this.imagesListener = eventImageService.listenToEventImages(this.eventoId, (images) => {
             this.images = images;
             this.renderGallery();
@@ -319,6 +335,9 @@ class LiveEventController {
         }
     }
 
+    // ============================================
+    // 🏁 FINALIZAR EVENTO
+    // ============================================
     async finalizarEvento() {
         try {
             const result = await Swal.fire({
@@ -333,7 +352,7 @@ class LiveEventController {
             if (!result.isConfirmed) return;
 
             const totalFotos = this.images.length;
-            const uniqueUsers = new Set(this.images.filter(img => img.userId).map(img => img.userId));
+            const uniqueUsers = new Set(this.images.filter(img => img.userName || img.userId).map(img => img.userName || img.userId));
             const totalAsistentes = Math.max(
                 Number(this.eventoData?.attendees || 0),
                 Number(this.eventoData?.invitados?.length || 0),
@@ -357,13 +376,16 @@ class LiveEventController {
                 attendees: totalAsistentes
             };
 
-            this.showSuccess('Evento finalizado correctamente');
+            this.showSuccess('✅ Evento finalizado correctamente');
         } catch (error) {
             console.error('Error finalizando evento:', error);
             this.showError(error.message || 'No se pudo finalizar el evento');
         }
     }
 
+    // ============================================
+    // 🔄 TOGGLE AUTO-REFRESH
+    // ============================================
     toggleAutoRefresh() {
         const btn = document.getElementById('autoRefreshBtn');
         const info = document.getElementById('refreshInfo');
@@ -377,11 +399,11 @@ class LiveEventController {
                 btn.classList.add('btn-snaap');
             }
             if (info) {
-                info.textContent = 'ðŸ”„ ActualizaciÃ³n automÃ¡tica activada';
+                info.textContent = '🔄 Actualización automática activada';
                 info.style.color = '#4db8ff';
             }
             this.startAutoRefresh();
-            this.showSuccess('ðŸ”„ Auto-refresh activado');
+            this.showSuccess('🔄 Auto-refresh activado');
         } else {
             if (this.refreshInterval) {
                 clearInterval(this.refreshInterval);
@@ -393,15 +415,15 @@ class LiveEventController {
                 btn.classList.add('btn-snaap-secondary');
             }
             if (info) {
-                info.textContent = 'â¸ï¸ ActualizaciÃ³n automÃ¡tica pausada';
+                info.textContent = '⏸️ Actualización automática pausada';
                 info.style.color = '#ff007a';
             }
-            this.showInfo('â¸ï¸ Auto-refresh pausado');
+            this.showInfo('⏸️ Auto-refresh pausado');
         }
     }
 
     // ============================================
-    // ðŸ“¦ UTILIDADES
+    // 📦 UTILIDADES
     // ============================================
     getTimeAgo(date) {
         const now = new Date();
@@ -418,7 +440,7 @@ class LiveEventController {
 
     showSuccess(message) {
         Swal.fire({
-            title: 'Ã‰xito',
+            title: 'Éxito',
             text: message,
             icon: 'success',
             timer: 2000,
@@ -451,14 +473,14 @@ class LiveEventController {
 }
 
 // ============================================
-// âœ… EXPORT
+// ✅ EXPORT
 // ============================================
 export function initLiveEventController() {
     new LiveEventController();
 }
 
 // ============================================
-// ðŸš€ INIT
+// 🚀 INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     new LiveEventController();

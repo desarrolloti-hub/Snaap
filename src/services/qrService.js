@@ -205,6 +205,7 @@ export class QrService {
             throw new Error('ID del evento es requerido');
         }
 
+        // 🔥 USAR ORIGEN PASADO COMO PARÁMETRO O EL ACTUAL
         const baseOrigin = origin || this.getCurrentOrigin();
         
         // 🔥 OBTENER DEVICE ID PARA INCLUIR EN LA URL
@@ -230,15 +231,31 @@ export class QrService {
     }
 
     // ============================================
-    // 🛠️ OBTENER ORIGEN ACTUAL
+    // 🛠️ OBTENER ORIGEN ACTUAL (CORREGIDO)
     // ============================================
     getCurrentOrigin() {
-        if (typeof window !== 'undefined' && window.location?.origin) {
+        // 🔥 PRIMERO: Intentar obtener de producción desde Firebase Hosting
+        if (typeof window !== 'undefined') {
+            // Si estamos en Firebase Hosting, usar la URL de producción
+            const hostname = window.location.hostname;
+            
+            // Si es producción (snaap-mx.web.app o dominio personalizado)
+            if (hostname === 'snaap-mx.web.app' || hostname.includes('snaap')) {
+                return window.location.origin;
+            }
+            
+            // Si es localhost, usar el origin de producción como fallback
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                // 🔥 EN PRODUCCIÓN, USAR LA URL DE FIREBASE HOSTING
+                console.warn('⚠️ Estás en localhost. Usando URL de producción para el QR.');
+                return 'https://snaap-mx.web.app';
+            }
+            
             return window.location.origin;
         }
 
-        // Fallback para entornos sin window
-        return 'https://snaap.app';
+        // Fallback final
+        return 'https://snaap-mx.web.app';
     }
 
     // ============================================
